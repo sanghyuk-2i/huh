@@ -36,6 +36,8 @@ export interface ErrorEntry {
 
 export type ErrorConfig = Record<string, ErrorEntry>;
 
+export type LocalizedErrorConfig = Record<string, ErrorConfig>;
+
 export interface ResolvedError extends ErrorEntry {
   trackId: string;
 }
@@ -50,4 +52,17 @@ export interface ValidationResult {
   valid: boolean;
   errors: ValidationError[];
   warnings: ValidationError[];
+}
+
+export interface CrossLocaleValidationError {
+  trackId: string;
+  field?: string;
+  locales: string[];
+  message: string;
+}
+
+export interface CrossLocaleValidationResult {
+  valid: boolean;
+  errors: CrossLocaleValidationError[];
+  warnings: CrossLocaleValidationError[];
 }

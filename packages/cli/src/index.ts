@@ -74,4 +74,6 @@ export type {
   NotionSource,
   CsvSource,
   XlsxSource,
+  I18nConfig,
+  LocaleSourceOverride,
 } from './commands/init';

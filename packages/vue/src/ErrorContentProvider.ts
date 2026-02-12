@@ -1,6 +1,6 @@
-import { defineComponent, ref, provide, h, toRaw } from 'vue';
+import { defineComponent, ref, provide, h, toRaw, computed } from 'vue';
 import type { PropType, InjectionKey } from 'vue';
-import type { ErrorConfig, ResolvedError } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig, ResolvedError } from '@huh/core';
 import { resolveError, ACTION_TYPES } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
@@ -11,7 +11,19 @@ export const HuhProvider = defineComponent({
   props: {
     source: {
       type: Object as PropType<ErrorConfig>,
-      required: true,
+      default: undefined,
+    },
+    locales: {
+      type: Object as PropType<LocalizedErrorConfig>,
+      default: undefined,
+    },
+    defaultLocale: {
+      type: String,
+      default: undefined,
+    },
+    locale: {
+      type: String,
+      default: undefined,
     },
     renderers: {
       type: Object as PropType<RendererMap>,
@@ -28,17 +40,45 @@ export const HuhProvider = defineComponent({
   },
   setup(props, { slots }) {
     const activeError = ref<ResolvedError | null>(null);
+    const internalLocale = ref<string>(props.locale ?? props.defaultLocale ?? '');
+
+    const currentLocale = computed(() => props.locale ?? internalLocale.value);
+
+    const getActiveSource = (): ErrorConfig => {
+      if (props.source) return props.source;
+      if (props.locales && currentLocale.value && props.locales[currentLocale.value]) {
+        return props.locales[currentLocale.value];
+      }
+      if (props.locales && props.defaultLocale && props.locales[props.defaultLocale]) {
+        return props.locales[props.defaultLocale];
+      }
+      throw new Error(
+        'HuhProvider requires either a "source" prop or "locales" with a valid locale.',
+      );
+    };
 
     const clearError = () => {
       activeError.value = null;
     };
 
     const handleError = (trackId: string, variables?: Record<string, string>) => {
-      const resolved = resolveError(props.source, trackId, variables);
+      const activeSource = getActiveSource();
+      const resolved = resolveError(activeSource, trackId, variables);
       activeError.value = resolved;
     };
 
-    provide(HuhInjectionKey, { handleError, clearError });
+    const setLocale = (newLocale: string) => {
+      internalLocale.value = newLocale;
+    };
+
+    provide(HuhInjectionKey, {
+      handleError,
+      clearError,
+      get locale() {
+        return props.locales ? currentLocale.value : undefined;
+      },
+      setLocale,
+    });
 
     const createOnAction = (error: ResolvedError) => {
       return () => {

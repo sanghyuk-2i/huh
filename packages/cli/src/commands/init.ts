@@ -97,10 +97,22 @@ export interface XlsxSource {
 
 export type HuhSource = GoogleSheetsSource | AirtableSource | NotionSource | CsvSource | XlsxSource;
 
+export interface LocaleSourceOverride {
+  sheet?: string;
+  range?: string;
+  filePath?: string;
+}
+
+export interface I18nConfig {
+  defaultLocale: string;
+  locales: Record<string, LocaleSourceOverride>;
+}
+
 // Simple defineConfig helper for type-safe config
 export interface HuhCliConfig {
   source: HuhSource;
   output: string;
+  i18n?: I18nConfig;
   simulate?: {
     variables?: Record<string, Record<string, string>>;
     defaultVariables?: Record<string, string>;

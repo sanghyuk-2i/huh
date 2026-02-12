@@ -1,13 +1,16 @@
 import React, { createContext, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { ErrorConfig, ResolvedError } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig, ResolvedError } from '@huh/core';
 import { resolveError, ACTION_TYPES } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
 export const HuhContext = createContext<HuhContextValue | null>(null);
 
 export interface HuhProviderProps {
-  source: ErrorConfig;
+  source?: ErrorConfig;
+  locales?: LocalizedErrorConfig;
+  defaultLocale?: string;
+  locale?: string;
   renderers: RendererMap;
   children: ReactNode;
   onRetry?: () => void;
@@ -16,12 +19,33 @@ export interface HuhProviderProps {
 
 export function HuhProvider({
   source,
+  locales,
+  defaultLocale,
+  locale: controlledLocale,
   renderers,
   children,
   onRetry,
   onCustomAction,
 }: HuhProviderProps) {
   const [activeError, setActiveError] = useState<ResolvedError | null>(null);
+  const [internalLocale, setInternalLocale] = useState<string>(
+    controlledLocale ?? defaultLocale ?? '',
+  );
+
+  const currentLocale = controlledLocale ?? internalLocale;
+
+  const getActiveSource = useCallback((): ErrorConfig => {
+    if (source) return source;
+    if (locales && currentLocale && locales[currentLocale]) {
+      return locales[currentLocale];
+    }
+    if (locales && defaultLocale && locales[defaultLocale]) {
+      return locales[defaultLocale];
+    }
+    throw new Error(
+      'HuhProvider requires either a "source" prop or "locales" with a valid locale.',
+    );
+  }, [source, locales, currentLocale, defaultLocale]);
 
   const clearError = useCallback(() => {
     setActiveError(null);
@@ -29,15 +53,25 @@ export function HuhProvider({
 
   const handleError = useCallback(
     (trackId: string, variables?: Record<string, string>) => {
-      const resolved = resolveError(source, trackId, variables);
+      const activeSource = getActiveSource();
+      const resolved = resolveError(activeSource, trackId, variables);
       setActiveError(resolved);
     },
-    [source],
+    [getActiveSource],
   );
 
+  const setLocale = useCallback((newLocale: string) => {
+    setInternalLocale(newLocale);
+  }, []);
+
   const contextValue = useMemo<HuhContextValue>(
-    () => ({ handleError, clearError }),
-    [handleError, clearError],
+    () => ({
+      handleError,
+      clearError,
+      locale: locales ? currentLocale : undefined,
+      setLocale,
+    }),
+    [handleError, clearError, currentLocale, setLocale, locales],
   );
 
   const createOnAction = useCallback(

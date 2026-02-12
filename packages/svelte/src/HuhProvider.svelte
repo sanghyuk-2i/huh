@@ -1,33 +1,73 @@
 <script lang="ts">
   import { setContext } from 'svelte';
   import type { Snippet } from 'svelte';
-  import type { ErrorConfig, ResolvedError } from '@huh/core';
+  import type { ErrorConfig, LocalizedErrorConfig, ResolvedError } from '@huh/core';
   import { resolveError, ACTION_TYPES } from '@huh/core';
   import { HUH_CONTEXT_KEY } from './context';
   import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
   interface Props {
-    source: ErrorConfig;
+    source?: ErrorConfig;
+    locales?: LocalizedErrorConfig;
+    defaultLocale?: string;
+    locale?: string;
     renderers: RendererMap;
     children: Snippet;
     onRetry?: () => void;
     onCustomAction?: (action: { type: string; target?: string }) => void;
   }
 
-  let { source, renderers, children, onRetry, onCustomAction }: Props = $props();
+  let {
+    source,
+    locales,
+    defaultLocale,
+    locale: controlledLocale,
+    renderers,
+    children,
+    onRetry,
+    onCustomAction,
+  }: Props = $props();
 
   let activeError: ResolvedError | null = $state(null);
+  let internalLocale: string = $state('');
+
+  let currentLocale = $derived(controlledLocale ?? (internalLocale || defaultLocale) ?? '');
+
+  function getActiveSource(): ErrorConfig {
+    if (source) return source;
+    if (locales && currentLocale && locales[currentLocale]) {
+      return locales[currentLocale];
+    }
+    if (locales && defaultLocale && locales[defaultLocale]) {
+      return locales[defaultLocale];
+    }
+    throw new Error(
+      'HuhProvider requires either a "source" prop or "locales" with a valid locale.',
+    );
+  }
 
   function clearError() {
     activeError = null;
   }
 
   function handleError(trackId: string, variables?: Record<string, string>) {
-    const resolved = resolveError(source, trackId, variables);
+    const activeSource = getActiveSource();
+    const resolved = resolveError(activeSource, trackId, variables);
     activeError = resolved;
   }
 
-  setContext<HuhContextValue>(HUH_CONTEXT_KEY, { handleError, clearError });
+  function setLocale(newLocale: string) {
+    internalLocale = newLocale;
+  }
+
+  setContext<HuhContextValue>(HUH_CONTEXT_KEY, {
+    handleError,
+    clearError,
+    get locale() {
+      return locales ? currentLocale : undefined;
+    },
+    setLocale,
+  });
 
   function createOnAction(error: ResolvedError) {
     return () => {
