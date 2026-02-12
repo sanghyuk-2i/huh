@@ -1,0 +1,450 @@
+---
+title: "i18n Multi-Language Support"
+description: "Spreadsheet tab-based multi-language error message management - configuration, output, framework integration"
+icon: "globe"
+---
+
+You can manage multi-language error messages by separating languages per data source. Depending on your data source, languages are separated by spreadsheet tabs, separate files, Airtable tables, or Notion databases. Non-developers (planners, content managers) can directly manage translations in each source.
+
+## Data Source Structure
+
+<Tabs>
+
+<Tab title="Google Sheets / XLSX">
+
+Separate each language into its own tab (sheet). All tabs use the same column structure and the same trackId list.
+
+```
+[Google Sheet / XLSX]
++----------+  +----------+  +----------+
+| Korean   |  | English  |  | Japanese |  <- Tab (sheet) = Language
++----------+  +----------+  +----------+
+| trackId  |  | trackId  |  | trackId  |
+| type     |  | type     |  | type     |
+| message  |  | message  |  | message  |
+| ...      |  | ...      |  | ...      |
++----------+  +----------+  +----------+
+```
+
+</Tab>
+
+<Tab title="Airtable">
+
+Separate each language into its own table within the same base. All tables use the same column structure and the same trackId list.
+
+```
+[Airtable Base]
++------------------+  +------------------+  +------------------+
+| tblKorean        |  | tblEnglish       |  | tblJapanese      |  <- Table = Language
++------------------+  +------------------+  +------------------+
+| trackId          |  | trackId          |  | trackId          |
+| type             |  | type             |  | type             |
+| message          |  | message          |  | message          |
+| ...              |  | ...              |  | ...              |
++------------------+  +------------------+  +------------------+
+```
+
+</Tab>
+
+<Tab title="Notion">
+
+Separate each language into its own database. All databases use the same property structure and the same trackId list.
+
+```
+[Notion]
++------------------+  +------------------+  +------------------+
+| DB Korean        |  | DB English       |  | DB Japanese      |  <- Database = Language
++------------------+  +------------------+  +------------------+
+| trackId          |  | trackId          |  | trackId          |
+| type             |  | type             |  | type             |
+| message          |  | message          |  | message          |
+| ...              |  | ...              |  | ...              |
++------------------+  +------------------+  +------------------+
+```
+
+</Tab>
+
+<Tab title="CSV">
+
+Separate each language into its own file.
+
+```
+[CSV Files]
+errors.ko.csv    errors.en.csv    errors.ja.csv    <- File = Language
++----------+     +----------+     +----------+
+| trackId  |     | trackId  |     | trackId  |
+| type     |     | type     |     | type     |
+| message  |     | message  |     | message  |
+| ...      |     | ...      |     | ...      |
++----------+     +----------+     +----------+
+```
+
+</Tab>
+
+</Tabs>
+
+<Note>
+`type` and `actionType` must be the same across all languages (since the rendering structure is identical). Only `message`, `title`, and `actionLabel` should be translated.
+</Note>
+
+## Configuration
+
+Add the `i18n` option to your `.huh.config.json`. Without the `i18n` option, everything works the same as before (single language).
+
+<Tabs>
+
+<Tab title="Google Sheets">
+
+```json
+{
+  "source": {
+    "type": "google-sheets",
+    "sheetId": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"
+  },
+  "output": "./src/huh",
+  "i18n": {
+    "defaultLocale": "ko",
+    "locales": {
+      "ko": { "range": "Korean" },
+      "en": { "range": "English" }
+    }
+  }
+}
+```
+
+Each locale's `range` is the Google Sheets tab name.
+
+</Tab>
+
+<Tab title="XLSX">
+
+```json
+{
+  "source": {
+    "type": "xlsx",
+    "filePath": "./errors.xlsx"
+  },
+  "output": "./src/huh",
+  "i18n": {
+    "defaultLocale": "ko",
+    "locales": {
+      "ko": { "sheet": "Korean" },
+      "en": { "sheet": "English" }
+    }
+  }
+}
+```
+
+Each locale's `sheet` is the XLSX sheet name.
+
+</Tab>
+
+<Tab title="Airtable">
+
+```json
+{
+  "source": {
+    "type": "airtable",
+    "baseId": "appXXXXXXXXXXXXXX",
+    "tableId": "tblKorean"
+  },
+  "output": "./src/huh",
+  "i18n": {
+    "defaultLocale": "ko",
+    "locales": {
+      "ko": { "tableId": "tblKorean" },
+      "en": { "tableId": "tblEnglish" }
+    }
+  }
+}
+```
+
+Each locale's `tableId` is the Airtable table ID for that language. All tables must be in the same base.
+
+</Tab>
+
+<Tab title="Notion">
+
+```json
+{
+  "source": {
+    "type": "notion",
+    "databaseId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "output": "./src/huh",
+  "i18n": {
+    "defaultLocale": "ko",
+    "locales": {
+      "ko": { "databaseId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+      "en": { "databaseId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" }
+    }
+  }
+}
+```
+
+Each locale's `databaseId` is the Notion database ID for that language.
+
+</Tab>
+
+<Tab title="CSV">
+
+Since CSV files don't have tabs, use separate files:
+
+```json
+{
+  "source": {
+    "type": "csv",
+    "filePath": "./errors.ko.csv"
+  },
+  "output": "./src/huh",
+  "i18n": {
+    "defaultLocale": "ko",
+    "locales": {
+      "ko": { "filePath": "./errors.ko.csv" },
+      "en": { "filePath": "./errors.en.csv" }
+    }
+  }
+}
+```
+
+</Tab>
+
+</Tabs>
+
+### TypeScript Configuration (defineConfig)
+
+```ts
+import { defineConfig } from '@huh/cli';
+
+export default defineConfig({
+  source: {
+    type: 'google-sheets',
+    sheetId: 'abc123',
+  },
+  output: './src/huh',
+  i18n: {
+    defaultLocale: 'ko',
+    locales: {
+      ko: { range: 'Korean' },
+      en: { range: 'English' },
+    },
+  },
+});
+```
+
+### Config Types
+
+```ts
+interface I18nConfig {
+  defaultLocale: string;
+  locales: Record<string, LocaleSourceOverride>;
+}
+
+interface LocaleSourceOverride {
+  sheet?: string;       // XLSX sheet name
+  range?: string;       // Google Sheets tab name
+  filePath?: string;    // CSV file path
+  tableId?: string;     // Airtable table ID
+  databaseId?: string;  // Notion database ID
+}
+```
+
+## Output Format
+
+In i18n mode, running `huh pull` generates per-locale files in the **directory** specified by `output`:
+
+```
+src/huh/
+  ko.json      <- Korean ErrorConfig
+  en.json      <- English ErrorConfig
+  index.ts     <- Auto-generated barrel file
+```
+
+Each JSON file has the same `ErrorConfig` structure as before:
+
+```json
+// ko.json
+{
+  "ERR_AUTH": {
+    "type": "MODAL",
+    "title": "Session Expired",
+    "message": "{{userName}}'s session has expired."
+  }
+}
+```
+
+`index.ts` is auto-generated:
+
+```ts
+import type { ErrorConfig } from '@huh/core';
+import ko from './ko.json';
+import en from './en.json';
+
+export type HuhLocale = 'ko' | 'en';
+export const defaultLocale: HuhLocale = 'ko';
+export const locales: Record<HuhLocale, ErrorConfig> = { ko, en };
+```
+
+<Note>
+Benefits of file separation:
+- **Tree-shaking**: Unused languages are excluded from the bundle
+- **Lazy loading**: Dynamically load at the point of need with `import('./huh/en.json')`
+- **Backward compatible**: The `validate` command works on individual files as-is
+</Note>
+
+## Framework Integration
+
+### React
+
+```tsx
+import { locales } from './huh';
+import { HuhProvider, useHuh } from '@huh/react';
+
+function App() {
+  const [lang, setLang] = useState('ko');
+
+  return (
+    <HuhProvider
+      locales={locales}
+      defaultLocale="ko"
+      locale={lang}
+      renderers={renderers}
+    >
+      <YourApp />
+    </HuhProvider>
+  );
+}
+
+// Language switching
+function LanguageSwitcher() {
+  const { locale, setLocale } = useHuh();
+
+  return (
+    <select value={locale} onChange={(e) => setLocale(e.target.value)}>
+      <option value="ko">Korean</option>
+      <option value="en">English</option>
+    </select>
+  );
+}
+```
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import { locales } from './huh';
+import { HuhProvider } from '@huh/vue';
+import { ref } from 'vue';
+
+const lang = ref('ko');
+</script>
+
+<template>
+  <HuhProvider
+    :locales="locales"
+    default-locale="ko"
+    :locale="lang"
+    :renderers="renderers"
+  >
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+```vue
+<!-- LanguageSwitcher.vue -->
+<script setup lang="ts">
+import { useHuh } from '@huh/vue';
+
+const { locale, setLocale } = useHuh();
+</script>
+
+<template>
+  <select :value="locale" @change="(e) => setLocale(e.target.value)">
+    <option value="ko">Korean</option>
+    <option value="en">English</option>
+  </select>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { locales } from './huh';
+  import { HuhProvider } from '@huh/svelte';
+
+  let lang = $state('ko');
+</script>
+
+<HuhProvider
+  {locales}
+  defaultLocale="ko"
+  locale={lang}
+  {renderers}
+>
+  <YourApp />
+</HuhProvider>
+```
+
+```svelte
+<!-- LanguageSwitcher.svelte -->
+<script lang="ts">
+  import { useHuh } from '@huh/svelte';
+
+  const { locale, setLocale } = useHuh();
+</script>
+
+<select value={locale} onchange={(e) => setLocale(e.target.value)}>
+  <option value="ko">Korean</option>
+  <option value="en">English</option>
+</select>
+```
+
+<Note>
+When you pass the `locale` prop, the language is controlled externally. If not passed, it's managed by the Provider's internal state and can be changed via `useHuh()`'s `setLocale()`.
+</Note>
+
+## Cross-Locale Validation
+
+When running `huh pull`, cross-locale consistency is automatically validated:
+
+| Check | Level | Description |
+|-------|-------|-------------|
+| Missing trackId | error | A trackId exists in one locale but not another |
+| type mismatch | warning | Same trackId has different types across locales |
+| actionType mismatch | warning | Same trackId has different action types across locales |
+| Per-locale validation | as-is | Existing `validateConfig` applied per locale |
+
+```
+Cross-locale validation:
+  ERROR: trackId "ERR_NETWORK" is missing in locale(s): ja
+  WARNING: trackId "ERR_AUTH" has different "type" across locales: ko=MODAL, en=TOAST
+```
+
+Missing trackIds are errors (pull fails), type/actionType mismatches are warnings (pull continues).
+
+For programmatic validation, use `validateLocales` from `@huh/core`:
+
+```ts
+import { validateLocales } from '@huh/core';
+import type { LocalizedErrorConfig } from '@huh/core';
+
+const locales: LocalizedErrorConfig = { ko: koConfig, en: enConfig };
+const result = validateLocales(locales);
+
+if (!result.valid) {
+  result.errors.forEach((e) => console.error(e.message));
+}
+result.warnings.forEach((w) => console.warn(w.message));
+```
+
+## Migration for Existing Users
+
+Without the `i18n` option, everything works exactly as before:
+
+- `output` is still a file path (`./src/huh.json`)
+- `HuhProvider`'s `source` prop works as-is
+- **Zero breaking changes**
+
+Simply add the `i18n` option when you need multi-language support.

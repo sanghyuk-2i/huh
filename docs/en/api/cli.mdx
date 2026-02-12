@@ -54,6 +54,8 @@ Fetches data from the configured data source and generates a JSON file.
 npx huh pull
 ```
 
+With i18n configuration, per-locale files (`ko.json`, `en.json`, `index.ts`) are generated in the output directory. See the [i18n Multi-Language Support](/en/guides/i18n) guide for details.
+
 **Execution flow:**
 
 <Steps>
@@ -64,6 +66,7 @@ npx huh pull
 
 <Step title="Fetch data">
   Fetch data from the configured data source via the Adapter pattern.
+  In i18n mode, data is fetched for each locale separately.
 </Step>
 
 <Step title="Convert to JSON DSL">
@@ -71,13 +74,15 @@ npx huh pull
 </Step>
 
 <Step title="Validate">
-  Validate with `validateConfig`.
+  Validate each locale with `validateConfig`.
+  In i18n mode, additionally runs `validateLocales` for cross-locale validation.
   - If only warnings, print them and continue
   - If errors exist, print errors and exit (exit code 1)
 </Step>
 
 <Step title="Generate JSON file">
   Generate the JSON file at the specified output path.
+  In i18n mode, generates per-locale JSON files and an `index.ts` barrel file.
 </Step>
 
 </Steps>
@@ -314,7 +319,21 @@ import type { HuhCliConfig } from '@huh/cli';
 ```ts
 interface HuhCliConfig {
   source: HuhSource;
-  output: string;  // JSON file output path
+  output: string;  // JSON file output path (directory path in i18n mode)
+  i18n?: I18nConfig;  // Multi-language config (optional)
+}
+
+interface I18nConfig {
+  defaultLocale: string;
+  locales: Record<string, LocaleSourceOverride>;
+}
+
+interface LocaleSourceOverride {
+  sheet?: string;       // XLSX sheet name
+  range?: string;       // Google Sheets tab name
+  filePath?: string;    // CSV file path
+  tableId?: string;     // Airtable table ID
+  databaseId?: string;  // Notion database ID
 }
 
 // Google Sheets

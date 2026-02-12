@@ -101,6 +101,8 @@ export interface LocaleSourceOverride {
   sheet?: string;
   range?: string;
   filePath?: string;
+  tableId?: string;
+  databaseId?: string;
 }
 
 export interface I18nConfig {

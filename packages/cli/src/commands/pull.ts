@@ -15,7 +15,7 @@ const SOURCE_LABELS: Record<string, string> = {
   xlsx: 'XLSX file',
 };
 
-function getLocaleSource(base: HuhSource, override: { sheet?: string; range?: string; filePath?: string }): HuhSource {
+function getLocaleSource(base: HuhSource, override: { sheet?: string; range?: string; filePath?: string; tableId?: string; databaseId?: string }): HuhSource {
   if (override.filePath && (base.type === 'csv' || base.type === 'xlsx')) {
     return { ...base, filePath: override.filePath } as HuhSource;
   }
@@ -24,6 +24,12 @@ function getLocaleSource(base: HuhSource, override: { sheet?: string; range?: st
   }
   if ((override.sheet || override.range) && base.type === 'google-sheets') {
     return { ...base, range: override.range ?? override.sheet } as HuhSource;
+  }
+  if (override.tableId && base.type === 'airtable') {
+    return { ...base, tableId: override.tableId } as HuhSource;
+  }
+  if (override.databaseId && base.type === 'notion') {
+    return { ...base, databaseId: override.databaseId } as HuhSource;
   }
   return base;
 }
