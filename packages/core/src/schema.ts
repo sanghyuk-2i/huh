@@ -1,0 +1,53 @@
+// Built-in error types (uppercase constants)
+export const ERROR_TYPES = {
+  TOAST: 'TOAST',
+  MODAL: 'MODAL',
+  PAGE: 'PAGE',
+} as const;
+
+// Built-in action types (uppercase constants)
+export const ACTION_TYPES = {
+  REDIRECT: 'REDIRECT',
+  RETRY: 'RETRY',
+  BACK: 'BACK',
+  DISMISS: 'DISMISS',
+} as const;
+
+export type BuiltInErrorType = (typeof ERROR_TYPES)[keyof typeof ERROR_TYPES];
+export type BuiltInActionType = (typeof ACTION_TYPES)[keyof typeof ACTION_TYPES];
+
+// Open-ended string types — built-in values + any user-defined custom type
+export type ErrorType = BuiltInErrorType | (string & {});
+export type ActionType = BuiltInActionType | (string & {});
+
+export interface ErrorAction {
+  label: string;
+  type: ActionType;
+  target?: string;
+}
+
+export interface ErrorEntry {
+  type: ErrorType;
+  message: string;
+  title?: string;
+  image?: string;
+  action?: ErrorAction;
+}
+
+export type ErrorConfig = Record<string, ErrorEntry>;
+
+export interface ResolvedError extends ErrorEntry {
+  trackId: string;
+}
+
+export interface ValidationError {
+  trackId?: string;
+  field?: string;
+  message: string;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  errors: ValidationError[];
+  warnings: ValidationError[];
+}
