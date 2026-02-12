@@ -6,4 +6,4 @@ dist
 .next
 .env
 esbuild-why.html
-.settings.local.json
+.settings.local.json.claude/settings.local.json

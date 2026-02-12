@@ -1,0 +1,326 @@
+---
+title: "@huh/core API"
+description: "Core package for type definitions, sheet data parsing, variable substitution, and validation"
+icon: "cube"
+---
+
+The core package responsible for type definitions, sheet data parsing, variable substitution, and validation of the error content JSON DSL. Has zero external dependencies.
+
+## Installation
+
+<CodeGroup>
+
+```bash pnpm
+pnpm add @huh/core
+```
+
+```bash npm
+npm install @huh/core
+```
+
+```bash yarn
+yarn add @huh/core
+```
+
+</CodeGroup>
+
+### CDN
+
+```html
+<!-- unpkg -->
+<script src="https://unpkg.com/@huh/core"></script>
+
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/@huh/core"></script>
+
+<!-- Pin version -->
+<script src="https://unpkg.com/@huh/core@0.1.0"></script>
+```
+
+When loaded via CDN, all APIs are available through the `window.HuhCore` global variable:
+
+```js
+const { resolveError, parseSheetData, validateConfig, renderTemplate } = HuhCore;
+```
+
+---
+
+## Types
+
+### `ERROR_TYPES` (constant)
+
+Uppercase constants for built-in error types.
+
+```ts
+const ERROR_TYPES = {
+  TOAST: 'TOAST',
+  MODAL: 'MODAL',
+  PAGE: 'PAGE',
+} as const;
+```
+
+### `ACTION_TYPES` (constant)
+
+Uppercase constants for built-in action types.
+
+```ts
+const ACTION_TYPES = {
+  REDIRECT: 'REDIRECT',
+  RETRY: 'RETRY',
+  BACK: 'BACK',
+  DISMISS: 'DISMISS',
+} as const;
+```
+
+### `ErrorType`
+
+An extensible string type that allows built-in types + custom types. Values are managed in uppercase.
+
+```ts
+type BuiltInErrorType = 'TOAST' | 'MODAL' | 'PAGE';
+type ErrorType = BuiltInErrorType | (string & {});  // Freely extensible: 'BANNER', 'SNACKBAR', etc.
+```
+
+### `ActionType`
+
+Allows built-in action types + custom action types.
+
+```ts
+type BuiltInActionType = 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS';
+type ActionType = BuiltInActionType | (string & {});  // Freely extensible: 'OPEN_CHAT', 'SHARE', etc.
+```
+
+### `ErrorAction`
+
+```ts
+interface ErrorAction {
+  label: string;       // Action button text
+  type: ActionType;    // Action kind
+  target?: string;     // URL to navigate to for redirect
+}
+```
+
+### `ErrorEntry`
+
+Represents a single error entry.
+
+```ts
+interface ErrorEntry {
+  type: ErrorType;        // Error display type
+  message: string;        // Error message (may contain template variables)
+  title?: string;         // Title (for modal, page)
+  image?: string;         // Image URL (for page)
+  action?: ErrorAction;   // User action
+}
+```
+
+### `ErrorConfig`
+
+The complete error configuration. A map of `ErrorEntry` keyed by `trackId`.
+
+```ts
+type ErrorConfig = Record<string, ErrorEntry>;
+```
+
+```json
+{
+  "ERR_LOGIN_FAILED": {
+    "type": "TOAST",
+    "message": "Login failed"
+  },
+  "ERR_NOT_FOUND": {
+    "type": "PAGE",
+    "message": "Page not found",
+    "title": "404"
+  },
+  "ERR_MAINTENANCE": {
+    "type": "BANNER",
+    "message": "Server is under maintenance"
+  }
+}
+```
+
+### `ResolvedError`
+
+The return type of the `resolveError` function. An `ErrorEntry` with `trackId` added.
+
+```ts
+interface ResolvedError extends ErrorEntry {
+  trackId: string;
+}
+```
+
+### `ValidationResult`
+
+```ts
+interface ValidationResult {
+  valid: boolean;                  // true if no errors
+  errors: ValidationError[];       // Error list (missing type, invalid values, etc.)
+  warnings: ValidationError[];     // Warning list (title used on toast, etc.)
+}
+
+interface ValidationError {
+  trackId?: string;
+  field?: string;
+  message: string;
+}
+```
+
+---
+
+## Functions
+
+### `parseSheetData(rows: string[][]): ErrorConfig`
+
+Converts raw data from a data source (header + data row array) into an `ErrorConfig`. All sources (Google Sheets, Airtable, Notion, CSV, XLSX) use the same 2D string array format.
+
+<ParamField path="rows" type="string[][]" required>
+  2D string array where the first row is the header.
+</ParamField>
+
+**Throws**
+
+- Error if fewer than 2 rows
+- Error if `trackId`, `type`, `message` headers are missing
+- Error if `type` is empty
+
+<Note>
+`type` and `actionType` values are automatically converted to uppercase. Whether you enter `toast`, `Toast`, or `TOAST` in the data source, it will be processed as `TOAST`.
+Custom types (`BANNER`, `SNACKBAR`, etc.) can be freely used in addition to built-in types.
+</Note>
+
+**Example**
+
+```ts
+import { parseSheetData } from '@huh/core';
+
+const rows = [
+  ['trackId', 'type', 'message', 'title', 'image', 'actionLabel', 'actionType', 'actionTarget'],
+  ['ERR_001', 'toast', 'An error occurred', '', '', '', '', ''],
+  ['ERR_002', 'modal', 'Session expired', 'Notice', '', 'OK', 'dismiss', ''],
+  ['ERR_003', 'banner', 'Server under maintenance', '', '', 'Contact Us', 'open_chat', ''],
+];
+
+const config = parseSheetData(rows);
+// {
+//   ERR_001: { type: 'TOAST', message: 'An error occurred' },
+//   ERR_002: { type: 'MODAL', message: 'Session expired', title: 'Notice', action: { label: 'OK', type: 'DISMISS' } },
+//   ERR_003: { type: 'BANNER', message: 'Server under maintenance', action: { label: 'Contact Us', type: 'OPEN_CHAT' } }
+// }
+```
+
+---
+
+### `resolveError(config, trackId, variables?): ResolvedError`
+
+Looks up an error by `trackId` and substitutes template variables in the message/title/action.
+
+<ParamField path="config" type="ErrorConfig" required>
+  Error configuration object.
+</ParamField>
+
+<ParamField path="trackId" type="string" required>
+  Error ID to look up.
+</ParamField>
+
+<ParamField path="variables" type="Record<string, string>">
+  Template variables to substitute (optional).
+</ParamField>
+
+**Throws**
+
+- `Unknown trackId` error if `trackId` is not found in config
+
+**Example**
+
+```ts
+import { resolveError } from '@huh/core';
+
+const config = {
+  ERR_SESSION: {
+    type: 'MODAL',
+    message: "{{userName}}'s session has expired",
+    title: '{{userName}}',
+    action: { label: 'Login Again', type: 'REDIRECT', target: '/login' },
+  },
+};
+
+const resolved = resolveError(config, 'ERR_SESSION', { userName: 'Jane' });
+// resolved.message -> "Jane's session has expired"
+// resolved.title   -> "Jane"
+// resolved.trackId -> "ERR_SESSION"
+```
+
+---
+
+### `renderTemplate(template, variables): string`
+
+Substitutes `{{variableName}}` placeholders in a string. Unmatched variables are left as-is.
+
+<ParamField path="template" type="string" required>
+  Template string containing `{{variableName}}` placeholders.
+</ParamField>
+
+<ParamField path="variables" type="Record<string, string>" required>
+  Variable map to substitute.
+</ParamField>
+
+**Example**
+
+```ts
+import { renderTemplate } from '@huh/core';
+
+renderTemplate('Hello {{name}}!', { name: 'Jane' });
+// -> "Hello Jane!"
+
+renderTemplate('{{a}} and {{b}}', { a: 'Hello' });
+// -> "Hello and {{b}}"  (unmatched variables are preserved)
+```
+
+---
+
+### `validateConfig(config): ValidationResult`
+
+Validates an `ErrorConfig`.
+
+**Validation Rules (errors)**
+
+| Condition | Message |
+|-----------|---------|
+| `type` is empty | Missing required field: type |
+| `message` is empty | Missing required field: message |
+| `action.label` is empty | Action is missing required field: label |
+| `REDIRECT` type without `target` | Action type "REDIRECT" requires a target URL |
+
+<Note>
+Custom types (`BANNER`, `SNACKBAR`, etc.) pass without errors. The validator does not check the type value itself -- it only raises an error when the value is empty.
+</Note>
+
+**Warning Rules (warnings)**
+
+Warnings are only generated for built-in types. Custom types do not trigger warnings.
+
+| Condition | Message |
+|-----------|---------|
+| Config is empty | Config is empty |
+| `TOAST` has title | Toast errors typically do not display a title |
+| `TOAST` has image | Toast errors typically do not display an image |
+| `PAGE` has no action | Page errors should provide an action |
+
+**Example**
+
+```ts
+import { validateConfig } from '@huh/core';
+
+const result = validateConfig({
+  ERR_001: { type: 'TOAST', message: '' },
+  ERR_002: { type: 'MODAL', message: 'OK', action: { label: 'Go', type: 'REDIRECT' } },
+  ERR_003: { type: 'BANNER', message: 'Custom type works' },  // Custom type — passes without errors
+});
+
+// result.valid -> false
+// result.errors -> [
+//   { trackId: 'ERR_001', field: 'message', message: 'Missing required field: message' },
+//   { trackId: 'ERR_002', field: 'action.target', message: 'Action type "REDIRECT" requires a target URL' },
+// ]
+```

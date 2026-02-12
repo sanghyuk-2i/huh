@@ -1,0 +1,129 @@
+---
+title: "Google Sheets 설정 가이드"
+description: "Google Sheets에서 에러 콘텐츠를 관리하기 위한 시트 구조 및 접근 권한 설정"
+icon: "table"
+---
+
+이 문서는 에러 콘텐츠를 관리할 Google Sheet의 작성 규칙을 설명합니다.
+
+## 템플릿으로 빠르게 시작하기
+
+미리 설정된 템플릿을 복사하면 컬럼 구조와 샘플 데이터가 포함된 시트를 바로 사용할 수 있습니다.
+
+**[Google Sheets 템플릿 복사하기](https://docs.google.com/spreadsheets/d/1HNCxgmi_kNaVWz-63A3EQ4u6Rx8vPRJgIcdXgd8MMAY/copy)**
+
+<Note>
+복사 후 데이터를 수정하고 `huh pull`을 실행하세요.
+</Note>
+
+---
+
+## 시트 컬럼 구조
+
+첫 번째 행은 반드시 헤더 행이어야 하며, 아래 컬럼명을 사용합니다:
+
+| 컬럼명 | 필수 | 설명 |
+|--------|------|------|
+| `trackId` | O | 에러를 식별하는 고유 ID (예: `ERR_LOGIN_FAILED`) |
+| `type` | O | 에러 표시 유형: `TOAST`, `MODAL`, `PAGE` 또는 커스텀 타입 |
+| `message` | O | 사용자에게 보여줄 에러 메시지 |
+| `title` | | 에러 제목 (modal, page에서 사용) |
+| `image` | | 이미지 URL (page에서 사용) |
+| `actionLabel` | | 액션 버튼 텍스트 |
+| `actionType` | | 액션 종류: `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
+| `actionTarget` | | 액션 대상 URL (`REDIRECT` 시 필수) |
+
+## 에러 타입 (`type`)
+
+기본 제공 타입:
+
+| 타입 | 용도 | 권장 필드 |
+|------|------|-----------|
+| `TOAST` | 간단한 알림 메시지 | message만 사용. title/image 사용 시 경고 발생 |
+| `MODAL` | 팝업 형태의 에러 안내 | message + title + action |
+| `PAGE` | 전체 화면 에러 페이지 | message + title + image + action (action 없으면 경고) |
+
+<Note>
+커스텀 타입(`BANNER`, `SNACKBAR` 등)도 자유롭게 사용할 수 있습니다. 소문자로 입력해도 자동으로 대문자로 변환됩니다.
+</Note>
+
+## 액션 타입 (`actionType`)
+
+기본 제공 액션 타입:
+
+| 타입 | 동작 | target 필요 |
+|------|------|-------------|
+| `REDIRECT` | 지정된 URL로 이동 | O (`actionTarget`에 URL 입력) |
+| `RETRY` | 에러 닫기 + 재시도 콜백 실행 | X |
+| `BACK` | 브라우저 뒤로가기 (`history.back()`) | X |
+| `DISMISS` | 에러 UI 닫기 | X |
+
+<Note>
+커스텀 액션 타입(`OPEN_CHAT`, `SHARE` 등)도 사용할 수 있습니다. `HuhProvider`의 `onCustomAction` 콜백에서 처리합니다.
+</Note>
+
+## 템플릿 변수
+
+메시지, 제목, 액션 라벨, 액션 타겟에 `{{변수명}}` 형태의 템플릿 변수를 사용할 수 있습니다. 변수는 런타임에 `handleError` 호출 시 전달됩니다.
+
+```
+메시지 예시: {{userName}}님, 요청을 처리할 수 없습니다.
+타겟 예시: /user/{{userId}}/settings
+```
+
+## 작성 예시
+
+| trackId | type | message | title | image | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------|-------------|------------|--------------|
+| ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요 | | | | | |
+| ERR_AUTH | MODAL | 인증이 필요합니다 | 로그인 필요 | | 로그인하기 | REDIRECT | /login |
+| ERR_TIMEOUT | MODAL | 요청 시간이 초과되었습니다 | 시간 초과 | | 다시 시도 | RETRY | |
+| ERR_FORBIDDEN | PAGE | {`{{userName}}`}님은 접근 권한이 없습니다 | 접근 거부 | /img/403.png | 뒤로가기 | BACK | |
+| ERR_NOT_FOUND | PAGE | 페이지를 찾을 수 없습니다 | 404 | /img/404.png | 홈으로 | REDIRECT | / |
+
+## 규칙 요약
+
+- `trackId`가 비어 있는 행은 무시됩니다
+- `trackId`, `type`, `message`는 필수입니다
+- `type`은 비어있으면 안 됩니다 (기본 제공: `TOAST`, `MODAL`, `PAGE`, 커스텀 타입도 가능)
+- `actionType`이 `REDIRECT`인 경우 `actionTarget`이 필수입니다
+- 소문자로 입력해도 CLI가 대문자로 자동 변환합니다
+- `actionLabel`과 `actionType`은 함께 입력해야 합니다 (둘 다 있거나 둘 다 없거나)
+
+## Google Sheet 접근 권한 설정
+
+CLI에서 시트에 접근하려면 다음 중 하나의 인증 방식이 필요합니다:
+
+<Steps>
+
+<Step title="방법 1: API Key (공개 시트용)">
+
+1. [Google Cloud Console](https://console.cloud.google.com/)에서 프로젝트 생성
+2. Google Sheets API 활성화
+3. API Key 생성
+4. 시트를 "링크가 있는 모든 사용자에게 공개"로 설정
+5. 환경변수 설정: `GOOGLE_API_KEY=your-api-key`
+
+</Step>
+
+<Step title="방법 2: Service Account (비공개 시트용)">
+
+1. Google Cloud Console에서 서비스 계정 생성
+2. JSON 키 파일 다운로드
+3. 시트에서 서비스 계정 이메일에 "뷰어" 권한 부여
+4. 설정 파일에 credentials 경로 지정:
+
+```json
+{
+  "source": {
+    "type": "google-sheets",
+    "sheetId": "YOUR_SHEET_ID",
+    "credentials": "./service-account.json"
+  },
+  "output": "./src/huh.json"
+}
+```
+
+</Step>
+
+</Steps>

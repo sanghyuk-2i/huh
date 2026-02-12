@@ -1,0 +1,217 @@
+---
+title: "@huh/vue API"
+description: "Vue 3 provide/inject 기반 에러 UI 렌더링 - HuhProvider, useHuh, RendererMap"
+icon: "vuejs"
+---
+
+Vue 3의 provide/inject 기반 에러 UI 렌더링 라이브러리입니다. Provider가 에러 상태를 관리하고, 사용자가 제공한 커스텀 렌더러로 에러 UI를 표시합니다.
+
+## 설치
+
+<CodeGroup>
+
+```bash pnpm
+pnpm add @huh/core @huh/vue
+```
+
+```bash npm
+npm install @huh/core @huh/vue
+```
+
+```bash yarn
+yarn add @huh/core @huh/vue
+```
+
+</CodeGroup>
+
+**Peer Dependencies**: `vue >= 3.3`
+
+---
+
+## HuhProvider
+
+에러 상태를 관리하고, 활성 에러가 있을 때 해당 타입의 렌더러를 호출합니다. SFC가 아닌 순수 TypeScript render function 컴포넌트입니다.
+
+### Props
+
+```ts
+interface HuhProviderProps {
+  source: ErrorConfig;       // JSON DSL 데이터 (core의 ErrorConfig)
+  renderers: RendererMap;    // 커스텀 렌더러 (필수)
+  onRetry?: () => void;      // RETRY 액션 시 호출되는 콜백
+  onCustomAction?: (action: { type: string; target?: string }) => void;  // 커스텀 액션 콜백
+}
+```
+
+### 기본 사용법
+
+```vue
+<script setup lang="ts">
+import { HuhProvider } from '@huh/vue';
+import type { ErrorConfig } from '@huh/core';
+import errorContent from './huh.json';
+import { renderers } from './renderers';
+
+const config = errorContent as ErrorConfig;
+</script>
+
+<template>
+  <HuhProvider
+    :source="config"
+    :renderers="renderers"
+    :on-retry="() => window.location.reload()"
+    :on-custom-action="(action) => {
+      if (action.type === 'OPEN_CHAT') openChatWidget();
+    }"
+  >
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+---
+
+## RendererMap
+
+에러 타입별 렌더러를 제공합니다. Vue Component 타입을 사용합니다. 키는 대문자 타입명입니다.
+
+```ts
+import type { Component } from 'vue';
+
+type RendererMap = Record<string, Component<ErrorRenderProps>>;
+```
+
+### ErrorRenderProps
+
+각 렌더러에 전달되는 props입니다.
+
+```ts
+interface ErrorRenderProps {
+  error: ResolvedError;    // 변수 치환이 완료된 에러 정보
+  onAction: () => void;    // 액션 버튼 클릭 핸들러
+  onDismiss: () => void;   // 닫기 핸들러
+}
+```
+
+### onAction 동작
+
+React 패키지와 동일한 액션 처리 로직을 사용합니다:
+
+| actionType | 동작 |
+|------------|------|
+| `REDIRECT` | `window.location.href = action.target` |
+| `BACK` | `window.history.back()` |
+| `RETRY` | 에러 클리어 + `onRetry` 콜백 호출 |
+| `DISMISS` | 에러 클리어 |
+| 커스텀 타입 | 에러 클리어 + `onCustomAction` 콜백 호출 |
+
+### 렌더러 구현 예시
+
+`defineComponent` + `h` 함수로 렌더러를 구현합니다 (SFC 컴파일러 불필요):
+
+```ts
+import { defineComponent, h } from 'vue';
+import type { RendererMap } from '@huh/vue';
+
+const Toast = defineComponent({
+  props: {
+    error: { type: Object, required: true },
+    onAction: { type: Function, required: true },
+    onDismiss: { type: Function, required: true },
+  },
+  setup(props) {
+    return () =>
+      h('div', { class: 'toast', onClick: props.onDismiss }, props.error.message);
+  },
+});
+
+const Modal = defineComponent({
+  props: {
+    error: { type: Object, required: true },
+    onAction: { type: Function, required: true },
+    onDismiss: { type: Function, required: true },
+  },
+  setup(props) {
+    return () =>
+      h('div', { class: 'modal-overlay', onClick: props.onDismiss }, [
+        h('div', { class: 'modal', onClick: (e: Event) => e.stopPropagation() }, [
+          h('h2', props.error.title),
+          h('p', props.error.message),
+          h('div', { class: 'modal-actions' }, [
+            h('button', { onClick: props.onDismiss }, '닫기'),
+            props.error.action &&
+              h('button', { onClick: props.onAction }, props.error.action.label),
+          ]),
+        ]),
+      ]);
+  },
+});
+
+export const renderers: RendererMap = {
+  TOAST: Toast,
+  MODAL: Modal,
+};
+```
+
+---
+
+## useHuh
+
+Provider 하위에서 에러를 트리거하거나 클리어하는 composable입니다. Vue의 `inject()`를 내부적으로 사용합니다.
+
+```ts
+function useHuh(): HuhContextValue;
+
+interface HuhContextValue {
+  handleError: (trackId: string, variables?: Record<string, string>) => void;
+  clearError: () => void;
+}
+```
+
+<Warning>
+Provider 밖에서 호출하면 에러가 발생합니다.
+</Warning>
+
+### handleError(trackId, variables?)
+
+```vue
+<script setup lang="ts">
+import { useHuh } from '@huh/vue';
+
+const { handleError } = useHuh();
+
+// 단순 에러 트리거
+handleError('ERR_NETWORK');
+
+// 변수 치환과 함께 트리거
+handleError('ERR_SESSION_EXPIRED', { userName: '홍길동' });
+</script>
+```
+
+### clearError()
+
+현재 활성화된 에러 UI를 닫습니다.
+
+```vue
+<script setup lang="ts">
+import { useHuh } from '@huh/vue';
+
+const { clearError } = useHuh();
+</script>
+
+<template>
+  <button @click="clearError()">에러 닫기</button>
+</template>
+```
+
+---
+
+## React 패키지와의 차이점
+
+| | @huh/react | @huh/vue |
+|---|---|---|
+| **상태 관리** | `useState` | `ref()` |
+| **컨텍스트** | `createContext`/`useContext` | `provide()`/`inject()` + `InjectionKey` |
+| **렌더러 타입** | `(props) => ReactNode` | `Component<ErrorRenderProps>` |
+| **빌드** | tsup (CJS + ESM) | tsup (CJS + ESM) |
+| **"use client"** | 필요 (Next.js) | 불필요 |

@@ -1,0 +1,272 @@
+---
+title: "Architecture"
+description: "Overall architecture, package dependency graph, JSON DSL schema, build configuration"
+icon: "building"
+---
+
+## Overall Flow
+
+```
+Data Source (non-developers write error messages)
+    |
+    +-- Google Sheets
+    +-- Airtable
+    +-- Notion
+    +-- CSV (local file)
+    +-- XLSX (local file)
+    |
+    v
+@huh/cli  --- pull command
+    |
+    +-- Fetch per data source via Adapter pattern
+    +-- Parse with @huh/core's parseSheetData
+    +-- Validate with @huh/core's validateConfig
+    |
+    v
+huh.json  (build-time artifact)
+    |
+    v
+@huh/react, @huh/vue, @huh/svelte  --- HuhProvider
+    |
+    +-- Inject JSON data via source prop
+    +-- Trigger errors with handleError(trackId, variables)
+    +-- Look up + substitute variables via @huh/core's resolveError
+    |
+    v
+User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
+```
+
+## Package Dependency Graph
+
+```
+@huh/react   --depends-->  @huh/core
+@huh/vue     --depends-->  @huh/core
+@huh/svelte  --depends-->  @huh/core
+@huh/cli     --depends-->  @huh/core
+
+@huh/core    --  (zero dependencies)
+```
+
+- **core** has no external dependencies and can be used anywhere.
+- **react** depends on core; react/react-dom are peer dependencies.
+- **vue** depends on core; vue >= 3.3 is a peer dependency.
+- **svelte** depends on core; svelte >= 5.0 is a peer dependency.
+- **cli** depends on core and uses commander/googleapis/picocolors/xlsx.
+
+## Package Responsibilities
+
+### @huh/core
+
+| Module | Responsibility |
+|--------|---------------|
+| `schema.ts` | All type definitions (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, etc.) |
+| `parser.ts` | Converts sheet raw data (2D string array) to ErrorConfig |
+| `template.ts` | `{{variable}}` placeholder substitution utility |
+| `resolver.ts` | Looks up error by trackId + applies variable substitution |
+| `validator.ts` | ErrorConfig validation (errors + warnings) |
+
+### @huh/react
+
+| Module | Responsibility |
+|--------|---------------|
+| `ErrorContentProvider.tsx` | Context Provider, error state management, renderer invocation |
+| `useErrorContent.ts` | handleError/clearError hook |
+| `types.ts` | ErrorRenderProps, RendererMap type definitions |
+
+### @huh/vue
+
+| Module | Responsibility |
+|--------|---------------|
+| `ErrorContentProvider.ts` | provide/inject-based Provider, error state management, render function renderer invocation |
+| `useErrorContent.ts` | inject-based useHuh composable |
+| `types.ts` | ErrorRenderProps, RendererMap (Vue Component) type definitions |
+
+### @huh/svelte
+
+| Module | Responsibility |
+|--------|---------------|
+| `HuhProvider.svelte` | setContext-based Provider, $state error state management, dynamic component rendering |
+| `useErrorContent.ts` | getContext-based useHuh |
+| `context.ts` | Separated Symbol injection key |
+| `types.ts` | ErrorRenderProps, RendererMap (Svelte Component) type definitions |
+
+### @huh/cli
+
+| Module | Responsibility |
+|--------|---------------|
+| `commands/init.ts` | Config file template generation, source type definitions |
+| `commands/pull.ts` | Fetch data via Adapter, parse, validate, generate JSON file |
+| `commands/validate.ts` | JSON file validation |
+| `adapters/types.ts` | `SourceAdapter` interface definition |
+| `adapters/registry.ts` | Adapter register/get/clear registry |
+| `adapters/google-sheets.ts` | Google Sheets API v4 adapter |
+| `adapters/airtable.ts` | Airtable REST API adapter |
+| `adapters/notion.ts` | Notion API adapter |
+| `adapters/csv.ts` | Local CSV file adapter (RFC 4180 compatible parser) |
+| `adapters/xlsx.ts` | Local XLSX file adapter (SheetJS) |
+| `adapters/index.ts` | Barrel -- auto-registers all adapters on import |
+| `fetch-sheet.ts` | Google Sheets API v4 data fetch (used by adapter) |
+| `fetch-airtable.ts` | Re-export shim -> `adapters/airtable` |
+| `fetch-notion.ts` | Re-export shim -> `adapters/notion` |
+| `generate.ts` | ErrorConfig -> JSON file write |
+
+## JSON DSL Schema
+
+```
+ErrorConfig (Record<trackId, ErrorEntry>)
+|
++-- trackId: string (unique identifier)
+|
++-- ErrorEntry
+    +-- type: ErrorType (uppercase. Built-in: 'TOAST' | 'MODAL' | 'PAGE' + custom types)
+    +-- message: string (supports {{variable}} templates)
+    +-- title?: string
+    +-- image?: string
+    +-- action?: ErrorAction
+        +-- label: string
+        +-- type: ActionType (uppercase. Built-in: 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS' + custom actions)
+        +-- target?: string (required for REDIRECT)
+```
+
+### Type Extensibility
+
+`ErrorType` and `ActionType` are open-ended string types:
+- Built-in types: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`)
+- Custom types (e.g., `BANNER`, `SNACKBAR`, `OPEN_CHAT`) can be freely added from data sources
+- The parser automatically converts to uppercase (lowercase input is accepted)
+- Custom types work automatically when you register the corresponding renderer in the framework's `RendererMap`
+- Custom action types are handled via the `HuhProvider`'s `onCustomAction` callback
+
+## Rendering Strategy
+
+The Provider does not supply default renderers. This is intentional:
+
+- Since every project has a different design system, providing default UI would still require customization.
+- Users implement renderers for each error type they use via `RendererMap`. In addition to the built-in types (`TOAST`, `MODAL`, `PAGE`), renderers for custom types can also be added.
+- Renderers receive `ErrorRenderProps`, with `onAction` and `onDismiss` callbacks automatically generated.
+
+### Action Handling Flow
+
+```
+User clicks action button -> onAction() called
+    |
+    +-- REDIRECT -> window.location.href = target
+    +-- BACK     -> window.history.back()
+    +-- RETRY    -> clearError() + onRetry callback
+    +-- DISMISS  -> clearError()
+    +-- Custom   -> clearError() + onCustomAction callback
+```
+
+## Build Configuration
+
+The monorepo is managed with the following tools:
+
+| Tool | Role |
+|------|------|
+| pnpm workspace | Package manager + workspaces |
+| turborepo | Build/test pipeline (caching, dependency ordering) |
+| tsup | TypeScript bundling (CJS + ESM + IIFE + d.ts) |
+| vitest | Test runner |
+
+### Build Outputs
+
+| File | Format | Purpose |
+|------|--------|---------|
+| `dist/index.js` | CJS | `require()` |
+| `dist/index.mjs` | ESM | `import` |
+| `dist/index.global.js` | IIFE (minified) | CDN, `<script>` |
+| `dist/index.d.ts` | TypeScript declarations | Type support |
+
+### Build Order
+
+Turborepo analyzes dependency relationships and determines the order automatically:
+
+```
+1. @huh/core (no dependencies, built first)
+2. @huh/react + @huh/vue + @huh/svelte + @huh/cli (built in parallel after core)
+```
+
+## Directory Structure
+
+```
+/
++-- package.json               # Root (monorepo scripts)
++-- pnpm-workspace.yaml
++-- turbo.json
++-- tsconfig.base.json
++-- vitest.workspace.ts
++-- docs/                      # Documentation
+|   +-- getting-started.md
+|   +-- google-sheet-guide.md
+|   +-- airtable-guide.md
+|   +-- notion-guide.md
+|   +-- api-core.md
+|   +-- api-react.md
+|   +-- api-cli.md
+|   +-- architecture.md
++-- packages/
+    +-- core/
+    |   +-- package.json
+    |   +-- tsconfig.json
+    |   +-- tsup.config.ts
+    |   +-- src/
+    |       +-- index.ts
+    |       +-- schema.ts
+    |       +-- parser.ts
+    |       +-- resolver.ts
+    |       +-- template.ts
+    |       +-- validator.ts
+    |       +-- __tests__/
+    +-- react/
+    |   +-- package.json
+    |   +-- tsup.config.ts
+    |   +-- src/
+    |       +-- index.ts
+    |       +-- ErrorContentProvider.tsx
+    |       +-- useErrorContent.ts
+    |       +-- types.ts
+    |       +-- __tests__/
+    +-- vue/
+    |   +-- package.json
+    |   +-- tsup.config.ts
+    |   +-- src/
+    |       +-- index.ts
+    |       +-- ErrorContentProvider.ts
+    |       +-- useErrorContent.ts
+    |       +-- types.ts
+    |       +-- __tests__/
+    +-- svelte/
+    |   +-- package.json
+    |   +-- svelte.config.js
+    |   +-- src/
+    |       +-- index.ts
+    |       +-- HuhProvider.svelte
+    |       +-- useErrorContent.ts
+    |       +-- context.ts
+    |       +-- types.ts
+    |       +-- __tests__/
+    +-- cli/
+        +-- package.json
+        +-- tsconfig.json
+        +-- tsup.config.ts
+        +-- src/
+            +-- index.ts
+            +-- fetch-sheet.ts
+            +-- fetch-airtable.ts      # re-export -> adapters/airtable
+            +-- fetch-notion.ts        # re-export -> adapters/notion
+            +-- generate.ts
+            +-- adapters/
+            |   +-- index.ts           # barrel (auto-registers all adapters)
+            |   +-- types.ts           # SourceAdapter interface
+            |   +-- registry.ts        # register/get/clear
+            |   +-- google-sheets.ts
+            |   +-- airtable.ts
+            |   +-- notion.ts
+            |   +-- csv.ts
+            |   +-- xlsx.ts
+            +-- commands/
+            |   +-- init.ts
+            |   +-- pull.ts
+            |   +-- validate.ts
+            +-- __tests__/
+```
