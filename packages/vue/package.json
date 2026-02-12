@@ -1,0 +1,43 @@
+{
+  "name": "@huh/vue",
+  "version": "0.1.0",
+  "description": "Vue bindings for huh — HuhProvider and useHuh composable",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "size": "size-limit",
+    "size:why": "size-limit --why"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.mjs",
+      "limit": "3 KB"
+    }
+  ],
+  "dependencies": {
+    "@huh/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3"
+  },
+  "devDependencies": {
+    "@vue/test-utils": "^2.4.0",
+    "jsdom": "^25.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "vue": "^3.5.0"
+  }
+}
