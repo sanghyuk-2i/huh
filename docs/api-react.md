@@ -1,0 +1,272 @@
+# @huh/react API
+
+React Context 기반의 에러 UI 렌더링 라이브러리입니다. Provider가 에러 상태를 관리하고, 사용자가 제공한 커스텀 렌더러로 에러 UI를 표시합니다.
+
+## 설치
+
+```bash
+pnpm add @huh/core @huh/react
+```
+
+**Peer Dependencies**: `react >= 18`, `react-dom >= 18`
+
+---
+
+## HuhProvider
+
+에러 상태를 관리하고, 활성 에러가 있을 때 해당 타입의 렌더러를 호출합니다.
+
+### Props
+
+```ts
+interface HuhProviderProps {
+  source: ErrorConfig;       // JSON DSL 데이터 (core의 ErrorConfig)
+  renderers: RendererMap;    // 커스텀 렌더러 (필수)
+  children: ReactNode;
+  onRetry?: () => void;      // RETRY 액션 시 호출되는 콜백
+  onCustomAction?: (action: { type: string; target?: string }) => void;  // 커스텀 액션 콜백
+}
+```
+
+### 기본 사용법
+
+```tsx
+import errorContent from './huh.json';
+import { HuhProvider } from '@huh/react';
+
+function App() {
+  return (
+    <HuhProvider
+      source={errorContent}
+      renderers={renderers}
+      onRetry={() => window.location.reload()}
+      onCustomAction={(action) => {
+        // 커스텀 액션 타입 처리 (예: OPEN_CHAT, SHARE 등)
+        if (action.type === 'OPEN_CHAT') openChatWidget();
+      }}
+    >
+      <YourApp />
+    </HuhProvider>
+  );
+}
+```
+
+---
+
+## RendererMap
+
+에러 타입별 렌더러를 제공합니다. 기본 렌더러는 없으며, 에러 발생 시 해당 타입의 렌더러가 없으면 런타임 에러가 발생합니다. 키는 대문자 타입명입니다.
+
+```ts
+type RendererMap = Record<string, (props: ErrorRenderProps) => ReactNode>;
+```
+
+기본 제공 타입(`TOAST`, `MODAL`, `PAGE`) 외에도 커스텀 타입에 대한 렌더러를 자유롭게 추가할 수 있습니다:
+
+```ts
+const renderers: RendererMap = {
+  TOAST: ({ error, onDismiss }) => <Toast message={error.message} onClose={onDismiss} />,
+  MODAL: ({ error, onAction, onDismiss }) => <Modal ... />,
+  PAGE: ({ error, onAction }) => <ErrorPage ... />,
+  // 커스텀 타입 렌더러
+  BANNER: ({ error, onAction, onDismiss }) => <Banner message={error.message} ... />,
+  SNACKBAR: ({ error, onDismiss }) => <Snackbar message={error.message} ... />,
+};
+```
+
+### ErrorRenderProps
+
+각 렌더러에 전달되는 props입니다.
+
+```ts
+interface ErrorRenderProps {
+  error: ResolvedError;    // 변수 치환이 완료된 에러 정보
+  onAction: () => void;    // 액션 버튼 클릭 핸들러
+  onDismiss: () => void;   // 닫기 핸들러
+}
+```
+
+- `error.type` — `'TOAST' | 'MODAL' | 'PAGE' | string` (커스텀 타입 포함)
+- `error.message` — 치환 완료된 메시지
+- `error.title` — 치환 완료된 제목 (선택)
+- `error.image` — 이미지 URL (선택)
+- `error.action` — 액션 정보 (선택)
+
+### onAction 동작
+
+`onAction`은 에러의 `action.type`에 따라 자동으로 동작합니다:
+
+| actionType | 동작 |
+|------------|------|
+| `REDIRECT` | `window.location.href = action.target` |
+| `BACK` | `window.history.back()` |
+| `RETRY` | 에러 클리어 + `onRetry` 콜백 호출 |
+| `DISMISS` | 에러 클리어 |
+| 커스텀 타입 | 에러 클리어 + `onCustomAction` 콜백 호출 |
+| 액션 없음 | 에러 클리어 |
+
+커스텀 액션 타입(예: `OPEN_CHAT`, `SHARE`)은 `onCustomAction` 콜백에 `{ type, target }` 객체가 전달됩니다.
+
+### 렌더러 구현 예시
+
+```tsx
+import type { RendererMap } from '@huh/react';
+import { Toast } from '@/components/Toast';
+import { Modal } from '@/components/Modal';
+
+const renderers: RendererMap = {
+  TOAST: ({ error, onDismiss }) => (
+    <Toast message={error.message} onClose={onDismiss} />
+  ),
+
+  MODAL: ({ error, onAction, onDismiss }) => (
+    <Modal open onClose={onDismiss}>
+      <Modal.Title>{error.title}</Modal.Title>
+      <Modal.Body>{error.message}</Modal.Body>
+      <Modal.Footer>
+        {error.action && (
+          <button onClick={onAction}>{error.action.label}</button>
+        )}
+        <button onClick={onDismiss}>닫기</button>
+      </Modal.Footer>
+    </Modal>
+  ),
+
+  PAGE: ({ error, onAction }) => (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      {error.image && <img src={error.image} alt="" className="w-48 mb-8" />}
+      <h1 className="text-3xl font-bold">{error.title}</h1>
+      <p className="mt-4 text-gray-600">{error.message}</p>
+      {error.action && (
+        <button onClick={onAction} className="mt-8 btn btn-primary">
+          {error.action.label}
+        </button>
+      )}
+    </div>
+  ),
+
+  // 커스텀 타입 예시
+  BANNER: ({ error, onAction, onDismiss }) => (
+    <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4">
+      <p>{error.message}</p>
+      {error.action && <button onClick={onAction}>{error.action.label}</button>}
+      <button onClick={onDismiss}>닫기</button>
+    </div>
+  ),
+};
+```
+
+---
+
+## useHuh
+
+Provider 하위에서 에러를 트리거하거나 클리어하는 훅입니다.
+
+```ts
+function useHuh(): HuhContextValue;
+
+interface HuhContextValue {
+  handleError: (trackId: string, variables?: Record<string, string>) => void;
+  clearError: () => void;
+}
+```
+
+**Provider 밖에서 호출하면 에러가 발생합니다.**
+
+### handleError(trackId, variables?)
+
+`trackId`에 해당하는 에러를 조회하고, 변수를 치환한 후 해당 타입의 렌더러로 UI를 표시합니다.
+
+```tsx
+const { handleError } = useHuh();
+
+// 단순 에러 트리거
+handleError('ERR_NETWORK');
+
+// 변수 치환과 함께 트리거
+handleError('ERR_SESSION_EXPIRED', { userName: '홍길동' });
+```
+
+### clearError()
+
+현재 활성화된 에러 UI를 닫습니다.
+
+```tsx
+const { clearError } = useHuh();
+
+clearError();
+```
+
+---
+
+## 전체 예시
+
+```tsx
+import React from 'react';
+import errorContent from './huh.json';
+import { HuhProvider, useHuh } from '@huh/react';
+import type { RendererMap } from '@huh/react';
+
+const renderers: RendererMap = {
+  TOAST: ({ error, onDismiss }) => (
+    <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded">
+      {error.message}
+      <button onClick={onDismiss} className="ml-2">X</button>
+    </div>
+  ),
+  MODAL: ({ error, onAction, onDismiss }) => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg">
+        <h2 className="text-xl font-bold">{error.title}</h2>
+        <p className="mt-2">{error.message}</p>
+        <div className="mt-4 flex gap-2">
+          {error.action && (
+            <button onClick={onAction} className="btn-primary">
+              {error.action.label}
+            </button>
+          )}
+          <button onClick={onDismiss}>닫기</button>
+        </div>
+      </div>
+    </div>
+  ),
+  PAGE: ({ error, onAction }) => (
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <h1 className="text-4xl">{error.title}</h1>
+      <p className="mt-4">{error.message}</p>
+      {error.action && (
+        <button onClick={onAction} className="mt-8 btn-primary">
+          {error.action.label}
+        </button>
+      )}
+    </div>
+  ),
+};
+
+function UserProfile() {
+  const { handleError } = useHuh();
+
+  const loadProfile = async () => {
+    try {
+      const res = await fetch('/api/profile');
+      if (!res.ok) throw new Error();
+    } catch {
+      handleError('ERR_PROFILE_LOAD');
+    }
+  };
+
+  return <button onClick={loadProfile}>프로필 로드</button>;
+}
+
+export default function App() {
+  return (
+    <HuhProvider
+      source={errorContent}
+      renderers={renderers}
+      onRetry={() => console.log('Retrying...')}
+    >
+      <UserProfile />
+    </HuhProvider>
+  );
+}
+```

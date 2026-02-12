@@ -1,0 +1,111 @@
+# Google Sheet Setup Guide
+
+This document explains the formatting rules for a Google Sheet that manages error content.
+
+## Quick Start with Template
+
+Copy the pre-configured template to get a sheet with the correct column structure and sample data.
+
+**[Copy Google Sheets Template](https://docs.google.com/spreadsheets/d/TEMPLATE_SHEET_ID/copy)**
+
+> After copying, edit the data and run `huh pull`.
+
+---
+
+## Sheet Column Structure
+
+The first row must be a header row, using the following column names:
+
+| Column Name | Required | Description |
+|-------------|----------|-------------|
+| `trackId` | Yes | Unique ID identifying the error (e.g., `ERR_LOGIN_FAILED`) |
+| `type` | Yes | Error display type: `TOAST`, `MODAL`, `PAGE`, or custom type |
+| `message` | Yes | Error message shown to the user |
+| `title` | | Error title (used for modal, page) |
+| `image` | | Image URL (used for page) |
+| `actionLabel` | | Action button text |
+| `actionType` | | Action kind: `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
+| `actionTarget` | | Action target URL (required for `REDIRECT`) |
+
+## Error Types (`type`)
+
+Built-in types:
+
+| Type | Use Case | Recommended Fields |
+|------|----------|-------------------|
+| `TOAST` | Simple notification message | Use message only. Warning if title/image are used |
+| `MODAL` | Popup-style error notice | message + title + action |
+| `PAGE` | Full-screen error page | message + title + image + action (warning if no action) |
+
+> Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely. Even if entered in lowercase, they are automatically converted to uppercase.
+
+## Action Types (`actionType`)
+
+Built-in action types:
+
+| Type | Behavior | Requires target |
+|------|----------|----------------|
+| `REDIRECT` | Navigate to specified URL | Yes (`actionTarget` with URL) |
+| `RETRY` | Close error + execute retry callback | No |
+| `BACK` | Browser back (`history.back()`) | No |
+| `DISMISS` | Close error UI | No |
+
+> Custom action types (`OPEN_CHAT`, `SHARE`, etc.) can also be used. Handle them via the `HuhProvider`'s `onCustomAction` callback.
+
+## Template Variables
+
+You can use template variables in the format `{{variableName}}` in messages, titles, action labels, and action targets. Variables are passed at runtime when calling `handleError`.
+
+```
+Message example: {{userName}}, your request could not be processed.
+Target example: /user/{{userId}}/settings
+```
+
+## Examples
+
+| trackId | type | message | title | image | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------|-------------|------------|--------------|
+| ERR_NETWORK | TOAST | Please check your network connection | | | | | |
+| ERR_AUTH | MODAL | Authentication is required | Login Required | | Login | REDIRECT | /login |
+| ERR_TIMEOUT | MODAL | The request has timed out | Timeout | | Try Again | RETRY | |
+| ERR_FORBIDDEN | PAGE | {{userName}} does not have access permission | Access Denied | /img/403.png | Go Back | BACK | |
+| ERR_NOT_FOUND | PAGE | Page not found | 404 | /img/404.png | Go Home | REDIRECT | / |
+
+## Rules Summary
+
+- Rows with an empty `trackId` are ignored
+- `trackId`, `type`, and `message` are required
+- `type` must not be empty (built-in: `TOAST`, `MODAL`, `PAGE`; custom types also allowed)
+- `actionTarget` is required when `actionType` is `REDIRECT`
+- Lowercase input is automatically converted to uppercase by the CLI
+- `actionLabel` and `actionType` must be provided together (both present or both absent)
+
+## Google Sheet Access Configuration
+
+To access the sheet from the CLI, one of the following authentication methods is required:
+
+### Method 1: API Key (for public sheets)
+
+1. Create a project in the [Google Cloud Console](https://console.cloud.google.com/)
+2. Enable the Google Sheets API
+3. Generate an API Key
+4. Set the sheet to "Anyone with the link can view"
+5. Set the environment variable: `GOOGLE_API_KEY=your-api-key`
+
+### Method 2: Service Account (for private sheets)
+
+1. Create a service account in the Google Cloud Console
+2. Download the JSON key file
+3. Grant "Viewer" permission to the service account email in the sheet
+4. Specify the credentials path in the config file:
+
+```json
+{
+  "source": {
+    "type": "google-sheets",
+    "sheetId": "YOUR_SHEET_ID",
+    "credentials": "./service-account.json"
+  },
+  "output": "./src/huh.json"
+}
+```

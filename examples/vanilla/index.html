@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>huh — Vanilla Example</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>huh — Vanilla Example</h1>
+      <p>버튼을 클릭하여 에러 UI를 확인하세요.</p>
+      <div class="buttons">
+        <button id="btn-toast">Toast (ERR_NETWORK)</button>
+        <button id="btn-modal">Modal (ERR_AUTH)</button>
+        <button id="btn-page">Page (ERR_NOT_FOUND)</button>
+      </div>
+      <div id="error-container"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

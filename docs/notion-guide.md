@@ -1,0 +1,124 @@
+# Notion 연동 가이드
+
+## 템플릿으로 빠르게 시작하기
+
+미리 설정된 Notion 템플릿을 복제하면 프로퍼티 구조와 샘플 데이터가 포함된 데이터베이스를 바로 사용할 수 있습니다.
+
+**[Notion 템플릿 복제하기](https://notion.so/TEMPLATE_DB_ID)**
+
+> 복제 후 데이터를 수정하고 `huh pull`을 실행하세요.
+
+---
+
+## 1. Notion 데이터베이스 설정
+
+### 새 데이터베이스 만들기
+
+1. Notion에서 새 페이지를 만듭니다.
+2. `/database`를 입력하고 **Database - Full page**를 선택합니다.
+3. 데이터베이스 이름을 지정합니다 (예: `Error Content`).
+
+### 프로퍼티(속성) 구조
+
+데이터베이스에 다음 프로퍼티를 설정합니다:
+
+| 프로퍼티 이름 | 프로퍼티 타입 | 필수 여부 | 설명 |
+|-------------|-------------|----------|------|
+| `trackId` | Title | **필수** | 에러 고유 식별자 (예: `ERR_LOGIN_001`) |
+| `type` | Select | **필수** | `TOAST`, `MODAL`, `PAGE` 또는 커스텀 타입 |
+| `message` | Rich text | **필수** | 에러 메시지. `{{변수}}` 형태로 템플릿 변수 사용 가능 |
+| `title` | Rich text | 선택 | 에러 제목 (modal, page에서 사용) |
+| `image` | URL | 선택 | 에러 이미지 URL |
+| `actionLabel` | Rich text | 선택 | 액션 버튼 텍스트 |
+| `actionType` | Select | 선택 | `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
+| `actionTarget` | URL | 선택 | REDIRECT 시 이동할 URL |
+
+> Notion에서 `trackId`는 기본 Title 프로퍼티입니다. 기본 "Name" 프로퍼티의 이름을 `trackId`로 변경하세요.
+
+> `type`과 `actionType`은 Select 타입으로 설정하면 옵션을 미리 정의하여 입력 실수를 방지할 수 있습니다. 커스텀 타입도 옵션에 추가할 수 있습니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
+
+### 작성 예시
+
+| trackId | type | message | title | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------------|------------|--------------|
+| ERR_LOGIN_001 | TOAST | 로그인에 실패했습니다. 다시 시도해주세요. | | 재시도 | RETRY | |
+| ERR_PAYMENT_001 | MODAL | 결제 처리 중 문제가 발생했습니다. | 결제 오류 | 고객센터 문의 | REDIRECT | /support |
+| ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다. | 페이지 없음 | 홈으로 가기 | REDIRECT | / |
+| ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요. | | 다시 시도 | RETRY | |
+
+## 2. Integration 생성 및 토큰 발급
+
+1. [Notion Integrations](https://www.notion.so/my-integrations)에 접속합니다.
+2. **New integration**을 클릭합니다.
+3. Integration 이름을 입력합니다 (예: `huh-cli`).
+4. 관련 워크스페이스를 선택합니다.
+5. **Capabilities**에서 **Read content**가 체크되어 있는지 확인합니다.
+6. **Submit**을 클릭합니다.
+7. **Internal Integration Secret**을 복사합니다 (`ntn_` 또는 `secret_`으로 시작).
+
+## 3. 데이터베이스에 Integration 연결
+
+Integration을 생성한 후, 데이터베이스에 연결해야 합니다:
+
+1. Notion에서 데이터베이스 페이지를 엽니다.
+2. 우측 상단 **···** 메뉴를 클릭합니다.
+3. **Connections** → **Connect to** 에서 생성한 Integration을 선택합니다.
+4. **Confirm**을 클릭합니다.
+
+> Integration을 연결하지 않으면 API 호출 시 `404` 에러가 발생합니다.
+
+## 4. Database ID 확인
+
+1. Notion에서 데이터베이스 페이지를 엽니다.
+2. 브라우저 URL에서 확인합니다:
+   ```
+   https://www.notion.so/workspace/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX?v=...
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                    Database ID (32자리 hex, 하이픈 없음)
+   ```
+3. 또는 **Share** → **Copy link**로 복사한 URL에서 추출합니다.
+
+> Database ID는 하이픈을 포함해도, 포함하지 않아도 됩니다. API에서 자동으로 처리합니다.
+
+## 5. 설정
+
+### 환경변수 설정 (권장)
+
+```bash
+export NOTION_TOKEN="ntn_XXXXXXXXXXXXXXXXXXXX"
+```
+
+### `.huh.config.json` 예시
+
+```json
+{
+  "source": {
+    "type": "notion",
+    "databaseId": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  },
+  "output": "./src/huh.json"
+}
+```
+
+토큰을 config에 직접 지정하는 경우:
+
+```json
+{
+  "source": {
+    "type": "notion",
+    "databaseId": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "token": "ntn_XXXXXXXXXXXXXXXXXXXX"
+  },
+  "output": "./src/huh.json"
+}
+```
+
+> config 파일에 토큰을 직접 넣는 경우, `.gitignore`에 `.huh.config.json`을 추가하세요.
+
+## 6. 데이터 가져오기
+
+```bash
+huh pull
+```
+
+정상적으로 실행되면 `output` 경로에 JSON 파일이 생성됩니다.

@@ -1,0 +1,230 @@
+# 아키텍처
+
+## 전체 흐름
+
+```
+데이터 소스 (비개발자가 에러 메시지 작성)
+    │
+    ├─ Google Sheets
+    ├─ Airtable
+    ├─ Notion
+    ├─ CSV (로컬 파일)
+    └─ XLSX (로컬 파일)
+    │
+    ▼
+@huh/cli  ─── pull 명령어
+    │
+    ├─ Adapter 패턴으로 데이터 소스별 fetch
+    ├─ @huh/core의 parseSheetData로 파싱
+    ├─ @huh/core의 validateConfig로 검증
+    │
+    ▼
+huh.json  (빌드 타임 산출물)
+    │
+    ▼
+@huh/react  ─── HuhProvider
+    │
+    ├─ source prop으로 JSON 데이터 주입
+    ├─ handleError(trackId, variables)로 에러 트리거
+    ├─ @huh/core의 resolveError로 조회 + 변수 치환
+    │
+    ▼
+사용자 제공 커스텀 렌더러  ─── TOAST / MODAL / PAGE / 커스텀 타입
+```
+
+## 패키지 의존 관계
+
+```
+@huh/react  ──depends──▶  @huh/core
+@huh/cli    ──depends──▶  @huh/core
+
+@huh/core   ──  (zero dependencies)
+```
+
+- **core**는 외부 의존성이 없어 어디서든 사용 가능합니다.
+- **react**는 core에 의존하며, react/react-dom은 peer dependency입니다.
+- **cli**는 core에 의존하며, commander/googleapis/picocolors/xlsx를 사용합니다.
+
+## 패키지별 역할
+
+### @huh/core
+
+| 모듈 | 역할 |
+|------|------|
+| `schema.ts` | 모든 타입 정의 (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES 등) |
+| `parser.ts` | 시트 raw 데이터(2D 문자열 배열) → ErrorConfig 변환 |
+| `template.ts` | `{{변수}}` 플레이스홀더 치환 유틸리티 |
+| `resolver.ts` | trackId로 에러 조회 + 변수 치환 적용 |
+| `validator.ts` | ErrorConfig 유효성 검증 (errors + warnings) |
+
+### @huh/react
+
+| 모듈 | 역할 |
+|------|------|
+| `ErrorContentProvider.tsx` | Context Provider, 에러 상태 관리, 렌더러 호출 |
+| `useErrorContent.ts` | handleError/clearError 훅 |
+| `types.ts` | ErrorRenderProps, RendererMap 타입 정의 |
+
+### @huh/cli
+
+| 모듈 | 역할 |
+|------|------|
+| `commands/init.ts` | 설정 파일 템플릿 생성, 소스 타입 정의 |
+| `commands/pull.ts` | Adapter를 통해 데이터 fetch → parse → validate → JSON 파일 생성 |
+| `commands/validate.ts` | JSON 파일 유효성 검증 |
+| `adapters/types.ts` | `SourceAdapter` 인터페이스 정의 |
+| `adapters/registry.ts` | Adapter 등록/조회 레지스트리 |
+| `adapters/google-sheets.ts` | Google Sheets API v4 adapter |
+| `adapters/airtable.ts` | Airtable REST API adapter |
+| `adapters/notion.ts` | Notion API adapter |
+| `adapters/csv.ts` | 로컬 CSV 파일 adapter (RFC 4180 호환 파서) |
+| `adapters/xlsx.ts` | 로컬 XLSX 파일 adapter (SheetJS) |
+| `adapters/index.ts` | Barrel — import 시 모든 adapter 자동 등록 |
+| `fetch-sheet.ts` | Google Sheets API v4 데이터 fetch (adapter에서 사용) |
+| `fetch-airtable.ts` | Re-export shim → `adapters/airtable` |
+| `fetch-notion.ts` | Re-export shim → `adapters/notion` |
+| `generate.ts` | ErrorConfig → JSON 파일 쓰기 |
+
+## JSON DSL 스키마
+
+```
+ErrorConfig (Record<trackId, ErrorEntry>)
+│
+├── trackId: string (고유 식별자)
+│
+└── ErrorEntry
+    ├── type: ErrorType (대문자. 기본: 'TOAST' | 'MODAL' | 'PAGE' + 커스텀 타입)
+    ├── message: string ({{변수}} 템플릿 지원)
+    ├── title?: string
+    ├── image?: string
+    └── action?: ErrorAction
+        ├── label: string
+        ├── type: ActionType (대문자. 기본: 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS' + 커스텀 액션)
+        └── target?: string (REDIRECT 시 필수)
+```
+
+### 타입 확장성
+
+`ErrorType`과 `ActionType`은 열린(open-ended) 문자열 타입입니다:
+- 기본 제공 타입: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`)
+- 데이터 소스에서 커스텀 타입(예: `BANNER`, `SNACKBAR`, `OPEN_CHAT`)을 자유롭게 추가 가능
+- 파서가 자동으로 대문자로 변환 (소문자 입력 허용)
+- React `RendererMap`에 해당 타입의 렌더러를 등록하면 자동으로 동작
+- 커스텀 액션 타입은 `HuhProvider`의 `onCustomAction` 콜백으로 처리
+
+## 렌더링 전략
+
+Provider는 기본 렌더러를 제공하지 않습니다. 이는 의도적인 설계입니다:
+
+- 각 프로젝트의 디자인 시스템이 다르기 때문에 기본 UI를 제공해도 커스터마이징이 필요합니다.
+- 사용자가 `RendererMap`을 통해 사용하는 에러 타입별 렌더러를 직접 구현합니다. 기본 제공 타입(`TOAST`, `MODAL`, `PAGE`) 외에도 커스텀 타입에 대한 렌더러를 추가할 수 있습니다.
+- 렌더러에는 `ErrorRenderProps`가 전달되며, `onAction`과 `onDismiss` 콜백이 자동 생성됩니다.
+
+### 액션 처리 흐름
+
+```
+사용자가 액션 버튼 클릭 → onAction() 호출
+    │
+    ├── REDIRECT → window.location.href = target
+    ├── BACK     → window.history.back()
+    ├── RETRY    → clearError() + onRetry 콜백
+    ├── DISMISS  → clearError()
+    └── 커스텀    → clearError() + onCustomAction 콜백
+```
+
+## 빌드 설정
+
+모노레포는 다음 도구로 관리됩니다:
+
+| 도구 | 역할 |
+|------|------|
+| pnpm workspace | 패키지 매니저 + 워크스페이스 |
+| turborepo | 빌드/테스트 파이프라인 (캐싱, 의존 순서) |
+| tsup | TypeScript 번들링 (CJS + ESM + IIFE + d.ts) |
+| vitest | 테스트 러너 |
+
+### 빌드 출력물
+
+| 파일 | 포맷 | 용도 |
+|------|------|------|
+| `dist/index.js` | CJS | `require()` |
+| `dist/index.mjs` | ESM | `import` |
+| `dist/index.global.js` | IIFE (minified) | CDN, `<script>` |
+| `dist/index.d.ts` | TypeScript 선언 | 타입 지원 |
+
+### 빌드 순서
+
+Turborepo가 의존 관계를 분석하여 자동으로 순서를 결정합니다:
+
+```
+1. @huh/core (의존성 없음, 먼저 빌드)
+2. @huh/react + @huh/cli (core 빌드 후 병렬 빌드)
+```
+
+## 디렉토리 구조
+
+```
+/
+├── package.json               # 루트 (모노레포 스크립트)
+├── pnpm-workspace.yaml
+├── turbo.json
+├── tsconfig.base.json
+├── vitest.workspace.ts
+├── docs/                      # 문서
+│   ├── getting-started.md
+│   ├── google-sheet-guide.md
+│   ├── airtable-guide.md
+│   ├── notion-guide.md
+│   ├── api-core.md
+│   ├── api-react.md
+│   ├── api-cli.md
+│   └── architecture.md
+└── packages/
+    ├── core/
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   ├── tsup.config.ts
+    │   └── src/
+    │       ├── index.ts
+    │       ├── schema.ts
+    │       ├── parser.ts
+    │       ├── resolver.ts
+    │       ├── template.ts
+    │       ├── validator.ts
+    │       └── __tests__/
+    ├── react/
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   ├── tsup.config.ts
+    │   ├── vitest.config.ts
+    │   └── src/
+    │       ├── index.ts
+    │       ├── ErrorContentProvider.tsx
+    │       ├── useErrorContent.ts
+    │       ├── types.ts
+    │       └── __tests__/
+    └── cli/
+        ├── package.json
+        ├── tsconfig.json
+        ├── tsup.config.ts
+        └── src/
+            ├── index.ts
+            ├── fetch-sheet.ts
+            ├── fetch-airtable.ts      # re-export → adapters/airtable
+            ├── fetch-notion.ts        # re-export → adapters/notion
+            ├── generate.ts
+            ├── adapters/
+            │   ├── index.ts           # barrel (auto-registers all adapters)
+            │   ├── types.ts           # SourceAdapter interface
+            │   ├── registry.ts        # register/get/clear
+            │   ├── google-sheets.ts
+            │   ├── airtable.ts
+            │   ├── notion.ts
+            │   ├── csv.ts
+            │   └── xlsx.ts
+            ├── commands/
+            │   ├── init.ts
+            │   ├── pull.ts
+            │   └── validate.ts
+            └── __tests__/
+```
