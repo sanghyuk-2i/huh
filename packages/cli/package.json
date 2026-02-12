@@ -1,0 +1,30 @@
+{
+  "name": "@huh/cli",
+  "version": "0.1.0",
+  "description": "CLI tool for huh — init, pull from Google Sheets, validate",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "huh": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@huh/core": "workspace:*",
+    "commander": "^12.1.0",
+    "googleapis": "^144.0.0",
+    "picocolors": "^1.1.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
