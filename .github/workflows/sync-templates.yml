@@ -1,0 +1,44 @@
+name: Sync Templates
+
+on:
+  push:
+    paths: ['scripts/templates/src/**']
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'csv,xlsx,google-sheets,airtable,notion or all'
+        default: 'all'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --filter huh-templates...
+
+      - run: pnpm --filter huh-templates generate --platform ${{ inputs.platforms || 'all' }}
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          AIRTABLE_TOKEN: ${{ secrets.AIRTABLE_TOKEN }}
+          AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          NOTION_PARENT_PAGE_ID: ${{ secrets.NOTION_PARENT_PAGE_ID }}
+
+      - uses: softprops/action-gh-release@v2
+        if: success()
+        with:
+          tag_name: templates-${{ github.sha }}
+          files: |
+            scripts/templates/output/*.csv
+            scripts/templates/output/*.xlsx
