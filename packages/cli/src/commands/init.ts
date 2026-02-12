@@ -101,6 +101,12 @@ export type HuhSource = GoogleSheetsSource | AirtableSource | NotionSource | Csv
 export interface HuhCliConfig {
   source: HuhSource;
   output: string;
+  simulate?: {
+    variables?: Record<string, Record<string, string>>;
+    defaultVariables?: Record<string, string>;
+    waitTimeout?: number;
+    screenshotDelay?: number;
+  };
 }
 
 export function defineConfig(config: HuhCliConfig): HuhCliConfig {

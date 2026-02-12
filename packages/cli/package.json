@@ -22,6 +22,9 @@
     "picocolors": "^1.1.0",
     "xlsx": "^0.18.5"
   },
+  "optionalDependencies": {
+    "playwright": "^1.48.0"
+  },
   "devDependencies": {
     "tsup": "^8.3.0",
     "typescript": "^5.7.0",

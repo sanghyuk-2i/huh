@@ -7,6 +7,7 @@ export default defineConfig({
   clean: true,
   sourcemap: true,
   metafile: true,
+  external: ['playwright'],
   banner: {
     js: '#!/usr/bin/env node',
   },
