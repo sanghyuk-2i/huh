@@ -14,7 +14,7 @@ Developers get type-safe, auto-rendered error UI at runtime.
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 
-[Getting Started](./docs/getting-started.md) | [API Reference](./docs/api-core.md) | [Architecture](./docs/architecture.md)
+[Getting Started](./docs/en/getting-started.mdx) | [API Reference](./docs/en/api/core.mdx) | [Architecture](./docs/en/architecture.mdx)
 
 **[Korean / 한국어](./README.md)**
 
@@ -68,7 +68,14 @@ handleError('ERR_AUTH', { userName: 'Jane' });
 ### 1. Install
 
 ```bash
+# React
 npm install @huh/core @huh/react
+
+# Vue
+npm install @huh/core @huh/vue
+
+# Svelte
+npm install @huh/core @huh/svelte
 ```
 
 #### CDN (no bundler)
@@ -190,10 +197,12 @@ Perfect for CI/CD pipelines. Catches content errors before they reach production
 | Package | Description |
 |---|---|
 | [`@huh/core`](./packages/core) | Zero-dependency. Types, parsing, template engine, validation. **CDN ready.** |
-| [`@huh/react`](./packages/react) | `HuhProvider` + `useHuh` hook. Bring your own renderers. |
+| [`@huh/react`](./packages/react) | React bindings. `HuhProvider` + `useHuh` hook. |
+| [`@huh/vue`](./packages/vue) | Vue 3 bindings. `HuhProvider` + `useHuh` composable. |
+| [`@huh/svelte`](./packages/svelte) | Svelte 5 bindings. `HuhProvider` + `useHuh`. |
 | [`@huh/cli`](./packages/cli) | `init` / `pull` / `validate` commands. |
 
-`@huh/core` has **zero dependencies** and works in any JavaScript runtime. Use it standalone with vanilla JS, Vue, Svelte, or anything else.
+`@huh/core` has **zero dependencies** and works in any JavaScript runtime. Use it standalone with vanilla JS or anything else.
 
 ## Why Huh?
 
@@ -220,12 +229,14 @@ Copy or download a template for your data source to get started quickly:
 
 ## Documentation
 
-- [Getting Started](./docs/getting-started.md) - Full setup guide
-- [Google Sheet Setup](./docs/google-sheet-guide.md) · [Airtable](./docs/airtable-guide.md) · [Notion](./docs/notion-guide.md) · [CSV](./docs/csv-guide.md) · [XLSX](./docs/xlsx-guide.md)
-- [@huh/core API](./docs/api-core.md) - `parseSheetData`, `resolveError`, `validateConfig`
-- [@huh/react API](./docs/api-react.md) - `HuhProvider`, `useHuh`, renderer types
-- [@huh/cli API](./docs/api-cli.md) - CLI commands and config options
-- [Architecture](./docs/architecture.md) - Design decisions and data flow
+- [Getting Started](./docs/en/getting-started.mdx) - Full setup guide
+- [Google Sheet Setup](./docs/en/guides/google-sheets.mdx) · [Airtable](./docs/en/guides/airtable.mdx) · [Notion](./docs/en/guides/notion.mdx) · [CSV](./docs/en/guides/csv.mdx) · [XLSX](./docs/en/guides/xlsx.mdx)
+- [@huh/core API](./docs/en/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
+- [@huh/react API](./docs/en/api/react.mdx) - `HuhProvider`, `useHuh`, renderer types
+- [@huh/vue API](./docs/en/api/vue.mdx) - Vue 3 bindings
+- [@huh/svelte API](./docs/en/api/svelte.mdx) - Svelte 5 bindings
+- [@huh/cli API](./docs/en/api/cli.mdx) - CLI commands and config options
+- [Architecture](./docs/en/architecture.mdx) - Design decisions and data flow
 
 ## CI/CD Integration
 

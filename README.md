@@ -14,7 +14,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 
-[시작하기](./docs/getting-started.md) | [API 레퍼런스](./docs/api-core.md) | [아키텍처](./docs/architecture.md)
+[시작하기](./docs/ko/getting-started.mdx) | [API 레퍼런스](./docs/ko/api/core.mdx) | [아키텍처](./docs/ko/architecture.mdx)
 
 **[English / 영어](./README.en.md)**
 
@@ -38,7 +38,7 @@
 
 ```
  +-----------------+       +-------------+       +------------------+
- |   데이터 소스     | pull  |  huh.json   | build |   React App      |
+ |   데이터 소스     | pull  |  huh.json   | build |   Your App       |
  |                 |------>|  (JSON DSL) |------>|                  |
  |  기획자/PM 관리   |       |  타입 안전    |       |  자동 에러 UI 렌더 |
  +-----------------+       +-------------+       +------------------+
@@ -68,7 +68,14 @@ handleError('ERR_AUTH', { userName: '홍길동' });
 ### 1. 설치
 
 ```bash
+# React
 npm install @huh/core @huh/react
+
+# Vue
+npm install @huh/core @huh/vue
+
+# Svelte
+npm install @huh/core @huh/svelte
 ```
 
 #### CDN (번들러 없이 사용)
@@ -190,10 +197,12 @@ CI/CD 파이프라인에 적합합니다. 콘텐츠 오류를 프로덕션에 �
 | 패키지 | 설명 |
 |---|---|
 | [`@huh/core`](./packages/core) | 의존성 제로. 타입, 파싱, 템플릿 엔진, 유효성 검증. **CDN 지원.** |
-| [`@huh/react`](./packages/react) | `HuhProvider` + `useHuh` 훅. 렌더러는 직접 구현. |
+| [`@huh/react`](./packages/react) | React 바인딩. `HuhProvider` + `useHuh` 훅. |
+| [`@huh/vue`](./packages/vue) | Vue 3 바인딩. `HuhProvider` + `useHuh` composable. |
+| [`@huh/svelte`](./packages/svelte) | Svelte 5 바인딩. `HuhProvider` + `useHuh`. |
 | [`@huh/cli`](./packages/cli) | `init` / `pull` / `validate` 명령어. |
 
-`@huh/core`는 **의존성이 전혀 없으며** 모든 JavaScript 런타임에서 동작합니다. vanilla JS, Vue, Svelte 등 어디서든 단독으로 사용할 수 있습니다.
+`@huh/core`는 **의존성이 전혀 없으며** 모든 JavaScript 런타임에서 동작합니다. vanilla JS에서도 단독으로 사용할 수 있습니다.
 
 ## 왜 Huh인가요?
 
@@ -220,12 +229,14 @@ CI/CD 파이프라인에 적합합니다. 콘텐츠 오류를 프로덕션에 �
 
 ## 문서
 
-- [시작하기](./docs/getting-started.md) - 전체 설정 가이드
-- [Google Sheet 설정](./docs/google-sheet-guide.md) · [Airtable](./docs/airtable-guide.md) · [Notion](./docs/notion-guide.md) · [CSV](./docs/csv-guide.md) · [XLSX](./docs/xlsx-guide.md)
-- [@huh/core API](./docs/api-core.md) - `parseSheetData`, `resolveError`, `validateConfig`
-- [@huh/react API](./docs/api-react.md) - `HuhProvider`, `useHuh`, 렌더러 타입
-- [@huh/cli API](./docs/api-cli.md) - CLI 명령어 및 설정 옵션
-- [아키텍처](./docs/architecture.md) - 설계 결정 및 데이터 흐름
+- [시작하기](./docs/ko/getting-started.mdx) - 전체 설정 가이드
+- [Google Sheet 설정](./docs/ko/guides/google-sheets.mdx) · [Airtable](./docs/ko/guides/airtable.mdx) · [Notion](./docs/ko/guides/notion.mdx) · [CSV](./docs/ko/guides/csv.mdx) · [XLSX](./docs/ko/guides/xlsx.mdx)
+- [@huh/core API](./docs/ko/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
+- [@huh/react API](./docs/ko/api/react.mdx) - `HuhProvider`, `useHuh`, 렌더러 타입
+- [@huh/vue API](./docs/ko/api/vue.mdx) - Vue 3 바인딩
+- [@huh/svelte API](./docs/ko/api/svelte.mdx) - Svelte 5 바인딩
+- [@huh/cli API](./docs/ko/api/cli.mdx) - CLI 명령어 및 설정 옵션
+- [아키텍처](./docs/ko/architecture.mdx) - 설계 결정 및 데이터 흐름
 
 ## CI/CD 연동
 
