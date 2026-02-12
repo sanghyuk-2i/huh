@@ -9,11 +9,11 @@ icon: "building"
 ```
 데이터 소스 (비개발자가 에러 메시지 작성)
     │
-    ├─ Google Sheets
+    ├─ Google Sheets (탭 = 언어별 분리 가능)
     ├─ Airtable
     ├─ Notion
-    ├─ CSV (로컬 파일)
-    └─ XLSX (로컬 파일)
+    ├─ CSV (로컬 파일, 언어별 파일 분리 가능)
+    └─ XLSX (로컬 파일, 시트 = 언어별 분리 가능)
     │
     ▼
 @huh/cli  ─── pull 명령어
@@ -21,14 +21,17 @@ icon: "building"
     ├─ Adapter 패턴으로 데이터 소스별 fetch
     ├─ @huh/core의 parseSheetData로 파싱
     ├─ @huh/core의 validateConfig로 검증
+    ├─ (i18n) @huh/core의 validateLocales로 cross-locale 검증
     │
     ▼
-huh.json  (빌드 타임 산출물)
-    │
+huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
+    │              ├─ ko.json, en.json (로케일별)
+    │              └─ index.ts (자동 생성 barrel)
     ▼
 @huh/react, @huh/vue, @huh/svelte  ─── HuhProvider
     │
-    ├─ source prop으로 JSON 데이터 주입
+    ├─ source prop으로 JSON 데이터 주입 (단일 언어)
+    ├─ locales prop으로 다국어 데이터 주입 (i18n)
     ├─ handleError(trackId, variables)로 에러 트리거
     ├─ @huh/core의 resolveError로 조회 + 변수 치환
     │
@@ -39,10 +42,12 @@ huh.json  (빌드 타임 산출물)
 ## 패키지 의존 관계
 
 ```
-@huh/react   ──depends──▶  @huh/core
-@huh/vue     ──depends──▶  @huh/core
-@huh/svelte  ──depends──▶  @huh/core
-@huh/cli     ──depends──▶  @huh/core
+@huh/react          ──depends──▶  @huh/core
+@huh/vue            ──depends──▶  @huh/core
+@huh/svelte         ──depends──▶  @huh/core
+@huh/cli            ──depends──▶  @huh/core
+@huh/plugin-sentry   ──depends──▶  @huh/core  (+ @sentry/browser peer dep)
+@huh/plugin-datadog  ──depends──▶  @huh/core  (+ @datadog/browser-logs peer dep)
 
 @huh/core    ──  (zero dependencies)
 ```
@@ -52,6 +57,8 @@ huh.json  (빌드 타임 산출물)
 - **vue**는 core에 의존하며, vue >= 3.3은 peer dependency입니다.
 - **svelte**는 core에 의존하며, svelte >= 5.0은 peer dependency입니다.
 - **cli**는 core에 의존하며, commander/googleapis/picocolors/xlsx를 사용합니다.
+- **plugin-sentry**는 core에 의존하며, @sentry/browser는 peer dependency입니다.
+- **plugin-datadog**는 core에 의존하며, @datadog/browser-logs는 peer dependency입니다.
 
 ## 패키지별 역할
 
@@ -59,11 +66,13 @@ huh.json  (빌드 타임 산출물)
 
 | 모듈 | 역할 |
 |------|------|
-| `schema.ts` | 모든 타입 정의 (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES 등) |
+| `schema.ts` | 모든 타입 정의 (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, HuhPlugin 등) |
+| `plugin.ts` | 플러그인 실행 유틸리티 (`runPluginHook`) |
 | `parser.ts` | 시트 raw 데이터(2D 문자열 배열) → ErrorConfig 변환 |
 | `template.ts` | `{{변수}}` 플레이스홀더 치환 유틸리티 |
 | `resolver.ts` | trackId로 에러 조회 + 변수 치환 적용 |
 | `validator.ts` | ErrorConfig 유효성 검증 (errors + warnings) |
+| `locale-validator.ts` | 다국어 cross-locale 검증 (trackId 일관성, type/actionType 불일치) |
 
 ### @huh/react
 
@@ -108,7 +117,7 @@ huh.json  (빌드 타임 산출물)
 | `fetch-sheet.ts` | Google Sheets API v4 데이터 fetch (adapter에서 사용) |
 | `fetch-airtable.ts` | Re-export shim → `adapters/airtable` |
 | `fetch-notion.ts` | Re-export shim → `adapters/notion` |
-| `generate.ts` | ErrorConfig → JSON 파일 쓰기 |
+| `generate.ts` | ErrorConfig → JSON 파일 쓰기, i18n 모드에서 로케일별 파일 + index.ts barrel 생성 |
 
 ## JSON DSL 스키마
 
@@ -156,6 +165,36 @@ Provider는 기본 렌더러를 제공하지 않습니다. 이는 의도적인 �
     ├── DISMISS  → clearError()
     └── 커스텀    → clearError() + onCustomAction 콜백
 ```
+
+## 플러그인 시스템
+
+플러그인은 에러 모니터링, 분석, 커스텀 연동을 위한 확장 포인트를 제공합니다. 각 프레임워크 Provider는 `plugins` prop을 지원합니다.
+
+### 플러그인 라이프사이클
+
+```
+handleError(trackId, variables)
+    │
+    ├── resolveError → 활성 에러 설정
+    ├── runPluginHook(plugins, 'onError', resolved, context)  ◀── 플러그인 훅
+    │
+    ▼
+사용자가 액션 버튼 클릭 → onAction()
+    │
+    ├── runPluginHook(plugins, 'onAction', error, action)     ◀── 플러그인 훅
+    └── 액션 실행 (REDIRECT / RETRY / DISMISS / 등)
+```
+
+### 에러 격리
+
+플러그인 에러는 catch 후 경고로 로깅됩니다. 실패한 플러그인이 에러 렌더링 흐름을 깨뜨리지 않습니다.
+
+### 공식 플러그인
+
+| 패키지 | 설명 |
+|--------|------|
+| `@huh/plugin-sentry` | Sentry 연동 — 에러 시 `captureMessage`, 액션 시 `addBreadcrumb` |
+| `@huh/plugin-datadog` | Datadog 연동 — 에러 시 `datadogLogs.logger`, 액션 시 info 레벨 로깅 |
 
 ## 빌드 설정
 
@@ -216,6 +255,7 @@ Turborepo가 의존 관계를 분석하여 자동으로 순서를 결정합니�
     │       ├── resolver.ts
     │       ├── template.ts
     │       ├── validator.ts
+    │       ├── locale-validator.ts
     │       └── __tests__/
     ├── react/
     │   ├── package.json

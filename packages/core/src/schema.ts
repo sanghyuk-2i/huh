@@ -66,3 +66,15 @@ export interface CrossLocaleValidationResult {
   errors: CrossLocaleValidationError[];
   warnings: CrossLocaleValidationError[];
 }
+
+export interface HuhErrorContext {
+  trackId: string;
+  variables?: Record<string, string>;
+  locale?: string;
+}
+
+export interface HuhPlugin {
+  name: string;
+  onError?: (error: ResolvedError, context: HuhErrorContext) => void;
+  onAction?: (error: ResolvedError, action: ErrorAction) => void;
+}

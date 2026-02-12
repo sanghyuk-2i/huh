@@ -150,6 +150,44 @@ interface ResolvedError extends ErrorEntry {
 }
 ```
 
+### `LocalizedErrorConfig`
+
+다국어 에러 설정. 로케일 코드를 키로 하는 `ErrorConfig` 맵입니다.
+
+```ts
+type LocalizedErrorConfig = Record<string, ErrorConfig>;
+```
+
+```ts
+const locales: LocalizedErrorConfig = {
+  ko: {
+    ERR_AUTH: { type: 'MODAL', message: '인증 만료', title: '인증 오류' },
+  },
+  en: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired', title: 'Auth Error' },
+  },
+};
+```
+
+### `CrossLocaleValidationResult`
+
+`validateLocales` 함수의 반환 타입입니다.
+
+```ts
+interface CrossLocaleValidationResult {
+  valid: boolean;                          // 에러가 없으면 true
+  errors: CrossLocaleValidationError[];    // 에러 목록 (trackId 누락 등)
+  warnings: CrossLocaleValidationError[];  // 경고 목록 (type/actionType 불일치 등)
+}
+
+interface CrossLocaleValidationError {
+  trackId: string;
+  field?: string;
+  locales: string[];    // 문제가 있는 로케일 목록
+  message: string;
+}
+```
+
 ### `ValidationResult`
 
 ```ts
@@ -163,6 +201,34 @@ interface ValidationError {
   trackId?: string;
   field?: string;
   message: string;
+}
+```
+
+### `HuhPlugin`
+
+에러 및 액션 라이프사이클에 훅을 거는 플러그인을 정의합니다.
+
+```ts
+interface HuhPlugin {
+  name: string;
+  onError?: (error: ResolvedError, context: HuhErrorContext) => void;
+  onAction?: (error: ResolvedError, action: ErrorAction) => void;
+}
+```
+
+- `name` — 플러그인 식별자 (경고 메시지에 사용)
+- `onError` — `handleError`가 에러를 resolve할 때 호출
+- `onAction` — 사용자가 액션을 트리거할 때 호출
+
+### `HuhErrorContext`
+
+`onError` 플러그인 훅에 전달되는 컨텍스트입니다.
+
+```ts
+interface HuhErrorContext {
+  trackId: string;
+  variables?: Record<string, string>;
+  locale?: string;
 }
 ```
 
@@ -329,4 +395,86 @@ const result = validateConfig({
 //   { trackId: 'ERR_001', field: 'message', message: 'Missing required field: message' },
 //   { trackId: 'ERR_002', field: 'action.target', message: 'Action type "REDIRECT" requires a target URL' },
 // ]
+```
+
+---
+
+### `validateLocales(locales): CrossLocaleValidationResult`
+
+다국어 에러 설정의 로케일 간 일관성을 검증합니다.
+
+**매개변수**
+
+<ParamField path="locales" type="LocalizedErrorConfig" required>
+  로케일별 에러 설정 맵
+</ParamField>
+
+**검증 규칙 (errors)**
+
+| 조건 | 메시지 |
+|------|--------|
+| 한 로케일에 있는 trackId가 다른 로케일에 없음 | trackId "XXX" is missing in locale(s): ... |
+
+**경고 규칙 (warnings)**
+
+| 조건 | 메시지 |
+|------|--------|
+| 같은 trackId인데 type이 다름 | trackId "XXX" has different "type" across locales |
+| 같은 trackId인데 action.type이 다름 | trackId "XXX" has different "action.type" across locales |
+
+<Note>
+로케일이 1개뿐이면 검증을 건너뛰고 valid: true를 반환합니다.
+</Note>
+
+**예시**
+
+```ts
+import { validateLocales } from '@huh/core';
+
+const result = validateLocales({
+  ko: {
+    ERR_AUTH: { type: 'MODAL', message: '인증 만료' },
+    ERR_NETWORK: { type: 'TOAST', message: '네트워크 오류' },
+  },
+  en: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired' },
+    // ERR_NETWORK 누락 → error
+  },
+});
+
+// result.valid → false
+// result.errors → [{ trackId: 'ERR_NETWORK', locales: ['en'], message: '...' }]
+```
+
+---
+
+### `runPluginHook(plugins, hook, ...args): void`
+
+모든 플러그인의 특정 훅을 실행합니다. 개별 플러그인이 에러를 던지면 catch 후 경고로 로깅합니다.
+
+**매개변수**
+
+<ParamField path="plugins" type="HuhPlugin[]" required>
+  실행할 플러그인 배열
+</ParamField>
+
+<ParamField path="hook" type="'onError' | 'onAction'" required>
+  실행할 훅 이름
+</ParamField>
+
+<ParamField path="args" type="Parameters" required>
+  훅 함수에 전달할 인자
+</ParamField>
+
+**예시**
+
+```ts
+import { runPluginHook } from '@huh/core';
+import type { HuhPlugin } from '@huh/core';
+
+const plugins: HuhPlugin[] = [myPlugin(), anotherPlugin()];
+
+// 프레임워크 Provider 내부에서 호출됨 — 일반적으로 직접 호출하지 않음
+runPluginHook(plugins, 'onError', resolvedError, { trackId: 'ERR_001' });
+runPluginHook(plugins, 'onAction', resolvedError, action);
 ```

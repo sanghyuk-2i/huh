@@ -109,6 +109,43 @@ describe('HuhProvider', () => {
         expect(screen.queryByTestId('banner')).toBeNull();
     });
 });
+describe('plugins', () => {
+    it('calls onError when handleError is called', async () => {
+        const onError = vi.fn();
+        const plugin = { name: 'test-plugin', onError };
+        render(TestWrapper, {
+            props: { source: testConfig, renderers: mockRenderers, plugins: [plugin] },
+        });
+        await fireEvent.click(screen.getByText('trigger toast'));
+        expect(onError).toHaveBeenCalledWith(expect.objectContaining({ trackId: 'ERR_001', type: 'TOAST' }), expect.objectContaining({ trackId: 'ERR_001' }));
+    });
+    it('calls onAction when action is triggered', async () => {
+        const onAction = vi.fn();
+        const plugin = { name: 'test-plugin', onAction };
+        render(TestWrapper, {
+            props: { source: testConfig, renderers: mockRenderers, plugins: [plugin] },
+        });
+        await fireEvent.click(screen.getByText('trigger modal'));
+        await fireEvent.click(screen.getByText('Dismiss'));
+        expect(onAction).toHaveBeenCalledWith(expect.objectContaining({ trackId: 'ERR_002' }), expect.objectContaining({ type: 'DISMISS' }));
+    });
+    it('renders normally even if plugin throws', async () => {
+        const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
+        const plugin = {
+            name: 'bad-plugin',
+            onError: () => {
+                throw new Error('plugin error');
+            },
+        };
+        render(TestWrapper, {
+            props: { source: testConfig, renderers: mockRenderers, plugins: [plugin] },
+        });
+        await fireEvent.click(screen.getByText('trigger toast'));
+        expect(screen.getByTestId('toast')).toBeDefined();
+        expect(warnSpy).toHaveBeenCalled();
+        warnSpy.mockRestore();
+    });
+});
 describe('useHuh', () => {
     it('throws when used outside provider', () => {
         expect(() => {

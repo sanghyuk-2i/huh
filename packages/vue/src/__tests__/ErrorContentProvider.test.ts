@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import { defineComponent, h } from 'vue';
 import { HuhProvider } from '../ErrorContentProvider';
 import { useHuh } from '../useErrorContent';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig, HuhPlugin } from '@huh/core';
 import type { RendererMap, ErrorRenderProps } from '../types';
 
 const testConfig: ErrorConfig = {
@@ -230,6 +230,70 @@ describe('HuhProvider', () => {
 
     expect(onCustomAction).toHaveBeenCalledWith({ type: 'OPEN_CHAT', target: undefined });
     expect(wrapper.find('[data-testid="banner"]').exists()).toBe(false);
+  });
+});
+
+describe('plugins', () => {
+  it('calls onError when handleError is called', async () => {
+    const onError = vi.fn();
+    const plugin: HuhPlugin = { name: 'test-plugin', onError };
+
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers, plugins: [plugin] },
+      slots: {
+        default: () => h(TestConsumer),
+      },
+    });
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'trigger toast')[0].trigger('click');
+
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ trackId: 'ERR_001', type: 'TOAST' }),
+      expect.objectContaining({ trackId: 'ERR_001' }),
+    );
+  });
+
+  it('calls onAction when action is triggered', async () => {
+    const onAction = vi.fn();
+    const plugin: HuhPlugin = { name: 'test-plugin', onAction };
+
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers, plugins: [plugin] },
+      slots: {
+        default: () => h(TestConsumer),
+      },
+    });
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'trigger modal')[0].trigger('click');
+    await wrapper.findAll('button').filter((b) => b.text() === 'Dismiss')[0].trigger('click');
+
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ trackId: 'ERR_002' }),
+      expect.objectContaining({ type: 'DISMISS' }),
+    );
+  });
+
+  it('renders normally even if plugin throws', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const plugin: HuhPlugin = {
+      name: 'bad-plugin',
+      onError: () => {
+        throw new Error('plugin error');
+      },
+    };
+
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers, plugins: [plugin] },
+      slots: {
+        default: () => h(TestConsumer),
+      },
+    });
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'trigger toast')[0].trigger('click');
+
+    expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });
 

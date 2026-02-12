@@ -150,6 +150,44 @@ interface ResolvedError extends ErrorEntry {
 }
 ```
 
+### `LocalizedErrorConfig`
+
+Multi-language error configuration. A map of `ErrorConfig` keyed by locale code.
+
+```ts
+type LocalizedErrorConfig = Record<string, ErrorConfig>;
+```
+
+```ts
+const locales: LocalizedErrorConfig = {
+  ko: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired', title: 'Auth Error' },
+  },
+  en: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired', title: 'Auth Error' },
+  },
+};
+```
+
+### `CrossLocaleValidationResult`
+
+The return type of the `validateLocales` function.
+
+```ts
+interface CrossLocaleValidationResult {
+  valid: boolean;                          // true if no errors
+  errors: CrossLocaleValidationError[];    // Error list (missing trackId, etc.)
+  warnings: CrossLocaleValidationError[];  // Warning list (type/actionType mismatch, etc.)
+}
+
+interface CrossLocaleValidationError {
+  trackId: string;
+  field?: string;
+  locales: string[];    // List of locales with the issue
+  message: string;
+}
+```
+
 ### `ValidationResult`
 
 ```ts
@@ -163,6 +201,34 @@ interface ValidationError {
   trackId?: string;
   field?: string;
   message: string;
+}
+```
+
+### `HuhPlugin`
+
+Defines a plugin that hooks into the error and action lifecycle.
+
+```ts
+interface HuhPlugin {
+  name: string;
+  onError?: (error: ResolvedError, context: HuhErrorContext) => void;
+  onAction?: (error: ResolvedError, action: ErrorAction) => void;
+}
+```
+
+- `name` — Plugin identifier (used in warning messages)
+- `onError` — Called when `handleError` resolves an error
+- `onAction` — Called when a user triggers an action
+
+### `HuhErrorContext`
+
+Context passed to the `onError` plugin hook.
+
+```ts
+interface HuhErrorContext {
+  trackId: string;
+  variables?: Record<string, string>;
+  locale?: string;
 }
 ```
 
@@ -323,4 +389,82 @@ const result = validateConfig({
 //   { trackId: 'ERR_001', field: 'message', message: 'Missing required field: message' },
 //   { trackId: 'ERR_002', field: 'action.target', message: 'Action type "REDIRECT" requires a target URL' },
 // ]
+```
+
+---
+
+### `validateLocales(locales): CrossLocaleValidationResult`
+
+Validates cross-locale consistency of multi-language error configurations.
+
+<ParamField path="locales" type="LocalizedErrorConfig" required>
+  Map of error configurations keyed by locale code.
+</ParamField>
+
+**Validation Rules (errors)**
+
+| Condition | Message |
+|-----------|---------|
+| A trackId in one locale is missing in another | trackId "XXX" is missing in locale(s): ... |
+
+**Warning Rules (warnings)**
+
+| Condition | Message |
+|-----------|---------|
+| Same trackId has different types | trackId "XXX" has different "type" across locales |
+| Same trackId has different action types | trackId "XXX" has different "action.type" across locales |
+
+<Note>
+If there is only one locale, validation is skipped and returns valid: true.
+</Note>
+
+**Example**
+
+```ts
+import { validateLocales } from '@huh/core';
+
+const result = validateLocales({
+  ko: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired' },
+    ERR_NETWORK: { type: 'TOAST', message: 'Network error' },
+  },
+  en: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired' },
+    // ERR_NETWORK missing -> error
+  },
+});
+
+// result.valid -> false
+// result.errors -> [{ trackId: 'ERR_NETWORK', locales: ['en'], message: '...' }]
+```
+
+---
+
+### `runPluginHook(plugins, hook, ...args): void`
+
+Executes a specific hook on all plugins, catching and warning on any errors thrown by individual plugins.
+
+<ParamField path="plugins" type="HuhPlugin[]" required>
+  Array of plugins to execute.
+</ParamField>
+
+<ParamField path="hook" type="'onError' | 'onAction'" required>
+  The hook name to execute.
+</ParamField>
+
+<ParamField path="args" type="Parameters" required>
+  Arguments to pass to the hook function.
+</ParamField>
+
+**Example**
+
+```ts
+import { runPluginHook } from '@huh/core';
+import type { HuhPlugin } from '@huh/core';
+
+const plugins: HuhPlugin[] = [myPlugin(), anotherPlugin()];
+
+// Called internally by framework providers — typically not called directly
+runPluginHook(plugins, 'onError', resolvedError, { trackId: 'ERR_001' });
+runPluginHook(plugins, 'onAction', resolvedError, action);
 ```

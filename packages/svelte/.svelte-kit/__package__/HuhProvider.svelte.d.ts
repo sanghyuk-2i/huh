@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { ErrorConfig, LocalizedErrorConfig } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig, HuhPlugin } from '@huh/core';
 import type { RendererMap } from './types';
 interface Props {
     source?: ErrorConfig;
@@ -13,6 +13,7 @@ interface Props {
         type: string;
         target?: string;
     }) => void;
+    plugins?: HuhPlugin[];
 }
 declare const HuhProvider: import("svelte").Component<Props, {}, "">;
 type HuhProvider = ReturnType<typeof HuhProvider>;

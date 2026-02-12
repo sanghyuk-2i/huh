@@ -34,6 +34,13 @@
               "ko/guides/csv",
               "ko/guides/xlsx"
             ]
+          },
+          {
+            "group": "가이드",
+            "pages": [
+              "ko/guides/i18n",
+              "ko/guides/plugins"
+            ]
           }
         ]
       },
@@ -56,6 +63,13 @@
               "en/guides/notion",
               "en/guides/csv",
               "en/guides/xlsx"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "en/guides/i18n",
+              "en/guides/plugins"
             ]
           }
         ]

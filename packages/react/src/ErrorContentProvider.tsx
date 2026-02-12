@@ -1,7 +1,7 @@
 import React, { createContext, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { ErrorConfig, LocalizedErrorConfig, ResolvedError } from '@huh/core';
-import { resolveError, ACTION_TYPES } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin } from '@huh/core';
+import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
 export const HuhContext = createContext<HuhContextValue | null>(null);
@@ -15,6 +15,7 @@ export interface HuhProviderProps {
   children: ReactNode;
   onRetry?: () => void;
   onCustomAction?: (action: { type: string; target?: string }) => void;
+  plugins?: HuhPlugin[];
 }
 
 export function HuhProvider({
@@ -26,6 +27,7 @@ export function HuhProvider({
   children,
   onRetry,
   onCustomAction,
+  plugins = [],
 }: HuhProviderProps) {
   const [activeError, setActiveError] = useState<ResolvedError | null>(null);
   const [internalLocale, setInternalLocale] = useState<string>(
@@ -56,8 +58,13 @@ export function HuhProvider({
       const activeSource = getActiveSource();
       const resolved = resolveError(activeSource, trackId, variables);
       setActiveError(resolved);
+      runPluginHook(plugins, 'onError', resolved, {
+        trackId,
+        variables,
+        locale: locales ? currentLocale : undefined,
+      });
     },
-    [getActiveSource],
+    [getActiveSource, plugins, locales, currentLocale],
   );
 
   const setLocale = useCallback((newLocale: string) => {
@@ -82,6 +89,8 @@ export function HuhProvider({
           clearError();
           return;
         }
+
+        runPluginHook(plugins, 'onAction', error, action);
 
         switch (action.type) {
           case ACTION_TYPES.REDIRECT:
@@ -109,7 +118,7 @@ export function HuhProvider({
         }
       };
     },
-    [clearError, onRetry, onCustomAction],
+    [clearError, onRetry, onCustomAction, plugins],
   );
 
   const renderError = () => {

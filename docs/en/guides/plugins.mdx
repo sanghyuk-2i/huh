@@ -1,0 +1,234 @@
+---
+title: "Plugins"
+description: "Extend huh with plugins for error monitoring, analytics, and custom integrations"
+icon: "plug"
+---
+
+Plugins let you hook into huh's error and action lifecycle. Use them to send errors to monitoring services (Sentry, Datadog), track analytics events, or add custom logging — without modifying your Provider setup.
+
+## How It Works
+
+Pass an array of plugins to your framework's `HuhProvider` via the `plugins` prop. Each plugin can implement two hooks:
+
+- **`onError`** — Called when `handleError` resolves an error
+- **`onAction`** — Called when a user triggers an action (before the action is executed)
+
+```tsx
+<HuhProvider
+  source={errorConfig}
+  renderers={renderers}
+  plugins={[myPlugin()]}
+>
+  <App />
+</HuhProvider>
+```
+
+## HuhPlugin Interface
+
+```ts
+interface HuhPlugin {
+  name: string;
+  onError?: (error: ResolvedError, context: HuhErrorContext) => void;
+  onAction?: (error: ResolvedError, action: ErrorAction) => void;
+}
+
+interface HuhErrorContext {
+  trackId: string;
+  variables?: Record<string, string>;
+  locale?: string;
+}
+```
+
+Both hooks are optional. If a plugin throws, the error is caught and logged as a warning — it won't break your app.
+
+## Writing a Custom Plugin
+
+A plugin is a factory function that returns a `HuhPlugin` object:
+
+```ts
+import type { HuhPlugin } from '@huh/core';
+
+export function analyticsPlugin(): HuhPlugin {
+  return {
+    name: 'my-analytics',
+    onError(error, context) {
+      analytics.track('error_shown', {
+        trackId: context.trackId,
+        errorType: error.type,
+        locale: context.locale,
+      });
+    },
+    onAction(error, action) {
+      analytics.track('error_action', {
+        trackId: error.trackId,
+        actionType: action.type,
+      });
+    },
+  };
+}
+```
+
+## Using @huh/plugin-sentry
+
+The official Sentry plugin automatically reports errors and records action breadcrumbs.
+
+### Installation
+
+<CodeGroup>
+
+```bash pnpm
+pnpm add @huh/plugin-sentry @sentry/browser
+```
+
+```bash npm
+npm install @huh/plugin-sentry @sentry/browser
+```
+
+```bash yarn
+yarn add @huh/plugin-sentry @sentry/browser
+```
+
+</CodeGroup>
+
+### Setup
+
+```tsx
+import { sentryPlugin } from '@huh/plugin-sentry';
+
+<HuhProvider
+  source={errorConfig}
+  renderers={renderers}
+  plugins={[sentryPlugin()]}
+>
+  <App />
+</HuhProvider>
+```
+
+When an error is triggered:
+- `Sentry.captureMessage` is called with the trackId
+- Tags are set for `huh.trackId`, `huh.errorType`, and `huh.locale`
+- Variables are attached as Sentry context
+
+When an action is triggered:
+- `Sentry.addBreadcrumb` records the action type and trackId
+
+### Options
+
+```ts
+sentryPlugin({
+  level: 'warning',           // Sentry severity (default: 'error')
+  tags: { env: 'production' }, // Additional Sentry tags
+  filter: (error) => error.type !== 'TOAST',  // Skip certain errors
+  breadcrumbs: false,          // Disable action breadcrumbs (default: true)
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `level` | `'fatal' \| 'error' \| 'warning' \| 'info'` | `'error'` | Sentry severity level |
+| `tags` | `Record<string, string>` | `{}` | Additional tags to set on the Sentry scope |
+| `filter` | `(error: ResolvedError) => boolean` | — | Return `false` to skip reporting |
+| `breadcrumbs` | `boolean` | `true` | Whether to record action breadcrumbs |
+
+## Using @huh/plugin-datadog
+
+The official Datadog plugin sends error logs via `@datadog/browser-logs` and tracks actions as info-level log entries.
+
+### Installation
+
+<CodeGroup>
+
+```bash pnpm
+pnpm add @huh/plugin-datadog @datadog/browser-logs
+```
+
+```bash npm
+npm install @huh/plugin-datadog @datadog/browser-logs
+```
+
+```bash yarn
+yarn add @huh/plugin-datadog @datadog/browser-logs
+```
+
+</CodeGroup>
+
+### Setup
+
+```tsx
+import { datadogLogs } from '@datadog/browser-logs';
+import { datadogPlugin } from '@huh/plugin-datadog';
+
+// Initialize Datadog Logs first
+datadogLogs.init({
+  clientToken: '<CLIENT_TOKEN>',
+  site: 'datadoghq.com',
+  forwardErrorsToLogs: true,
+  sessionSampleRate: 100,
+});
+
+<HuhProvider
+  source={errorConfig}
+  renderers={renderers}
+  plugins={[datadogPlugin()]}
+>
+  <App />
+</HuhProvider>
+```
+
+When an error is triggered:
+- `datadogLogs.logger.error()` is called with `[huh] <trackId>` as the message
+- `huh.trackId`, `huh.errorType`, `huh.locale`, and `huh.variables` are attached as structured context
+
+When an action is triggered:
+- `datadogLogs.logger.info()` logs the action type and trackId
+
+### Options
+
+```ts
+datadogPlugin({
+  level: 'warn',              // Log level (default: 'error')
+  service: 'my-app',          // Service name added to log context
+  filter: (error) => error.type !== 'TOAST',  // Skip certain errors
+  actionTracking: false,       // Disable action logging (default: true)
+})
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `level` | `'error' \| 'warn' \| 'info' \| 'debug'` | `'error'` | Datadog log level for error events |
+| `service` | `string` | — | Service name added to all log entries |
+| `filter` | `(error: ResolvedError) => boolean` | — | Return `false` to skip logging |
+| `actionTracking` | `boolean` | `true` | Whether to log user actions |
+
+---
+
+## Multiple Plugins
+
+You can combine multiple plugins. They execute in order:
+
+```tsx
+<HuhProvider
+  source={errorConfig}
+  renderers={renderers}
+  plugins={[sentryPlugin(), analyticsPlugin(), loggingPlugin()]}
+>
+  <App />
+</HuhProvider>
+```
+
+<Note>
+In React, define your plugins array outside the component or wrap it in `useMemo` to avoid unnecessary re-renders:
+
+```tsx
+// Outside component (recommended)
+const plugins = [sentryPlugin()];
+
+function App() {
+  return (
+    <HuhProvider plugins={plugins} ...>
+      ...
+    </HuhProvider>
+  );
+}
+```
+</Note>

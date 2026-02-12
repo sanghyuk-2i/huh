@@ -9,11 +9,11 @@ icon: "building"
 ```
 Data Source (non-developers write error messages)
     |
-    +-- Google Sheets
+    +-- Google Sheets (tabs = per-language separation)
     +-- Airtable
     +-- Notion
-    +-- CSV (local file)
-    +-- XLSX (local file)
+    +-- CSV (local file, per-language file separation)
+    +-- XLSX (local file, sheets = per-language separation)
     |
     v
 @huh/cli  --- pull command
@@ -21,14 +21,17 @@ Data Source (non-developers write error messages)
     +-- Fetch per data source via Adapter pattern
     +-- Parse with @huh/core's parseSheetData
     +-- Validate with @huh/core's validateConfig
+    +-- (i18n) Cross-locale validate with @huh/core's validateLocales
     |
     v
-huh.json  (build-time artifact)
-    |
+huh.json  or  huh/ directory (build-time artifact)
+    |              +-- ko.json, en.json (per-locale)
+    |              +-- index.ts (auto-generated barrel)
     v
 @huh/react, @huh/vue, @huh/svelte  --- HuhProvider
     |
-    +-- Inject JSON data via source prop
+    +-- Inject JSON data via source prop (single language)
+    +-- Inject multi-language data via locales prop (i18n)
     +-- Trigger errors with handleError(trackId, variables)
     +-- Look up + substitute variables via @huh/core's resolveError
     |
@@ -39,10 +42,12 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 ## Package Dependency Graph
 
 ```
-@huh/react   --depends-->  @huh/core
-@huh/vue     --depends-->  @huh/core
-@huh/svelte  --depends-->  @huh/core
-@huh/cli     --depends-->  @huh/core
+@huh/react          --depends-->  @huh/core
+@huh/vue            --depends-->  @huh/core
+@huh/svelte         --depends-->  @huh/core
+@huh/cli            --depends-->  @huh/core
+@huh/plugin-sentry   --depends-->  @huh/core  (+ @sentry/browser peer dep)
+@huh/plugin-datadog  --depends-->  @huh/core  (+ @datadog/browser-logs peer dep)
 
 @huh/core    --  (zero dependencies)
 ```
@@ -52,6 +57,8 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 - **vue** depends on core; vue >= 3.3 is a peer dependency.
 - **svelte** depends on core; svelte >= 5.0 is a peer dependency.
 - **cli** depends on core and uses commander/googleapis/picocolors/xlsx.
+- **plugin-sentry** depends on core; @sentry/browser is a peer dependency.
+- **plugin-datadog** depends on core; @datadog/browser-logs is a peer dependency.
 
 ## Package Responsibilities
 
@@ -59,11 +66,13 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 
 | Module | Responsibility |
 |--------|---------------|
-| `schema.ts` | All type definitions (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, etc.) |
+| `schema.ts` | All type definitions (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, HuhPlugin, etc.) |
+| `plugin.ts` | Plugin runner utility (`runPluginHook`) |
 | `parser.ts` | Converts sheet raw data (2D string array) to ErrorConfig |
 | `template.ts` | `{{variable}}` placeholder substitution utility |
 | `resolver.ts` | Looks up error by trackId + applies variable substitution |
 | `validator.ts` | ErrorConfig validation (errors + warnings) |
+| `locale-validator.ts` | Multi-language cross-locale validation (trackId consistency, type/actionType mismatch) |
 
 ### @huh/react
 
@@ -108,7 +117,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | `fetch-sheet.ts` | Google Sheets API v4 data fetch (used by adapter) |
 | `fetch-airtable.ts` | Re-export shim -> `adapters/airtable` |
 | `fetch-notion.ts` | Re-export shim -> `adapters/notion` |
-| `generate.ts` | ErrorConfig -> JSON file write |
+| `generate.ts` | ErrorConfig -> JSON file write; in i18n mode, generates per-locale files + index.ts barrel |
 
 ## JSON DSL Schema
 
@@ -156,6 +165,36 @@ User clicks action button -> onAction() called
     +-- DISMISS  -> clearError()
     +-- Custom   -> clearError() + onCustomAction callback
 ```
+
+## Plugin System
+
+Plugins provide extension points for error monitoring, analytics, and custom integrations. Each framework Provider accepts a `plugins` prop.
+
+### Plugin Lifecycle
+
+```
+handleError(trackId, variables)
+    |
+    +-- resolveError -> set active error
+    +-- runPluginHook(plugins, 'onError', resolved, context)  <-- Plugin hook
+    |
+    v
+User clicks action button -> onAction()
+    |
+    +-- runPluginHook(plugins, 'onAction', error, action)     <-- Plugin hook
+    +-- Execute action (REDIRECT / RETRY / DISMISS / etc.)
+```
+
+### Error Isolation
+
+Plugin errors are caught and logged as warnings. A failing plugin never breaks the error rendering flow.
+
+### Official Plugins
+
+| Package | Description |
+|---------|-------------|
+| `@huh/plugin-sentry` | Sentry integration — `captureMessage` on error, `addBreadcrumb` on action |
+| `@huh/plugin-datadog` | Datadog integration — `datadogLogs.logger` on error, info-level action logging |
 
 ## Build Configuration
 
@@ -216,6 +255,7 @@ Turborepo analyzes dependency relationships and determines the order automatical
     |       +-- resolver.ts
     |       +-- template.ts
     |       +-- validator.ts
+    |       +-- locale-validator.ts
     |       +-- __tests__/
     +-- react/
     |   +-- package.json

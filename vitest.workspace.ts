@@ -6,4 +6,6 @@ export default defineWorkspace([
   'packages/vue',
   'packages/svelte',
   'packages/cli',
+  'packages/plugin-sentry',
+  'packages/plugin-datadog',
 ]);

@@ -1,7 +1,7 @@
 import { defineComponent, ref, provide, h, toRaw, computed } from 'vue';
 import type { PropType, InjectionKey } from 'vue';
-import type { ErrorConfig, LocalizedErrorConfig, ResolvedError } from '@huh/core';
-import { resolveError, ACTION_TYPES } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin } from '@huh/core';
+import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
 export const HuhInjectionKey: InjectionKey<HuhContextValue> = Symbol('HuhContext');
@@ -37,6 +37,10 @@ export const HuhProvider = defineComponent({
       type: Function as PropType<(action: { type: string; target?: string }) => void>,
       default: undefined,
     },
+    plugins: {
+      type: Array as PropType<HuhPlugin[]>,
+      default: () => [],
+    },
   },
   setup(props, { slots }) {
     const activeError = ref<ResolvedError | null>(null);
@@ -65,6 +69,11 @@ export const HuhProvider = defineComponent({
       const activeSource = getActiveSource();
       const resolved = resolveError(activeSource, trackId, variables);
       activeError.value = resolved;
+      runPluginHook(props.plugins, 'onError', resolved, {
+        trackId,
+        variables,
+        locale: props.locales ? currentLocale.value : undefined,
+      });
     };
 
     const setLocale = (newLocale: string) => {
@@ -87,6 +96,8 @@ export const HuhProvider = defineComponent({
           clearError();
           return;
         }
+
+        runPluginHook(props.plugins, 'onAction', error, action);
 
         switch (action.type) {
           case ACTION_TYPES.REDIRECT:

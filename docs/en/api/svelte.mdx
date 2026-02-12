@@ -36,13 +36,21 @@ Manages error state and renders the appropriate type's renderer as a dynamic com
 
 ```ts
 interface Props {
-  source: ErrorConfig;       // JSON DSL data (core's ErrorConfig)
-  renderers: RendererMap;    // Custom renderers (required)
-  children: Snippet;         // Child components
-  onRetry?: () => void;      // Callback invoked on RETRY action
+  source?: ErrorConfig;       // JSON DSL data (single language mode)
+  locales?: LocalizedErrorConfig;  // Multi-language error config (i18n mode)
+  defaultLocale?: string;     // Default locale
+  locale?: string;            // Current locale (externally controlled)
+  renderers: RendererMap;     // Custom renderers (required)
+  children: Snippet;          // Child components
+  onRetry?: () => void;       // Callback invoked on RETRY action
   onCustomAction?: (action: { type: string; target?: string }) => void;  // Custom action callback
+  plugins?: HuhPlugin[];    // Plugin array for monitoring/analytics
 }
 ```
+
+<Note>
+Either `source` or `locales` must be provided. `source` is for single language mode, `locales` is for multi-language mode.
+</Note>
 
 ### Basic Usage
 
@@ -182,6 +190,8 @@ function useHuh(): HuhContextValue;
 interface HuhContextValue {
   handleError: (trackId: string, variables?: Record<string, string>) => void;
   clearError: () => void;
+  locale: string | undefined;                // Current locale (i18n mode)
+  setLocale: (locale: string) => void;       // Change locale (i18n mode)
 }
 ```
 

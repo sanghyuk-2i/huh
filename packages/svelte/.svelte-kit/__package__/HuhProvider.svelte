@@ -1,8 +1,8 @@
 <script lang="ts">
   import { setContext } from 'svelte';
   import type { Snippet } from 'svelte';
-  import type { ErrorConfig, LocalizedErrorConfig, ResolvedError } from '@huh/core';
-  import { resolveError, ACTION_TYPES } from '@huh/core';
+  import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin } from '@huh/core';
+  import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
   import { HUH_CONTEXT_KEY } from './context';
   import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
@@ -15,6 +15,7 @@
     children: Snippet;
     onRetry?: () => void;
     onCustomAction?: (action: { type: string; target?: string }) => void;
+    plugins?: HuhPlugin[];
   }
 
   let {
@@ -26,6 +27,7 @@
     children,
     onRetry,
     onCustomAction,
+    plugins = [],
   }: Props = $props();
 
   let activeError: ResolvedError | null = $state(null);
@@ -54,6 +56,11 @@
     const activeSource = getActiveSource();
     const resolved = resolveError(activeSource, trackId, variables);
     activeError = resolved;
+    runPluginHook(plugins, 'onError', resolved, {
+      trackId,
+      variables,
+      locale: locales ? currentLocale : undefined,
+    });
   }
 
   function setLocale(newLocale: string) {
@@ -76,6 +83,8 @@
         clearError();
         return;
       }
+
+      runPluginHook(plugins, 'onAction', error, action);
 
       switch (action.type) {
         case ACTION_TYPES.REDIRECT:

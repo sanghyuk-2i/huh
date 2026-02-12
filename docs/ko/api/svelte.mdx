@@ -36,13 +36,21 @@ yarn add @huh/core @huh/svelte
 
 ```ts
 interface Props {
-  source: ErrorConfig;       // JSON DSL 데이터 (core의 ErrorConfig)
-  renderers: RendererMap;    // 커스텀 렌더러 (필수)
-  children: Snippet;         // 자식 컴포넌트
-  onRetry?: () => void;      // RETRY 액션 시 호출되는 콜백
+  source?: ErrorConfig;       // JSON DSL 데이터 (단일 언어 모드)
+  locales?: LocalizedErrorConfig;  // 다국어 에러 설정 (i18n 모드)
+  defaultLocale?: string;     // 기본 로케일
+  locale?: string;            // 현재 로케일 (외부 제어)
+  renderers: RendererMap;     // 커스텀 렌더러 (필수)
+  children: Snippet;          // 자식 컴포넌트
+  onRetry?: () => void;       // RETRY 액션 시 호출되는 콜백
   onCustomAction?: (action: { type: string; target?: string }) => void;  // 커스텀 액션 콜백
+  plugins?: HuhPlugin[];    // 모니터링/분석용 플러그인 배열
 }
 ```
+
+<Note>
+`source`와 `locales` 중 하나를 제공해야 합니다. `source`는 기존 단일 언어 모드, `locales`는 다국어 모드입니다.
+</Note>
 
 ### 기본 사용법
 
@@ -182,6 +190,8 @@ function useHuh(): HuhContextValue;
 interface HuhContextValue {
   handleError: (trackId: string, variables?: Record<string, string>) => void;
   clearError: () => void;
+  locale: string | undefined;                // 현재 로케일 (i18n 모드)
+  setLocale: (locale: string) => void;       // 로케일 변경 (i18n 모드)
 }
 ```
 

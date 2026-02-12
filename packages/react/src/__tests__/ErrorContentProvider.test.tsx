@@ -3,7 +3,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, act, cleanup } from '@testing-library/react';
 import { HuhProvider } from '../ErrorContentProvider';
 import { useHuh } from '../useErrorContent';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig, HuhPlugin } from '@huh/core';
 import type { RendererMap, ErrorRenderProps } from '../types';
 
 afterEach(() => {
@@ -203,6 +203,76 @@ describe('HuhProvider', () => {
 
     expect(onCustomAction).toHaveBeenCalledWith({ type: 'OPEN_CHAT', target: undefined });
     expect(screen.queryByTestId('banner')).toBeNull();
+  });
+});
+
+describe('plugins', () => {
+  it('calls onError when handleError is called', () => {
+    const onError = vi.fn();
+    const plugin: HuhPlugin = { name: 'test-plugin', onError };
+
+    render(
+      <HuhProvider source={testConfig} renderers={mockRenderers} plugins={[plugin]}>
+        <TestConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('trigger toast').click();
+    });
+
+    expect(onError).toHaveBeenCalledWith(
+      expect.objectContaining({ trackId: 'ERR_001', type: 'TOAST' }),
+      expect.objectContaining({ trackId: 'ERR_001' }),
+    );
+  });
+
+  it('calls onAction when action is triggered', () => {
+    const onAction = vi.fn();
+    const plugin: HuhPlugin = { name: 'test-plugin', onAction };
+
+    render(
+      <HuhProvider source={testConfig} renderers={mockRenderers} plugins={[plugin]}>
+        <TestConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('trigger modal').click();
+    });
+
+    act(() => {
+      screen.getByText('Dismiss').click();
+    });
+
+    expect(onAction).toHaveBeenCalledWith(
+      expect.objectContaining({ trackId: 'ERR_002' }),
+      expect.objectContaining({ type: 'DISMISS' }),
+    );
+  });
+
+  it('renders normally even if plugin throws', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const plugin: HuhPlugin = {
+      name: 'bad-plugin',
+      onError: () => {
+        throw new Error('plugin error');
+      },
+    };
+
+    render(
+      <HuhProvider source={testConfig} renderers={mockRenderers} plugins={[plugin]}>
+        <TestConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('trigger toast').click();
+    });
+
+    expect(screen.getByTestId('toast')).toBeDefined();
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });
 
