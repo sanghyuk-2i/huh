@@ -1,0 +1,239 @@
+---
+title: "@huh/svelte API"
+description: "Svelte 5 context-based error UI rendering - HuhProvider, useHuh, RendererMap"
+icon: "svelte"
+---
+
+A Svelte 5 setContext/getContext-based error UI rendering library. The Provider manages error state and displays error UI using user-provided custom renderers. Uses Svelte 5 runes (`$state`, `$props`, `$derived`).
+
+## Installation
+
+<CodeGroup>
+
+```bash pnpm
+pnpm add @huh/core @huh/svelte
+```
+
+```bash npm
+npm install @huh/core @huh/svelte
+```
+
+```bash yarn
+yarn add @huh/core @huh/svelte
+```
+
+</CodeGroup>
+
+**Peer Dependencies**: `svelte >= 5.0.0`
+
+---
+
+## HuhProvider
+
+Manages error state and renders the appropriate type's renderer as a dynamic component when an active error exists.
+
+### Props
+
+```ts
+interface Props {
+  source: ErrorConfig;       // JSON DSL data (core's ErrorConfig)
+  renderers: RendererMap;    // Custom renderers (required)
+  children: Snippet;         // Child components
+  onRetry?: () => void;      // Callback invoked on RETRY action
+  onCustomAction?: (action: { type: string; target?: string }) => void;  // Custom action callback
+}
+```
+
+### Basic Usage
+
+```svelte
+<script lang="ts">
+  import { HuhProvider } from '@huh/svelte';
+  import type { ErrorConfig } from '@huh/core';
+  import errorContent from './huh.json';
+  import { renderers } from './renderers';
+
+  const config = errorContent as ErrorConfig;
+</script>
+
+<HuhProvider
+  source={config}
+  {renderers}
+  onRetry={() => window.location.reload()}
+  onCustomAction={(action) => {
+    if (action.type === 'OPEN_CHAT') openChatWidget();
+  }}
+>
+  <YourApp />
+</HuhProvider>
+```
+
+---
+
+## RendererMap
+
+Provides renderers for each error type. Uses Svelte 5 Component types. Keys are uppercase type names.
+
+```ts
+import type { Component } from 'svelte';
+
+type RendererMap = Record<string, Component<ErrorRenderProps>>;
+```
+
+### ErrorRenderProps
+
+Props passed to each renderer.
+
+```ts
+interface ErrorRenderProps {
+  error: ResolvedError;    // Error info with variables already substituted
+  onAction: () => void;    // Action button click handler
+  onDismiss: () => void;   // Dismiss handler
+}
+```
+
+### onAction Behavior
+
+Uses the same action handling logic as the React/Vue packages:
+
+| actionType | Behavior |
+|------------|----------|
+| `REDIRECT` | `window.location.href = action.target` |
+| `BACK` | `window.history.back()` |
+| `RETRY` | Clear error + invoke `onRetry` callback |
+| `DISMISS` | Clear error |
+| Custom type | Clear error + invoke `onCustomAction` callback |
+
+### Renderer Implementation Example
+
+Implement renderers as Svelte components:
+
+```svelte
+<!-- Toast.svelte -->
+<script lang="ts">
+  import type { ResolvedError } from '@huh/core';
+
+  interface Props {
+    error: ResolvedError;
+    onAction: () => void;
+    onDismiss: () => void;
+  }
+
+  let { error, onDismiss }: Props = $props();
+</script>
+
+<div class="toast" onclick={onDismiss} role="alert">
+  {error.message}
+</div>
+```
+
+```svelte
+<!-- Modal.svelte -->
+<script lang="ts">
+  import type { ResolvedError } from '@huh/core';
+
+  interface Props {
+    error: ResolvedError;
+    onAction: () => void;
+    onDismiss: () => void;
+  }
+
+  let { error, onAction, onDismiss }: Props = $props();
+</script>
+
+<div class="modal-overlay" onclick={onDismiss} role="dialog" tabindex="-1">
+  <div class="modal" onclick={(e) => e.stopPropagation()} role="document">
+    <h2>{error.title}</h2>
+    <p>{error.message}</p>
+    <div class="modal-actions">
+      <button onclick={onDismiss}>Close</button>
+      {#if error.action}
+        <button onclick={onAction}>{error.action.label}</button>
+      {/if}
+    </div>
+  </div>
+</div>
+```
+
+Assemble renderers into a `RendererMap`:
+
+```ts
+import type { RendererMap } from '@huh/svelte';
+import Toast from './renderers/Toast.svelte';
+import Modal from './renderers/Modal.svelte';
+import Page from './renderers/Page.svelte';
+
+export const renderers: RendererMap = {
+  TOAST: Toast,
+  MODAL: Modal,
+  PAGE: Page,
+};
+```
+
+---
+
+## useHuh
+
+A function for triggering or clearing errors from within the Provider tree. Uses Svelte's `getContext()` internally.
+
+```ts
+function useHuh(): HuhContextValue;
+
+interface HuhContextValue {
+  handleError: (trackId: string, variables?: Record<string, string>) => void;
+  clearError: () => void;
+}
+```
+
+<Note>
+Throws an error if called outside of the Provider. Must be called at component initialization time (top-level `<script>` block).
+</Note>
+
+### handleError(trackId, variables?)
+
+```svelte
+<script lang="ts">
+  import { useHuh } from '@huh/svelte';
+
+  const { handleError } = useHuh();
+</script>
+
+<button onclick={() => handleError('ERR_NETWORK')}>Trigger Error</button>
+<button onclick={() => handleError('ERR_AUTH', { userName: 'Jane' })}>With Variables</button>
+```
+
+### clearError()
+
+Closes the currently active error UI.
+
+```svelte
+<script lang="ts">
+  import { useHuh } from '@huh/svelte';
+
+  const { clearError } = useHuh();
+</script>
+
+<button onclick={() => clearError()}>Close Error</button>
+```
+
+---
+
+## Build Configuration
+
+`@huh/svelte` is built with `svelte-package`, the standard Svelte library build tool (not tsup).
+
+- **Output**: ESM only (`"type": "module"`)
+- **Exports**: includes `"svelte"` condition
+- **Files**: `dist` + `src` (source included for IDE tooling)
+
+---
+
+## Differences from React Package
+
+| | @huh/react | @huh/svelte |
+|---|---|---|
+| **State** | `useState` | `$state()` |
+| **Context** | `createContext`/`useContext` | `setContext()`/`getContext()` + Symbol |
+| **Renderer type** | `(props) => ReactNode` | `Component<ErrorRenderProps>` (Svelte components) |
+| **Children** | `ReactNode` | `Snippet` |
+| **Build** | tsup (CJS + ESM) | svelte-package (ESM) |

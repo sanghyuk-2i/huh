@@ -1,16 +1,24 @@
-# Airtable 연동 가이드
+---
+title: "Airtable 연동 가이드"
+description: "Airtable에서 에러 콘텐츠를 관리하기 위한 베이스 설정 및 토큰 발급"
+icon: "database"
+---
 
 ## 템플릿으로 빠르게 시작하기
 
 미리 설정된 Airtable 템플릿을 복제하면 필드 구조와 샘플 데이터가 포함된 베이스를 바로 사용할 수 있습니다.
 
-**[Airtable 템플릿 복제하기](https://airtable.com/TEMPLATE_BASE_ID)**
+**[Airtable 템플릿 복제하기](https://airtable.com/appo3UhuMSVi9br6f/shrjYOIeEDWkm8W3Y)**
 
-> 복제 후 데이터를 수정하고 `huh pull`을 실행하세요.
+<Note>
+복제 후 데이터를 수정하고 `huh pull`을 실행하세요.
+</Note>
 
 ---
 
-## 1. Airtable 베이스/테이블 설정
+<Steps>
+
+<Step title="1. Airtable 베이스/테이블 설정">
 
 ### 새 베이스 만들기
 
@@ -33,7 +41,9 @@
 | `actionType` | Single select | 선택 | `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
 | `actionTarget` | URL 또는 Single line text | 선택 | REDIRECT 시 이동할 URL |
 
-> `type` 필드에 Single select 옵션으로 `TOAST`, `MODAL`, `PAGE` 등을 추가하면 입력 실수를 방지할 수 있습니다. 커스텀 타입도 옵션에 추가할 수 있습니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
+<Note>
+`type` 필드에 Single select 옵션으로 `TOAST`, `MODAL`, `PAGE` 등을 추가하면 입력 실수를 방지할 수 있습니다. 커스텀 타입도 옵션에 추가할 수 있습니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
+</Note>
 
 ### 작성 예시
 
@@ -44,7 +54,9 @@
 | ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다. | 페이지 없음 | 홈으로 가기 | REDIRECT | / |
 | ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요. | | 다시 시도 | RETRY | |
 
-## 2. Personal Access Token 발급
+</Step>
+
+<Step title="2. Personal Access Token 발급">
 
 1. [Airtable 토큰 페이지](https://airtable.com/create/tokens)에 접속합니다.
 2. **Create new token**을 클릭합니다.
@@ -53,9 +65,13 @@
 5. **Access**에서 해당 베이스를 선택합니다.
 6. **Create token**을 클릭하고 토큰을 복사합니다.
 
-> 토큰은 한 번만 표시됩니다. 안전한 곳에 보관하세요.
+<Warning>
+토큰은 한 번만 표시됩니다. 안전한 곳에 보관하세요.
+</Warning>
 
-## 3. Base ID 및 Table ID 확인
+</Step>
+
+<Step title="3. Base ID 및 Table ID 확인">
 
 1. Airtable에서 해당 베이스를 엽니다.
 2. 브라우저 URL에서 확인합니다:
@@ -65,7 +81,9 @@
                         Base ID              Table ID
    ```
 
-## 4. 설정
+</Step>
+
+<Step title="4. 설정">
 
 ### 환경변수 설정 (권장)
 
@@ -100,12 +118,20 @@ export AIRTABLE_TOKEN="patXXXXXXXXXXXXXX"
 }
 ```
 
-> config 파일에 토큰을 직접 넣는 경우, `.gitignore`에 `.huh.config.json`을 추가하세요.
+<Warning>
+config 파일에 토큰을 직접 넣는 경우, `.gitignore`에 `.huh.config.json`을 추가하세요.
+</Warning>
 
-## 5. 데이터 가져오기
+</Step>
+
+<Step title="5. 데이터 가져오기">
 
 ```bash
 huh pull
 ```
 
 정상적으로 실행되면 `output` 경로에 JSON 파일이 생성됩니다.
+
+</Step>
+
+</Steps>

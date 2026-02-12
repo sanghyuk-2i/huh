@@ -1,12 +1,28 @@
-# @huh/core API
+---
+title: "@huh/core API"
+description: "에러 콘텐츠 JSON DSL의 타입 정의, 파싱, 변수 치환, 유효성 검증 핵심 패키지"
+icon: "cube"
+---
 
 에러 콘텐츠 JSON DSL의 타입 정의, 시트 데이터 파싱, 변수 치환, 유효성 검증을 담당하는 핵심 패키지입니다. 외부 의존성이 없습니다.
 
 ## 설치
 
-```bash
+<CodeGroup>
+
+```bash pnpm
 pnpm add @huh/core
 ```
+
+```bash npm
+npm install @huh/core
+```
+
+```bash yarn
+yarn add @huh/core
+```
+
+</CodeGroup>
 
 ### CDN
 
@@ -160,9 +176,9 @@ interface ValidationError {
 
 **매개변수**
 
-| 이름 | 타입 | 설명 |
-|------|------|------|
-| `rows` | `string[][]` | 첫 번째 행이 헤더인 2차원 문자열 배열 |
+<ParamField path="rows" type="string[][]" required>
+  첫 번째 행이 헤더인 2차원 문자열 배열
+</ParamField>
 
 **예외**
 
@@ -170,8 +186,10 @@ interface ValidationError {
 - `trackId`, `type`, `message` 헤더가 없으면 에러
 - `type`이 비어있으면 에러
 
-> `type`과 `actionType` 값은 자동으로 대문자로 변환됩니다. 데이터 소스에서 `toast`, `Toast`, `TOAST` 어느 것을 입력해도 `TOAST`로 처리됩니다.
-> 기본 제공 타입 외에도 커스텀 타입(`BANNER`, `SNACKBAR` 등)을 자유롭게 사용할 수 있습니다.
+<Note>
+`type`과 `actionType` 값은 자동으로 대문자로 변환됩니다. 데이터 소스에서 `toast`, `Toast`, `TOAST` 어느 것을 입력해도 `TOAST`로 처리됩니다.
+기본 제공 타입 외에도 커스텀 타입(`BANNER`, `SNACKBAR` 등)을 자유롭게 사용할 수 있습니다.
+</Note>
 
 **예시**
 
@@ -201,11 +219,17 @@ const config = parseSheetData(rows);
 
 **매개변수**
 
-| 이름 | 타입 | 설명 |
-|------|------|------|
-| `config` | `ErrorConfig` | 에러 설정 |
-| `trackId` | `string` | 조회할 에러 ID |
-| `variables` | `Record<string, string>` | 템플릿 변수 (선택) |
+<ParamField path="config" type="ErrorConfig" required>
+  에러 설정
+</ParamField>
+
+<ParamField path="trackId" type="string" required>
+  조회할 에러 ID
+</ParamField>
+
+<ParamField path="variables" type="Record<string, string>">
+  템플릿 변수 (선택)
+</ParamField>
 
 **예외**
 
@@ -239,10 +263,13 @@ const resolved = resolveError(config, 'ERR_SESSION', { userName: '홍길동' });
 
 **매개변수**
 
-| 이름 | 타입 | 설명 |
-|------|------|------|
-| `template` | `string` | 템플릿 문자열 |
-| `variables` | `Record<string, string>` | 치환할 변수 맵 |
+<ParamField path="template" type="string" required>
+  템플릿 문자열
+</ParamField>
+
+<ParamField path="variables" type="Record<string, string>" required>
+  치환할 변수 맵
+</ParamField>
 
 **예시**
 
@@ -271,7 +298,9 @@ renderTemplate('{{a}} and {{b}}', { a: 'Hello' });
 | `action.label`이 비어있음 | Action is missing required field: label |
 | `REDIRECT` 타입인데 `target`이 없음 | Action type "REDIRECT" requires a target URL |
 
-> 커스텀 타입(`BANNER`, `SNACKBAR` 등)은 에러 없이 통과합니다. 타입 값 자체의 유효성은 검증하지 않으며, 비어있는 경우에만 에러를 발생시킵니다.
+<Note>
+커스텀 타입(`BANNER`, `SNACKBAR` 등)은 에러 없이 통과합니다. 타입 값 자체의 유효성은 검증하지 않으며, 비어있는 경우에만 에러를 발생시킵니다.
+</Note>
 
 **경고 규칙 (warnings)**
 

@@ -1,4 +1,8 @@
-# Architecture
+---
+title: "Architecture"
+description: "Overall architecture, package dependency graph, JSON DSL schema, build configuration"
+icon: "building"
+---
 
 ## Overall Flow
 
@@ -22,7 +26,7 @@ Data Source (non-developers write error messages)
 huh.json  (build-time artifact)
     |
     v
-@huh/react  --- HuhProvider
+@huh/react, @huh/vue, @huh/svelte  --- HuhProvider
     |
     +-- Inject JSON data via source prop
     +-- Trigger errors with handleError(trackId, variables)
@@ -35,14 +39,18 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 ## Package Dependency Graph
 
 ```
-@huh/react  --depends-->  @huh/core
-@huh/cli    --depends-->  @huh/core
+@huh/react   --depends-->  @huh/core
+@huh/vue     --depends-->  @huh/core
+@huh/svelte  --depends-->  @huh/core
+@huh/cli     --depends-->  @huh/core
 
-@huh/core   --  (zero dependencies)
+@huh/core    --  (zero dependencies)
 ```
 
 - **core** has no external dependencies and can be used anywhere.
 - **react** depends on core; react/react-dom are peer dependencies.
+- **vue** depends on core; vue >= 3.3 is a peer dependency.
+- **svelte** depends on core; svelte >= 5.0 is a peer dependency.
 - **cli** depends on core and uses commander/googleapis/picocolors/xlsx.
 
 ## Package Responsibilities
@@ -65,6 +73,23 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | `useErrorContent.ts` | handleError/clearError hook |
 | `types.ts` | ErrorRenderProps, RendererMap type definitions |
 
+### @huh/vue
+
+| Module | Responsibility |
+|--------|---------------|
+| `ErrorContentProvider.ts` | provide/inject-based Provider, error state management, render function renderer invocation |
+| `useErrorContent.ts` | inject-based useHuh composable |
+| `types.ts` | ErrorRenderProps, RendererMap (Vue Component) type definitions |
+
+### @huh/svelte
+
+| Module | Responsibility |
+|--------|---------------|
+| `HuhProvider.svelte` | setContext-based Provider, $state error state management, dynamic component rendering |
+| `useErrorContent.ts` | getContext-based useHuh |
+| `context.ts` | Separated Symbol injection key |
+| `types.ts` | ErrorRenderProps, RendererMap (Svelte Component) type definitions |
+
 ### @huh/cli
 
 | Module | Responsibility |
@@ -79,7 +104,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | `adapters/notion.ts` | Notion API adapter |
 | `adapters/csv.ts` | Local CSV file adapter (RFC 4180 compatible parser) |
 | `adapters/xlsx.ts` | Local XLSX file adapter (SheetJS) |
-| `adapters/index.ts` | Barrel — auto-registers all adapters on import |
+| `adapters/index.ts` | Barrel -- auto-registers all adapters on import |
 | `fetch-sheet.ts` | Google Sheets API v4 data fetch (used by adapter) |
 | `fetch-airtable.ts` | Re-export shim -> `adapters/airtable` |
 | `fetch-notion.ts` | Re-export shim -> `adapters/notion` |
@@ -109,7 +134,7 @@ ErrorConfig (Record<trackId, ErrorEntry>)
 - Built-in types: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`)
 - Custom types (e.g., `BANNER`, `SNACKBAR`, `OPEN_CHAT`) can be freely added from data sources
 - The parser automatically converts to uppercase (lowercase input is accepted)
-- Custom types work automatically when you register the corresponding renderer in the React `RendererMap`
+- Custom types work automatically when you register the corresponding renderer in the framework's `RendererMap`
 - Custom action types are handled via the `HuhProvider`'s `onCustomAction` callback
 
 ## Rendering Strategy
@@ -158,7 +183,7 @@ Turborepo analyzes dependency relationships and determines the order automatical
 
 ```
 1. @huh/core (no dependencies, built first)
-2. @huh/react + @huh/cli (built in parallel after core)
+2. @huh/react + @huh/vue + @huh/svelte + @huh/cli (built in parallel after core)
 ```
 
 ## Directory Structure
@@ -194,13 +219,30 @@ Turborepo analyzes dependency relationships and determines the order automatical
     |       +-- __tests__/
     +-- react/
     |   +-- package.json
-    |   +-- tsconfig.json
     |   +-- tsup.config.ts
-    |   +-- vitest.config.ts
     |   +-- src/
     |       +-- index.ts
     |       +-- ErrorContentProvider.tsx
     |       +-- useErrorContent.ts
+    |       +-- types.ts
+    |       +-- __tests__/
+    +-- vue/
+    |   +-- package.json
+    |   +-- tsup.config.ts
+    |   +-- src/
+    |       +-- index.ts
+    |       +-- ErrorContentProvider.ts
+    |       +-- useErrorContent.ts
+    |       +-- types.ts
+    |       +-- __tests__/
+    +-- svelte/
+    |   +-- package.json
+    |   +-- svelte.config.js
+    |   +-- src/
+    |       +-- index.ts
+    |       +-- HuhProvider.svelte
+    |       +-- useErrorContent.ts
+    |       +-- context.ts
     |       +-- types.ts
     |       +-- __tests__/
     +-- cli/

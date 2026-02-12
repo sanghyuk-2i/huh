@@ -1,4 +1,8 @@
-# 아키텍처
+---
+title: "아키텍처"
+description: "Huh의 전체 아키텍처, 패키지 의존 관계, JSON DSL 스키마, 빌드 설정"
+icon: "building"
+---
 
 ## 전체 흐름
 
@@ -22,7 +26,7 @@
 huh.json  (빌드 타임 산출물)
     │
     ▼
-@huh/react  ─── HuhProvider
+@huh/react, @huh/vue, @huh/svelte  ─── HuhProvider
     │
     ├─ source prop으로 JSON 데이터 주입
     ├─ handleError(trackId, variables)로 에러 트리거
@@ -35,14 +39,18 @@ huh.json  (빌드 타임 산출물)
 ## 패키지 의존 관계
 
 ```
-@huh/react  ──depends──▶  @huh/core
-@huh/cli    ──depends──▶  @huh/core
+@huh/react   ──depends──▶  @huh/core
+@huh/vue     ──depends──▶  @huh/core
+@huh/svelte  ──depends──▶  @huh/core
+@huh/cli     ──depends──▶  @huh/core
 
-@huh/core   ──  (zero dependencies)
+@huh/core    ──  (zero dependencies)
 ```
 
 - **core**는 외부 의존성이 없어 어디서든 사용 가능합니다.
 - **react**는 core에 의존하며, react/react-dom은 peer dependency입니다.
+- **vue**는 core에 의존하며, vue >= 3.3은 peer dependency입니다.
+- **svelte**는 core에 의존하며, svelte >= 5.0은 peer dependency입니다.
 - **cli**는 core에 의존하며, commander/googleapis/picocolors/xlsx를 사용합니다.
 
 ## 패키지별 역할
@@ -64,6 +72,23 @@ huh.json  (빌드 타임 산출물)
 | `ErrorContentProvider.tsx` | Context Provider, 에러 상태 관리, 렌더러 호출 |
 | `useErrorContent.ts` | handleError/clearError 훅 |
 | `types.ts` | ErrorRenderProps, RendererMap 타입 정의 |
+
+### @huh/vue
+
+| 모듈 | 역할 |
+|------|------|
+| `ErrorContentProvider.ts` | provide/inject 기반 Provider, 에러 상태 관리, render function으로 렌더러 호출 |
+| `useErrorContent.ts` | inject 기반 useHuh composable |
+| `types.ts` | ErrorRenderProps, RendererMap (Vue Component) 타입 정의 |
+
+### @huh/svelte
+
+| 모듈 | 역할 |
+|------|------|
+| `HuhProvider.svelte` | setContext 기반 Provider, $state로 에러 상태 관리, 동적 컴포넌트 렌더링 |
+| `useErrorContent.ts` | getContext 기반 useHuh |
+| `context.ts` | Symbol injection key 분리 |
+| `types.ts` | ErrorRenderProps, RendererMap (Svelte Component) 타입 정의 |
 
 ### @huh/cli
 
@@ -109,7 +134,7 @@ ErrorConfig (Record<trackId, ErrorEntry>)
 - 기본 제공 타입: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`)
 - 데이터 소스에서 커스텀 타입(예: `BANNER`, `SNACKBAR`, `OPEN_CHAT`)을 자유롭게 추가 가능
 - 파서가 자동으로 대문자로 변환 (소문자 입력 허용)
-- React `RendererMap`에 해당 타입의 렌더러를 등록하면 자동으로 동작
+- 프레임워크별 `RendererMap`에 해당 타입의 렌더러를 등록하면 자동으로 동작
 - 커스텀 액션 타입은 `HuhProvider`의 `onCustomAction` 콜백으로 처리
 
 ## 렌더링 전략
@@ -158,7 +183,7 @@ Turborepo가 의존 관계를 분석하여 자동으로 순서를 결정합니�
 
 ```
 1. @huh/core (의존성 없음, 먼저 빌드)
-2. @huh/react + @huh/cli (core 빌드 후 병렬 빌드)
+2. @huh/react + @huh/vue + @huh/svelte + @huh/cli (core 빌드 후 병렬 빌드)
 ```
 
 ## 디렉토리 구조
@@ -194,13 +219,30 @@ Turborepo가 의존 관계를 분석하여 자동으로 순서를 결정합니�
     │       └── __tests__/
     ├── react/
     │   ├── package.json
-    │   ├── tsconfig.json
     │   ├── tsup.config.ts
-    │   ├── vitest.config.ts
     │   └── src/
     │       ├── index.ts
     │       ├── ErrorContentProvider.tsx
     │       ├── useErrorContent.ts
+    │       ├── types.ts
+    │       └── __tests__/
+    ├── vue/
+    │   ├── package.json
+    │   ├── tsup.config.ts
+    │   └── src/
+    │       ├── index.ts
+    │       ├── ErrorContentProvider.ts
+    │       ├── useErrorContent.ts
+    │       ├── types.ts
+    │       └── __tests__/
+    ├── svelte/
+    │   ├── package.json
+    │   ├── svelte.config.js
+    │   └── src/
+    │       ├── index.ts
+    │       ├── HuhProvider.svelte
+    │       ├── useErrorContent.ts
+    │       ├── context.ts
     │       ├── types.ts
     │       └── __tests__/
     └── cli/

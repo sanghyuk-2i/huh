@@ -1,12 +1,28 @@
-# @huh/react API
+---
+title: "@huh/react API"
+description: "React Context-based error UI rendering - HuhProvider, useHuh, RendererMap"
+icon: "react"
+---
 
 A React Context-based error UI rendering library. The Provider manages error state and displays error UI using user-provided custom renderers.
 
 ## Installation
 
-```bash
+<CodeGroup>
+
+```bash pnpm
 pnpm add @huh/core @huh/react
 ```
+
+```bash npm
+npm install @huh/core @huh/react
+```
+
+```bash yarn
+yarn add @huh/core @huh/react
+```
+
+</CodeGroup>
 
 **Peer Dependencies**: `react >= 18`, `react-dom >= 18`
 
@@ -55,7 +71,7 @@ function App() {
 
 ## RendererMap
 
-Provides renderers for each error type. There are no default renderers — if an error occurs and no renderer exists for that type, a runtime error will be thrown. Keys are uppercase type names.
+Provides renderers for each error type. There are no default renderers -- if an error occurs and no renderer exists for that type, a runtime error will be thrown. Keys are uppercase type names.
 
 ```ts
 type RendererMap = Record<string, (props: ErrorRenderProps) => ReactNode>;
@@ -86,11 +102,11 @@ interface ErrorRenderProps {
 }
 ```
 
-- `error.type` — `'TOAST' | 'MODAL' | 'PAGE' | string` (includes custom types)
-- `error.message` — Substituted message
-- `error.title` — Substituted title (optional)
-- `error.image` — Image URL (optional)
-- `error.action` — Action info (optional)
+- `error.type` -- `'TOAST' | 'MODAL' | 'PAGE' | string` (includes custom types)
+- `error.message` -- Substituted message
+- `error.title` -- Substituted title (optional)
+- `error.image` -- Image URL (optional)
+- `error.action` -- Action info (optional)
 
 ### onAction Behavior
 
@@ -171,7 +187,9 @@ interface HuhContextValue {
 }
 ```
 
-**Throws an error if called outside of the Provider.**
+<Note>
+Throws an error if called outside of the Provider.
+</Note>
 
 ### handleError(trackId, variables?)
 

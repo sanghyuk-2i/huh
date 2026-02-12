@@ -1,4 +1,8 @@
-# CSV File Guide
+---
+title: "CSV File Guide"
+description: "How to import error content from local CSV files"
+icon: "file"
+---
 
 Explains how to import error content from a local CSV file. Simple to use without any external API or authentication.
 
@@ -9,11 +13,15 @@ Download the pre-made CSV template to get started right away.
 - [Download Korean CSV Template](https://github.com/your-org/huh/releases/latest/download/huh-template-ko.csv)
 - [Download English CSV Template](https://github.com/your-org/huh/releases/latest/download/huh-template-en.csv)
 
-> After downloading, edit the data and run `huh pull`.
+<Note>
+After downloading, edit the data and run `huh pull`.
+</Note>
 
 ---
 
-## 1. Writing a CSV File
+<Steps>
+
+<Step title="Writing a CSV File">
 
 The first row must be a header row. Follow the column structure below:
 
@@ -24,7 +32,9 @@ ERR_SESSION_EXPIRED,MODAL,Session has expired,Session Expired,,Login Again,REDIR
 ERR_NOT_FOUND,PAGE,Page not found,404,/img/404.png,Go Home,REDIRECT,/
 ```
 
-> Even if entered in lowercase, the CLI will automatically convert to uppercase. Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely.
+<Note>
+Even if entered in lowercase, the CLI will automatically convert to uppercase. Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely.
+</Note>
 
 ### Column Rules
 
@@ -49,7 +59,9 @@ Uses an RFC 4180 compatible parser, supporting:
 - CRLF (`\r\n`) and LF (`\n`) line endings
 - Automatic UTF-8 BOM removal
 
-## 2. Configuration
+</Step>
+
+<Step title="Configuration">
 
 ### `.huh.config.json`
 
@@ -79,13 +91,19 @@ export default defineConfig({
 
 `filePath` can be a relative or absolute path. Relative paths are resolved from `process.cwd()`.
 
-## 3. Fetching Data
+</Step>
+
+<Step title="Fetching Data">
 
 ```bash
 huh pull
 ```
 
 If successful, a JSON file will be generated at the `output` path.
+
+</Step>
+
+</Steps>
 
 ## Notes
 

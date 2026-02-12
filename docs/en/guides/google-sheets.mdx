@@ -1,4 +1,8 @@
-# Google Sheet Setup Guide
+---
+title: "Google Sheets Setup Guide"
+description: "Sheet structure and access configuration for managing error content in Google Sheets"
+icon: "table"
+---
 
 This document explains the formatting rules for a Google Sheet that manages error content.
 
@@ -6,9 +10,11 @@ This document explains the formatting rules for a Google Sheet that manages erro
 
 Copy the pre-configured template to get a sheet with the correct column structure and sample data.
 
-**[Copy Google Sheets Template](https://docs.google.com/spreadsheets/d/TEMPLATE_SHEET_ID/copy)**
+**[Copy Google Sheets Template](https://docs.google.com/spreadsheets/d/1HNCxgmi_kNaVWz-63A3EQ4u6Rx8vPRJgIcdXgd8MMAY/copy)**
 
-> After copying, edit the data and run `huh pull`.
+<Note>
+After copying, edit the data and run `huh pull`.
+</Note>
 
 ---
 
@@ -37,7 +43,9 @@ Built-in types:
 | `MODAL` | Popup-style error notice | message + title + action |
 | `PAGE` | Full-screen error page | message + title + image + action (warning if no action) |
 
-> Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely. Even if entered in lowercase, they are automatically converted to uppercase.
+<Note>
+Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely. Even if entered in lowercase, they are automatically converted to uppercase.
+</Note>
 
 ## Action Types (`actionType`)
 
@@ -50,7 +58,9 @@ Built-in action types:
 | `BACK` | Browser back (`history.back()`) | No |
 | `DISMISS` | Close error UI | No |
 
-> Custom action types (`OPEN_CHAT`, `SHARE`, etc.) can also be used. Handle them via the `HuhProvider`'s `onCustomAction` callback.
+<Note>
+Custom action types (`OPEN_CHAT`, `SHARE`, etc.) can also be used. Handle them via the `HuhProvider`'s `onCustomAction` callback.
+</Note>
 
 ## Template Variables
 
@@ -68,7 +78,7 @@ Target example: /user/{{userId}}/settings
 | ERR_NETWORK | TOAST | Please check your network connection | | | | | |
 | ERR_AUTH | MODAL | Authentication is required | Login Required | | Login | REDIRECT | /login |
 | ERR_TIMEOUT | MODAL | The request has timed out | Timeout | | Try Again | RETRY | |
-| ERR_FORBIDDEN | PAGE | {{userName}} does not have access permission | Access Denied | /img/403.png | Go Back | BACK | |
+| ERR_FORBIDDEN | PAGE | \{\{userName\}\} does not have access permission | Access Denied | /img/403.png | Go Back | BACK | |
 | ERR_NOT_FOUND | PAGE | Page not found | 404 | /img/404.png | Go Home | REDIRECT | / |
 
 ## Rules Summary
@@ -84,7 +94,9 @@ Target example: /user/{{userId}}/settings
 
 To access the sheet from the CLI, one of the following authentication methods is required:
 
-### Method 1: API Key (for public sheets)
+<Steps>
+
+<Step title="Method 1: API Key (for public sheets)">
 
 1. Create a project in the [Google Cloud Console](https://console.cloud.google.com/)
 2. Enable the Google Sheets API
@@ -92,7 +104,9 @@ To access the sheet from the CLI, one of the following authentication methods is
 4. Set the sheet to "Anyone with the link can view"
 5. Set the environment variable: `GOOGLE_API_KEY=your-api-key`
 
-### Method 2: Service Account (for private sheets)
+</Step>
+
+<Step title="Method 2: Service Account (for private sheets)">
 
 1. Create a service account in the Google Cloud Console
 2. Download the JSON key file
@@ -109,3 +123,7 @@ To access the sheet from the CLI, one of the following authentication methods is
   "output": "./src/huh.json"
 }
 ```
+
+</Step>
+
+</Steps>

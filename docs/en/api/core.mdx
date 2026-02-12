@@ -1,12 +1,28 @@
-# @huh/core API
+---
+title: "@huh/core API"
+description: "Core package for type definitions, sheet data parsing, variable substitution, and validation"
+icon: "cube"
+---
 
 The core package responsible for type definitions, sheet data parsing, variable substitution, and validation of the error content JSON DSL. Has zero external dependencies.
 
 ## Installation
 
-```bash
+<CodeGroup>
+
+```bash pnpm
 pnpm add @huh/core
 ```
+
+```bash npm
+npm install @huh/core
+```
+
+```bash yarn
+yarn add @huh/core
+```
+
+</CodeGroup>
 
 ### CDN
 
@@ -158,11 +174,9 @@ interface ValidationError {
 
 Converts raw data from a data source (header + data row array) into an `ErrorConfig`. All sources (Google Sheets, Airtable, Notion, CSV, XLSX) use the same 2D string array format.
 
-**Parameters**
-
-| Name | Type | Description |
-|------|------|-------------|
-| `rows` | `string[][]` | 2D string array where the first row is the header |
+<ParamField path="rows" type="string[][]" required>
+  2D string array where the first row is the header.
+</ParamField>
 
 **Throws**
 
@@ -170,8 +184,10 @@ Converts raw data from a data source (header + data row array) into an `ErrorCon
 - Error if `trackId`, `type`, `message` headers are missing
 - Error if `type` is empty
 
-> `type` and `actionType` values are automatically converted to uppercase. Whether you enter `toast`, `Toast`, or `TOAST` in the data source, it will be processed as `TOAST`.
-> Custom types (`BANNER`, `SNACKBAR`, etc.) can be freely used in addition to built-in types.
+<Note>
+`type` and `actionType` values are automatically converted to uppercase. Whether you enter `toast`, `Toast`, or `TOAST` in the data source, it will be processed as `TOAST`.
+Custom types (`BANNER`, `SNACKBAR`, etc.) can be freely used in addition to built-in types.
+</Note>
 
 **Example**
 
@@ -199,13 +215,17 @@ const config = parseSheetData(rows);
 
 Looks up an error by `trackId` and substitutes template variables in the message/title/action.
 
-**Parameters**
+<ParamField path="config" type="ErrorConfig" required>
+  Error configuration object.
+</ParamField>
 
-| Name | Type | Description |
-|------|------|-------------|
-| `config` | `ErrorConfig` | Error configuration |
-| `trackId` | `string` | Error ID to look up |
-| `variables` | `Record<string, string>` | Template variables (optional) |
+<ParamField path="trackId" type="string" required>
+  Error ID to look up.
+</ParamField>
+
+<ParamField path="variables" type="Record<string, string>">
+  Template variables to substitute (optional).
+</ParamField>
 
 **Throws**
 
@@ -237,12 +257,13 @@ const resolved = resolveError(config, 'ERR_SESSION', { userName: 'Jane' });
 
 Substitutes `{{variableName}}` placeholders in a string. Unmatched variables are left as-is.
 
-**Parameters**
+<ParamField path="template" type="string" required>
+  Template string containing `{{variableName}}` placeholders.
+</ParamField>
 
-| Name | Type | Description |
-|------|------|-------------|
-| `template` | `string` | Template string |
-| `variables` | `Record<string, string>` | Variable map to substitute |
+<ParamField path="variables" type="Record<string, string>" required>
+  Variable map to substitute.
+</ParamField>
 
 **Example**
 
@@ -271,7 +292,9 @@ Validates an `ErrorConfig`.
 | `action.label` is empty | Action is missing required field: label |
 | `REDIRECT` type without `target` | Action type "REDIRECT" requires a target URL |
 
-> Custom types (`BANNER`, `SNACKBAR`, etc.) pass without errors. The validator does not check the type value itself — it only raises an error when the value is empty.
+<Note>
+Custom types (`BANNER`, `SNACKBAR`, etc.) pass without errors. The validator does not check the type value itself -- it only raises an error when the value is empty.
+</Note>
 
 **Warning Rules (warnings)**
 

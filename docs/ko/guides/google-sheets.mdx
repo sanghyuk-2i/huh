@@ -1,4 +1,8 @@
-# Google Sheet 설정 가이드
+---
+title: "Google Sheets 설정 가이드"
+description: "Google Sheets에서 에러 콘텐츠를 관리하기 위한 시트 구조 및 접근 권한 설정"
+icon: "table"
+---
 
 이 문서는 에러 콘텐츠를 관리할 Google Sheet의 작성 규칙을 설명합니다.
 
@@ -6,9 +10,11 @@
 
 미리 설정된 템플릿을 복사하면 컬럼 구조와 샘플 데이터가 포함된 시트를 바로 사용할 수 있습니다.
 
-**[Google Sheets 템플릿 복사하기](https://docs.google.com/spreadsheets/d/TEMPLATE_SHEET_ID/copy)**
+**[Google Sheets 템플릿 복사하기](https://docs.google.com/spreadsheets/d/1HNCxgmi_kNaVWz-63A3EQ4u6Rx8vPRJgIcdXgd8MMAY/copy)**
 
-> 복사 후 데이터를 수정하고 `huh pull`을 실행하세요.
+<Note>
+복사 후 데이터를 수정하고 `huh pull`을 실행하세요.
+</Note>
 
 ---
 
@@ -37,7 +43,9 @@
 | `MODAL` | 팝업 형태의 에러 안내 | message + title + action |
 | `PAGE` | 전체 화면 에러 페이지 | message + title + image + action (action 없으면 경고) |
 
-> 커스텀 타입(`BANNER`, `SNACKBAR` 등)도 자유롭게 사용할 수 있습니다. 소문자로 입력해도 자동으로 대문자로 변환됩니다.
+<Note>
+커스텀 타입(`BANNER`, `SNACKBAR` 등)도 자유롭게 사용할 수 있습니다. 소문자로 입력해도 자동으로 대문자로 변환됩니다.
+</Note>
 
 ## 액션 타입 (`actionType`)
 
@@ -50,7 +58,9 @@
 | `BACK` | 브라우저 뒤로가기 (`history.back()`) | X |
 | `DISMISS` | 에러 UI 닫기 | X |
 
-> 커스텀 액션 타입(`OPEN_CHAT`, `SHARE` 등)도 사용할 수 있습니다. `HuhProvider`의 `onCustomAction` 콜백에서 처리합니다.
+<Note>
+커스텀 액션 타입(`OPEN_CHAT`, `SHARE` 등)도 사용할 수 있습니다. `HuhProvider`의 `onCustomAction` 콜백에서 처리합니다.
+</Note>
 
 ## 템플릿 변수
 
@@ -68,7 +78,7 @@
 | ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요 | | | | | |
 | ERR_AUTH | MODAL | 인증이 필요합니다 | 로그인 필요 | | 로그인하기 | REDIRECT | /login |
 | ERR_TIMEOUT | MODAL | 요청 시간이 초과되었습니다 | 시간 초과 | | 다시 시도 | RETRY | |
-| ERR_FORBIDDEN | PAGE | {{userName}}님은 접근 권한이 없습니다 | 접근 거부 | /img/403.png | 뒤로가기 | BACK | |
+| ERR_FORBIDDEN | PAGE | {`{{userName}}`}님은 접근 권한이 없습니다 | 접근 거부 | /img/403.png | 뒤로가기 | BACK | |
 | ERR_NOT_FOUND | PAGE | 페이지를 찾을 수 없습니다 | 404 | /img/404.png | 홈으로 | REDIRECT | / |
 
 ## 규칙 요약
@@ -84,7 +94,9 @@
 
 CLI에서 시트에 접근하려면 다음 중 하나의 인증 방식이 필요합니다:
 
-### 방법 1: API Key (공개 시트용)
+<Steps>
+
+<Step title="방법 1: API Key (공개 시트용)">
 
 1. [Google Cloud Console](https://console.cloud.google.com/)에서 프로젝트 생성
 2. Google Sheets API 활성화
@@ -92,7 +104,9 @@ CLI에서 시트에 접근하려면 다음 중 하나의 인증 방식이 필요
 4. 시트를 "링크가 있는 모든 사용자에게 공개"로 설정
 5. 환경변수 설정: `GOOGLE_API_KEY=your-api-key`
 
-### 방법 2: Service Account (비공개 시트용)
+</Step>
+
+<Step title="방법 2: Service Account (비공개 시트용)">
 
 1. Google Cloud Console에서 서비스 계정 생성
 2. JSON 키 파일 다운로드
@@ -109,3 +123,7 @@ CLI에서 시트에 접근하려면 다음 중 하나의 인증 방식이 필요
   "output": "./src/huh.json"
 }
 ```
+
+</Step>
+
+</Steps>

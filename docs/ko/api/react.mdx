@@ -1,12 +1,28 @@
-# @huh/react API
+---
+title: "@huh/react API"
+description: "React Context 기반 에러 UI 렌더링 - HuhProvider, useHuh, RendererMap"
+icon: "react"
+---
 
 React Context 기반의 에러 UI 렌더링 라이브러리입니다. Provider가 에러 상태를 관리하고, 사용자가 제공한 커스텀 렌더러로 에러 UI를 표시합니다.
 
 ## 설치
 
-```bash
+<CodeGroup>
+
+```bash pnpm
 pnpm add @huh/core @huh/react
 ```
+
+```bash npm
+npm install @huh/core @huh/react
+```
+
+```bash yarn
+yarn add @huh/core @huh/react
+```
+
+</CodeGroup>
 
 **Peer Dependencies**: `react >= 18`, `react-dom >= 18`
 
@@ -171,7 +187,9 @@ interface HuhContextValue {
 }
 ```
 
-**Provider 밖에서 호출하면 에러가 발생합니다.**
+<Warning>
+Provider 밖에서 호출하면 에러가 발생합니다.
+</Warning>
 
 ### handleError(trackId, variables?)
 

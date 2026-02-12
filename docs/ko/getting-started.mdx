@@ -1,22 +1,63 @@
-# 시작하기
+---
+title: "시작하기"
+description: "Huh 3단계 설정 가이드 - 데이터 소스 준비, CLI로 JSON 생성, React 앱에서 사용"
+icon: "rocket"
+---
 
 Huh는 3단계로 동작합니다:
 
 1. **데이터 소스** 에서 에러 메시지 작성 (비개발자)
    - Google Sheets, Airtable, Notion, CSV, XLSX 지원
 2. **CLI** 로 데이터를 JSON 파일로 변환 (빌드 타임)
-3. **React Provider** 에서 Track ID로 에러 UI 렌더링 (런타임)
+3. **프레임워크 Provider** (React / Vue / Svelte) 에서 Track ID로 에러 UI 렌더링 (런타임)
 
 ## 설치
 
-```bash
-# React 프로젝트에서 사용하는 경우
-pnpm add @huh/core @huh/react
-pnpm add -D @huh/cli
+<CodeGroup>
 
-# Node.js에서 core만 사용하는 경우
-pnpm add @huh/core
+```bash pnpm
+# React
+pnpm add @huh/core @huh/react
+
+# Vue
+pnpm add @huh/core @huh/vue
+
+# Svelte
+pnpm add @huh/core @huh/svelte
+
+# CLI (공통)
+pnpm add -D @huh/cli
 ```
+
+```bash npm
+# React
+npm install @huh/core @huh/react
+
+# Vue
+npm install @huh/core @huh/vue
+
+# Svelte
+npm install @huh/core @huh/svelte
+
+# CLI (공통)
+npm install -D @huh/cli
+```
+
+```bash yarn
+# React
+yarn add @huh/core @huh/react
+
+# Vue
+yarn add @huh/core @huh/vue
+
+# Svelte
+yarn add @huh/core @huh/svelte
+
+# CLI (공통)
+yarn add -D @huh/cli
+```
+
+</CodeGroup>
 
 ### CDN으로 사용하기 (번들러 없이)
 
@@ -41,27 +82,46 @@ pnpm add @huh/core
 </script>
 ```
 
-## 1단계: 데이터 소스 준비
+<Steps>
+
+<Step title="1단계: 데이터 소스 준비">
 
 아래 컬럼 구조로 데이터를 작성합니다. (Google Sheets, Airtable, Notion, CSV, XLSX 모두 동일)
 
 | trackId | type | message | title | image | actionLabel | actionType | actionTarget |
 |---------|------|---------|-------|-------|-------------|------------|--------------|
 | ERR_LOGIN_FAILED | TOAST | 로그인에 실패했습니다 | | | | | |
-| ERR_SESSION_EXPIRED | MODAL | {{userName}}님의 세션이 만료되었습니다 | 세션 만료 | | 다시 로그인 | REDIRECT | /login |
+| ERR_SESSION_EXPIRED | MODAL | {`{{userName}}`}님의 세션이 만료되었습니다 | 세션 만료 | | 다시 로그인 | REDIRECT | /login |
 | ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다 | 404 | /images/404.png | 홈으로 | REDIRECT | / |
 
-> `type`과 `actionType`은 대문자로 관리됩니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
-> 기본 제공 타입(`TOAST`, `MODAL`, `PAGE`) 외에도 `BANNER`, `SNACKBAR` 등 커스텀 타입을 자유롭게 추가할 수 있습니다.
+<Note>
+`type`과 `actionType`은 대문자로 관리됩니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
+기본 제공 타입(`TOAST`, `MODAL`, `PAGE`) 외에도 `BANNER`, `SNACKBAR` 등 커스텀 타입을 자유롭게 추가할 수 있습니다.
+</Note>
 
 데이터 소스별 설정 가이드:
-- [Google Sheet 설정 가이드](./google-sheet-guide.md)
-- [Airtable 연동 가이드](./airtable-guide.md)
-- [Notion 연동 가이드](./notion-guide.md)
-- [CSV 파일 가이드](./csv-guide.md)
-- [XLSX 파일 가이드](./xlsx-guide.md)
 
-## 2단계: CLI로 JSON 생성
+<CardGroup cols={2}>
+  <Card title="Google Sheets 설정 가이드" icon="table" href="/ko/guides/google-sheets">
+    Google Sheets에서 에러 콘텐츠 관리
+  </Card>
+  <Card title="Airtable 연동 가이드" icon="database" href="/ko/guides/airtable">
+    Airtable에서 에러 콘텐츠 관리
+  </Card>
+  <Card title="Notion 연동 가이드" icon="book" href="/ko/guides/notion">
+    Notion 데이터베이스에서 에러 콘텐츠 관리
+  </Card>
+  <Card title="CSV 파일 가이드" icon="file" href="/ko/guides/csv">
+    로컬 CSV 파일에서 에러 콘텐츠 가져오기
+  </Card>
+  <Card title="XLSX 파일 가이드" icon="file-spreadsheet" href="/ko/guides/xlsx">
+    로컬 XLSX 파일에서 에러 콘텐츠 가져오기
+  </Card>
+</CardGroup>
+
+</Step>
+
+<Step title="2단계: CLI로 JSON 생성">
 
 ```bash
 # 프로젝트에 설정 파일 생성
@@ -95,12 +155,13 @@ npx huh validate
 }
 ```
 
-## 3단계: React 앱에서 사용
+</Step>
 
-### Provider 설정
+<Step title="3단계: 앱에서 사용">
+
+### React
 
 ```tsx
-import React from 'react';
 import errorContent from './huh.json';
 import { HuhProvider } from '@huh/react';
 import type { RendererMap } from '@huh/react';
@@ -147,6 +208,42 @@ function App() {
 }
 ```
 
+### Vue
+
+```vue
+<script setup lang="ts">
+import { HuhProvider, useHuh } from '@huh/vue';
+import type { ErrorConfig } from '@huh/core';
+import errorContent from './huh.json';
+import { renderers } from './renderers'; // defineComponent로 구현한 렌더러
+
+const config = errorContent as ErrorConfig;
+</script>
+
+<template>
+  <HuhProvider :source="config" :renderers="renderers">
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { HuhProvider, useHuh } from '@huh/svelte';
+  import type { ErrorConfig } from '@huh/core';
+  import errorContent from './huh.json';
+  import { renderers } from './renderers'; // Svelte 컴포넌트 렌더러
+
+  const config = errorContent as ErrorConfig;
+</script>
+
+<HuhProvider source={config} {renderers}>
+  <YourApp />
+</HuhProvider>
+```
+
 ### 에러 트리거
 
 ```tsx
@@ -178,10 +275,32 @@ handleError('ERR_SESSION_EXPIRED', { userName: '홍길동' });
 // 결과: "홍길동님의 세션이 만료되었습니다"
 ```
 
+</Step>
+
+</Steps>
+
 ## 다음 단계
 
-- [@huh/core API 레퍼런스](./api-core.md) - 타입, 파싱, 검증 상세
-- [@huh/react 가이드](./api-react.md) - Provider, 훅, 렌더러 상세
-- [@huh/cli 가이드](./api-cli.md) - CLI 명령어 상세
-- [CSV 파일 가이드](./csv-guide.md) - 로컬 CSV 파일 연동
-- [XLSX 파일 가이드](./xlsx-guide.md) - 로컬 XLSX 파일 연동
+<CardGroup cols={2}>
+  <Card title="@huh/core API 레퍼런스" icon="cube" href="/ko/api/core">
+    타입, 파싱, 검증 상세
+  </Card>
+  <Card title="@huh/react 가이드" icon="react" href="/ko/api/react">
+    React Provider, 훅, 렌더러 상세
+  </Card>
+  <Card title="@huh/vue 가이드" icon="vuejs" href="/ko/api/vue">
+    Vue 3 Provider, composable 상세
+  </Card>
+  <Card title="@huh/svelte 가이드" icon="svelte" href="/ko/api/svelte">
+    Svelte 5 Provider, context 상세
+  </Card>
+  <Card title="@huh/cli 가이드" icon="terminal" href="/ko/api/cli">
+    CLI 명령어 상세
+  </Card>
+  <Card title="CSV 파일 가이드" icon="file" href="/ko/guides/csv">
+    로컬 CSV 파일 연동
+  </Card>
+  <Card title="XLSX 파일 가이드" icon="file-spreadsheet" href="/ko/guides/xlsx">
+    로컬 XLSX 파일 연동
+  </Card>
+</CardGroup>

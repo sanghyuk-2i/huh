@@ -1,22 +1,63 @@
-# Getting Started
+---
+title: "Getting Started"
+description: "Huh 3-step setup guide - prepare data source, generate JSON with CLI, use in React app"
+icon: "rocket"
+---
 
 Huh works in 3 steps:
 
 1. **Data source** — Write error messages (non-developers)
    - Supports Google Sheets, Airtable, Notion, CSV, XLSX
 2. **CLI** — Convert data to a JSON file (build time)
-3. **React Provider** — Render error UI by Track ID (runtime)
+3. **Framework Provider** (React / Vue / Svelte) — Render error UI by Track ID (runtime)
 
 ## Installation
 
-```bash
-# For React projects
-pnpm add @huh/core @huh/react
-pnpm add -D @huh/cli
+<CodeGroup>
 
-# For Node.js with core only
-pnpm add @huh/core
+```bash pnpm
+# React
+pnpm add @huh/core @huh/react
+
+# Vue
+pnpm add @huh/core @huh/vue
+
+# Svelte
+pnpm add @huh/core @huh/svelte
+
+# CLI (shared)
+pnpm add -D @huh/cli
 ```
+
+```bash npm
+# React
+npm install @huh/core @huh/react
+
+# Vue
+npm install @huh/core @huh/vue
+
+# Svelte
+npm install @huh/core @huh/svelte
+
+# CLI (shared)
+npm install -D @huh/cli
+```
+
+```bash yarn
+# React
+yarn add @huh/core @huh/react
+
+# Vue
+yarn add @huh/core @huh/vue
+
+# Svelte
+yarn add @huh/core @huh/svelte
+
+# CLI (shared)
+yarn add -D @huh/cli
+```
+
+</CodeGroup>
 
 ### CDN Usage (no bundler)
 
@@ -41,27 +82,46 @@ After loading, all APIs are available via the `window.HuhCore` global variable:
 </script>
 ```
 
-## Step 1: Prepare a Data Source
+<Steps>
+
+<Step title="Prepare a Data Source">
 
 Create your data using the following column structure. (Same for Google Sheets, Airtable, Notion, CSV, and XLSX)
 
 | trackId | type | message | title | image | actionLabel | actionType | actionTarget |
 |---------|------|---------|-------|-------|-------------|------------|--------------|
 | ERR_LOGIN_FAILED | TOAST | Login failed | | | | | |
-| ERR_SESSION_EXPIRED | MODAL | {{userName}}'s session has expired | Session Expired | | Login Again | REDIRECT | /login |
+| ERR_SESSION_EXPIRED | MODAL | \{\{userName\}\}'s session has expired | Session Expired | | Login Again | REDIRECT | /login |
 | ERR_NOT_FOUND | PAGE | The page you requested could not be found | 404 | /images/404.png | Go Home | REDIRECT | / |
 
-> `type` and `actionType` are managed in uppercase. Even if you enter lowercase, the CLI will automatically convert them to uppercase.
-> In addition to the built-in types (`TOAST`, `MODAL`, `PAGE`), you can freely add custom types such as `BANNER`, `SNACKBAR`, etc.
+<Note>
+`type` and `actionType` are managed in uppercase. Even if you enter lowercase, the CLI will automatically convert them to uppercase.
+In addition to the built-in types (`TOAST`, `MODAL`, `PAGE`), you can freely add custom types such as `BANNER`, `SNACKBAR`, etc.
+</Note>
 
 Setup guides for each data source:
-- [Google Sheet Setup Guide](./google-sheet-guide.en.md)
-- [Airtable Integration Guide](./airtable-guide.en.md)
-- [Notion Integration Guide](./notion-guide.en.md)
-- [CSV File Guide](./csv-guide.en.md)
-- [XLSX File Guide](./xlsx-guide.en.md)
 
-## Step 2: Generate JSON with the CLI
+<CardGroup cols={2}>
+  <Card title="Google Sheets" icon="table" href="/en/guides/google-sheets">
+    Google Sheet Setup Guide
+  </Card>
+  <Card title="Airtable" icon="database" href="/en/guides/airtable">
+    Airtable Integration Guide
+  </Card>
+  <Card title="Notion" icon="book" href="/en/guides/notion">
+    Notion Integration Guide
+  </Card>
+  <Card title="CSV" icon="file" href="/en/guides/csv">
+    CSV File Guide
+  </Card>
+  <Card title="XLSX" icon="file-spreadsheet" href="/en/guides/xlsx">
+    XLSX File Guide
+  </Card>
+</CardGroup>
+
+</Step>
+
+<Step title="Generate JSON with the CLI">
 
 ```bash
 # Create a config file in your project
@@ -95,12 +155,13 @@ Running the `pull` command generates the `src/huh.json` file:
 }
 ```
 
-## Step 3: Use in Your React App
+</Step>
 
-### Provider Setup
+<Step title="Use in Your App">
+
+### React
 
 ```tsx
-import React from 'react';
 import errorContent from './huh.json';
 import { HuhProvider } from '@huh/react';
 import type { RendererMap } from '@huh/react';
@@ -147,6 +208,42 @@ function App() {
 }
 ```
 
+### Vue
+
+```vue
+<script setup lang="ts">
+import { HuhProvider, useHuh } from '@huh/vue';
+import type { ErrorConfig } from '@huh/core';
+import errorContent from './huh.json';
+import { renderers } from './renderers'; // Renderers built with defineComponent
+
+const config = errorContent as ErrorConfig;
+</script>
+
+<template>
+  <HuhProvider :source="config" :renderers="renderers">
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { HuhProvider, useHuh } from '@huh/svelte';
+  import type { ErrorConfig } from '@huh/core';
+  import errorContent from './huh.json';
+  import { renderers } from './renderers'; // Svelte component renderers
+
+  const config = errorContent as ErrorConfig;
+</script>
+
+<HuhProvider source={config} {renderers}>
+  <YourApp />
+</HuhProvider>
+```
+
 ### Triggering Errors
 
 ```tsx
@@ -178,10 +275,32 @@ handleError('ERR_SESSION_EXPIRED', { userName: 'Jane' });
 // Result: "Jane's session has expired"
 ```
 
+</Step>
+
+</Steps>
+
 ## Next Steps
 
-- [@huh/core API Reference](./api-core.en.md) - Types, parsing, validation details
-- [@huh/react Guide](./api-react.en.md) - Provider, hooks, renderer details
-- [@huh/cli Guide](./api-cli.en.md) - CLI command details
-- [CSV File Guide](./csv-guide.en.md) - Local CSV file integration
-- [XLSX File Guide](./xlsx-guide.en.md) - Local XLSX file integration
+<CardGroup cols={2}>
+  <Card title="@huh/core API Reference" icon="cube" href="/en/api/core">
+    Types, parsing, validation details
+  </Card>
+  <Card title="@huh/react Guide" icon="react" href="/en/api/react">
+    React Provider, hooks, renderer details
+  </Card>
+  <Card title="@huh/vue Guide" icon="vuejs" href="/en/api/vue">
+    Vue 3 Provider, composable details
+  </Card>
+  <Card title="@huh/svelte Guide" icon="svelte" href="/en/api/svelte">
+    Svelte 5 Provider, context details
+  </Card>
+  <Card title="@huh/cli Guide" icon="terminal" href="/en/api/cli">
+    CLI command details
+  </Card>
+  <Card title="CSV File Guide" icon="file" href="/en/guides/csv">
+    Local CSV file integration
+  </Card>
+  <Card title="XLSX File Guide" icon="file-spreadsheet" href="/en/guides/xlsx">
+    Local XLSX file integration
+  </Card>
+</CardGroup>

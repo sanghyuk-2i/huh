@@ -1,4 +1,8 @@
-# CSV 파일 가이드
+---
+title: "CSV 파일 가이드"
+description: "로컬 CSV 파일에서 에러 콘텐츠를 가져오는 방법"
+icon: "file"
+---
 
 로컬 CSV 파일에서 에러 콘텐츠를 가져오는 방법을 설명합니다. 외부 API나 인증 없이 간단하게 사용할 수 있습니다.
 
@@ -9,11 +13,15 @@
 - [한국어 CSV 템플릿 다운로드](https://github.com/your-org/huh/releases/latest/download/huh-template-ko.csv)
 - [English CSV 템플릿 다운로드](https://github.com/your-org/huh/releases/latest/download/huh-template-en.csv)
 
-> 다운로드 후 데이터를 수정하고 `huh pull`을 실행하세요.
+<Note>
+다운로드 후 데이터를 수정하고 `huh pull`을 실행하세요.
+</Note>
 
 ---
 
-## 1. CSV 파일 작성
+<Steps>
+
+<Step title="1. CSV 파일 작성">
 
 첫 번째 행은 반드시 헤더 행이어야 합니다. 아래 컬럼 구조를 따릅니다:
 
@@ -24,7 +32,9 @@ ERR_SESSION_EXPIRED,MODAL,세션이 만료되었습니다,세션 만료,,다시 
 ERR_NOT_FOUND,PAGE,페이지를 찾을 수 없습니다,404,/img/404.png,홈으로,REDIRECT,/
 ```
 
-> 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다. 커스텀 타입(`BANNER`, `SNACKBAR` 등)도 자유롭게 사용할 수 있습니다.
+<Note>
+소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다. 커스텀 타입(`BANNER`, `SNACKBAR` 등)도 자유롭게 사용할 수 있습니다.
+</Note>
 
 ### 컬럼 규칙
 
@@ -49,7 +59,9 @@ RFC 4180 호환 파서를 사용하므로 다음을 모두 지원합니다:
 - CRLF (`\r\n`) 및 LF (`\n`) 줄바꿈
 - UTF-8 BOM 자동 제거
 
-## 2. 설정
+</Step>
+
+<Step title="2. 설정">
 
 ### `.huh.config.json`
 
@@ -79,13 +91,19 @@ export default defineConfig({
 
 `filePath`는 상대 경로 또는 절대 경로를 사용할 수 있습니다. 상대 경로는 `process.cwd()` 기준으로 해석됩니다.
 
-## 3. 데이터 가져오기
+</Step>
+
+<Step title="3. 데이터 가져오기">
 
 ```bash
 huh pull
 ```
 
 정상적으로 실행되면 `output` 경로에 JSON 파일이 생성됩니다.
+
+</Step>
+
+</Steps>
 
 ## 참고
 

@@ -1,12 +1,28 @@
-# @huh/cli API
+---
+title: "@huh/cli API"
+description: "CLI tool - init, pull, validate commands and data source configuration"
+icon: "terminal"
+---
 
 A CLI tool that fetches error content from various data sources (Google Sheets, Airtable, Notion, CSV, XLSX) and converts it to a JSON file.
 
 ## Installation
 
-```bash
+<CodeGroup>
+
+```bash pnpm
 pnpm add -D @huh/cli
 ```
+
+```bash npm
+npm install -D @huh/cli
+```
+
+```bash yarn
+yarn add -D @huh/cli
+```
+
+</CodeGroup>
 
 After installation, you can use the `huh` command.
 
@@ -24,7 +40,9 @@ npx huh init
 
 The generated file includes configuration examples for all 5 data sources: Google Sheets, Airtable, Notion, CSV, and XLSX. Uncomment the source you want to use.
 
+<Note>
 If a config file already exists, it will not be overwritten and a warning will be displayed.
+</Note>
 
 ---
 
@@ -38,13 +56,31 @@ npx huh pull
 
 **Execution flow:**
 
-1. Read config file (`.huh.config.json`)
-2. Fetch data from configured data source via Adapter pattern
-3. Convert to JSON DSL with `parseSheetData`
-4. Validate with `validateConfig`
-   - If only warnings, print them and continue
-   - If errors exist, print errors and exit (exit code 1)
-5. Generate JSON file at the specified output path
+<Steps>
+
+<Step title="Read config file">
+  Read `.huh.config.json` from the project root.
+</Step>
+
+<Step title="Fetch data">
+  Fetch data from the configured data source via the Adapter pattern.
+</Step>
+
+<Step title="Convert to JSON DSL">
+  Convert fetched data with `parseSheetData`.
+</Step>
+
+<Step title="Validate">
+  Validate with `validateConfig`.
+  - If only warnings, print them and continue
+  - If errors exist, print errors and exit (exit code 1)
+</Step>
+
+<Step title="Generate JSON file">
+  Generate the JSON file at the specified output path.
+</Step>
+
+</Steps>
 
 ---
 
@@ -52,7 +88,9 @@ npx huh pull
 
 The current v0.1 supports the `.huh.config.json` format.
 
-### Google Sheets
+<Tabs>
+
+<Tab title="Google Sheets">
 
 ```json
 {
@@ -77,9 +115,11 @@ The current v0.1 supports the `.huh.config.json` format.
 GOOGLE_API_KEY=AIza... npx huh pull
 ```
 
-For details: [Google Sheet Setup Guide](./google-sheet-guide.en.md)
+For details: [Google Sheet Setup Guide](/en/guides/google-sheets)
 
-### Airtable
+</Tab>
+
+<Tab title="Airtable">
 
 ```json
 {
@@ -94,9 +134,11 @@ For details: [Google Sheet Setup Guide](./google-sheet-guide.en.md)
 
 **Authentication:** `AIRTABLE_TOKEN` environment variable or specify directly in `source.token`
 
-For details: [Airtable Integration Guide](./airtable-guide.en.md)
+For details: [Airtable Integration Guide](/en/guides/airtable)
 
-### Notion
+</Tab>
+
+<Tab title="Notion">
 
 ```json
 {
@@ -110,9 +152,11 @@ For details: [Airtable Integration Guide](./airtable-guide.en.md)
 
 **Authentication:** `NOTION_TOKEN` environment variable or specify directly in `source.token`
 
-For details: [Notion Integration Guide](./notion-guide.en.md)
+For details: [Notion Integration Guide](/en/guides/notion)
 
-### CSV (Local File)
+</Tab>
+
+<Tab title="CSV">
 
 ```json
 {
@@ -126,9 +170,11 @@ For details: [Notion Integration Guide](./notion-guide.en.md)
 
 No authentication required. Uses an RFC 4180 compatible CSV parser.
 
-For details: [CSV File Guide](./csv-guide.en.md)
+For details: [CSV File Guide](/en/guides/csv)
 
-### XLSX (Local File)
+</Tab>
+
+<Tab title="XLSX">
 
 ```json
 {
@@ -143,7 +189,11 @@ For details: [CSV File Guide](./csv-guide.en.md)
 
 No authentication required. If `sheet` is not specified, the first sheet is used.
 
-For details: [XLSX File Guide](./xlsx-guide.en.md)
+For details: [XLSX File Guide](/en/guides/xlsx)
+
+</Tab>
+
+</Tabs>
 
 ---
 
@@ -190,7 +240,11 @@ Exits with exit code 1 if there is at least one error. Passes if there are only 
 
 ## CI/CD Integration
 
-### GitHub Actions Example
+<Warning>
+Never commit API tokens or secrets directly to your repository. Always use environment variables or your CI/CD platform's secret management to pass sensitive credentials like `GOOGLE_API_KEY`, `AIRTABLE_TOKEN`, and `NOTION_TOKEN`.
+</Warning>
+
+<Accordion title="GitHub Actions Example">
 
 ```yaml
 name: Huh Error Content Sync
@@ -235,12 +289,16 @@ jobs:
           git push
 ```
 
-### pre-commit Hook
+</Accordion>
+
+<Accordion title="pre-commit Hook">
 
 ```bash
 # .husky/pre-commit
 npx huh validate
 ```
+
+</Accordion>
 
 ---
 

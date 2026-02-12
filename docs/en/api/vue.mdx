@@ -1,0 +1,217 @@
+---
+title: "@huh/vue API"
+description: "Vue 3 provide/inject-based error UI rendering - HuhProvider, useHuh, RendererMap"
+icon: "vuejs"
+---
+
+A Vue 3 provide/inject-based error UI rendering library. The Provider manages error state and displays error UI using user-provided custom renderers.
+
+## Installation
+
+<CodeGroup>
+
+```bash pnpm
+pnpm add @huh/core @huh/vue
+```
+
+```bash npm
+npm install @huh/core @huh/vue
+```
+
+```bash yarn
+yarn add @huh/core @huh/vue
+```
+
+</CodeGroup>
+
+**Peer Dependencies**: `vue >= 3.3`
+
+---
+
+## HuhProvider
+
+Manages error state and invokes the appropriate type's renderer when an active error exists. This is a pure TypeScript render function component (not an SFC).
+
+### Props
+
+```ts
+interface HuhProviderProps {
+  source: ErrorConfig;       // JSON DSL data (core's ErrorConfig)
+  renderers: RendererMap;    // Custom renderers (required)
+  onRetry?: () => void;      // Callback invoked on RETRY action
+  onCustomAction?: (action: { type: string; target?: string }) => void;  // Custom action callback
+}
+```
+
+### Basic Usage
+
+```vue
+<script setup lang="ts">
+import { HuhProvider } from '@huh/vue';
+import type { ErrorConfig } from '@huh/core';
+import errorContent from './huh.json';
+import { renderers } from './renderers';
+
+const config = errorContent as ErrorConfig;
+</script>
+
+<template>
+  <HuhProvider
+    :source="config"
+    :renderers="renderers"
+    :on-retry="() => window.location.reload()"
+    :on-custom-action="(action) => {
+      if (action.type === 'OPEN_CHAT') openChatWidget();
+    }"
+  >
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+---
+
+## RendererMap
+
+Provides renderers for each error type. Uses Vue Component types. Keys are uppercase type names.
+
+```ts
+import type { Component } from 'vue';
+
+type RendererMap = Record<string, Component<ErrorRenderProps>>;
+```
+
+### ErrorRenderProps
+
+Props passed to each renderer.
+
+```ts
+interface ErrorRenderProps {
+  error: ResolvedError;    // Error info with variables already substituted
+  onAction: () => void;    // Action button click handler
+  onDismiss: () => void;   // Dismiss handler
+}
+```
+
+### onAction Behavior
+
+Uses the same action handling logic as the React package:
+
+| actionType | Behavior |
+|------------|----------|
+| `REDIRECT` | `window.location.href = action.target` |
+| `BACK` | `window.history.back()` |
+| `RETRY` | Clear error + invoke `onRetry` callback |
+| `DISMISS` | Clear error |
+| Custom type | Clear error + invoke `onCustomAction` callback |
+
+### Renderer Implementation Example
+
+Implement renderers using `defineComponent` + `h` function (no SFC compiler needed):
+
+```ts
+import { defineComponent, h } from 'vue';
+import type { RendererMap } from '@huh/vue';
+
+const Toast = defineComponent({
+  props: {
+    error: { type: Object, required: true },
+    onAction: { type: Function, required: true },
+    onDismiss: { type: Function, required: true },
+  },
+  setup(props) {
+    return () =>
+      h('div', { class: 'toast', onClick: props.onDismiss }, props.error.message);
+  },
+});
+
+const Modal = defineComponent({
+  props: {
+    error: { type: Object, required: true },
+    onAction: { type: Function, required: true },
+    onDismiss: { type: Function, required: true },
+  },
+  setup(props) {
+    return () =>
+      h('div', { class: 'modal-overlay', onClick: props.onDismiss }, [
+        h('div', { class: 'modal', onClick: (e: Event) => e.stopPropagation() }, [
+          h('h2', props.error.title),
+          h('p', props.error.message),
+          h('div', { class: 'modal-actions' }, [
+            h('button', { onClick: props.onDismiss }, 'Close'),
+            props.error.action &&
+              h('button', { onClick: props.onAction }, props.error.action.label),
+          ]),
+        ]),
+      ]);
+  },
+});
+
+export const renderers: RendererMap = {
+  TOAST: Toast,
+  MODAL: Modal,
+};
+```
+
+---
+
+## useHuh
+
+A composable for triggering or clearing errors from within the Provider tree. Uses Vue's `inject()` internally.
+
+```ts
+function useHuh(): HuhContextValue;
+
+interface HuhContextValue {
+  handleError: (trackId: string, variables?: Record<string, string>) => void;
+  clearError: () => void;
+}
+```
+
+<Warning>
+Throws an error if called outside of the Provider.
+</Warning>
+
+### handleError(trackId, variables?)
+
+```vue
+<script setup lang="ts">
+import { useHuh } from '@huh/vue';
+
+const { handleError } = useHuh();
+
+// Simple error trigger
+handleError('ERR_NETWORK');
+
+// Trigger with variable substitution
+handleError('ERR_SESSION_EXPIRED', { userName: 'Jane' });
+</script>
+```
+
+### clearError()
+
+Closes the currently active error UI.
+
+```vue
+<script setup lang="ts">
+import { useHuh } from '@huh/vue';
+
+const { clearError } = useHuh();
+</script>
+
+<template>
+  <button @click="clearError()">Close Error</button>
+</template>
+```
+
+---
+
+## Differences from React Package
+
+| | @huh/react | @huh/vue |
+|---|---|---|
+| **State** | `useState` | `ref()` |
+| **Context** | `createContext`/`useContext` | `provide()`/`inject()` + `InjectionKey` |
+| **Renderer type** | `(props) => ReactNode` | `Component<ErrorRenderProps>` |
+| **Build** | tsup (CJS + ESM) | tsup (CJS + ESM) |
+| **"use client"** | Required (Next.js) | Not needed |

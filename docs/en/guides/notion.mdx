@@ -1,16 +1,24 @@
-# Notion Integration Guide
+---
+title: "Notion Integration Guide"
+description: "Database setup guide for managing error content in Notion"
+icon: "book"
+---
 
 ## Quick Start with Template
 
 Duplicate the pre-configured Notion template to get a database with the correct property structure and sample data.
 
-**[Duplicate Notion Template](https://notion.so/TEMPLATE_DB_ID)**
+**[Duplicate Notion Template](https://www.notion.so/sanghyuk2i/Hur-Error-304d49b044d8808194a0fa50b490a6e2)**
 
-> After duplicating, edit the data and run `huh pull`.
+<Note>
+After duplicating, edit the data and run `huh pull`.
+</Note>
 
 ---
 
-## 1. Notion Database Setup
+<Steps>
+
+<Step title="Notion Database Setup">
 
 ### Creating a New Database
 
@@ -33,9 +41,13 @@ Set up the following properties in the database:
 | `actionType` | Select | Optional | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
 | `actionTarget` | URL | Optional | URL to navigate to for REDIRECT |
 
-> In Notion, `trackId` is the default Title property. Rename the default "Name" property to `trackId`.
+<Note>
+In Notion, `trackId` is the default Title property. Rename the default "Name" property to `trackId`.
+</Note>
 
-> Setting `type` and `actionType` as Select types lets you predefine options to prevent input mistakes. Custom types can also be added as options. Even if entered in lowercase, the CLI will automatically convert them to uppercase.
+<Note>
+Setting `type` and `actionType` as Select types lets you predefine options to prevent input mistakes. Custom types can also be added as options. Even if entered in lowercase, the CLI will automatically convert them to uppercase.
+</Note>
 
 ### Example Data
 
@@ -46,7 +58,9 @@ Set up the following properties in the database:
 | ERR_NOT_FOUND | PAGE | The page you requested could not be found. | Page Not Found | Go Home | REDIRECT | / |
 | ERR_NETWORK | TOAST | Please check your network connection. | | Try Again | RETRY | |
 
-## 2. Creating an Integration and Getting a Token
+</Step>
+
+<Step title="Creating an Integration and Getting a Token">
 
 1. Go to [Notion Integrations](https://www.notion.so/my-integrations).
 2. Click **New integration**.
@@ -56,7 +70,9 @@ Set up the following properties in the database:
 6. Click **Submit**.
 7. Copy the **Internal Integration Secret** (starts with `ntn_` or `secret_`).
 
-## 3. Connecting the Integration to the Database
+</Step>
+
+<Step title="Connecting the Integration to the Database">
 
 After creating the integration, you need to connect it to the database:
 
@@ -65,9 +81,13 @@ After creating the integration, you need to connect it to the database:
 3. Under **Connections** > **Connect to**, select the integration you created.
 4. Click **Confirm**.
 
-> If the integration is not connected, API calls will return a `404` error.
+<Warning>
+If the integration is not connected, API calls will return a `404` error.
+</Warning>
 
-## 4. Finding the Database ID
+</Step>
+
+<Step title="Finding the Database ID">
 
 1. Open the database page in Notion.
 2. Find it in the browser URL:
@@ -78,9 +98,13 @@ After creating the integration, you need to connect it to the database:
    ```
 3. Or extract it from the URL copied via **Share** > **Copy link**.
 
-> The Database ID can include hyphens or not. The API handles both formats automatically.
+<Note>
+The Database ID can include hyphens or not. The API handles both formats automatically.
+</Note>
 
-## 5. Configuration
+</Step>
+
+<Step title="Configuration">
 
 ### Environment Variable (Recommended)
 
@@ -113,12 +137,20 @@ To specify the token directly in the config:
 }
 ```
 
-> If you include the token directly in the config file, add `.huh.config.json` to your `.gitignore`.
+<Warning>
+If you include the token directly in the config file, add `.huh.config.json` to your `.gitignore`.
+</Warning>
 
-## 6. Fetching Data
+</Step>
+
+<Step title="Fetching Data">
 
 ```bash
 huh pull
 ```
 
 If successful, a JSON file will be generated at the `output` path.
+
+</Step>
+
+</Steps>
