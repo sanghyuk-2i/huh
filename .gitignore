@@ -5,4 +5,5 @@ dist
 .turbo
 .next
 .env
+esbuild-why.html
 .settings.local.json
