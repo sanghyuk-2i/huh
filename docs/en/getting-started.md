@@ -1,0 +1,296 @@
+---
+title: 'Getting Started'
+description: 'Huh 3-step setup guide - prepare data source, generate JSON with CLI, use in React app'
+
+---
+Huh works in 3 steps:
+
+1. **Data source** — Write error messages (non-developers)
+   - Supports Google Sheets, Airtable, Notion, CSV, XLSX
+2. **CLI** — Convert data to a JSON file (build time)
+3. **Framework Provider** (React / Vue / Svelte) — Render error UI by Track ID (runtime)
+
+## Installation
+
+::: code-group
+
+```bash [pnpm]
+# React
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
+
+# Vue
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+
+# Svelte
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+
+# CLI (shared)
+pnpm add -D @sanghyuk-2i/huh-cli
+```
+
+```bash [npm]
+# React
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
+
+# Vue
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+
+# Svelte
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+
+# CLI (shared)
+npm install -D @sanghyuk-2i/huh-cli
+```
+
+```bash [yarn]
+# React
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
+
+# Vue
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+
+# Svelte
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+
+# CLI (shared)
+yarn add -D @sanghyuk-2i/huh-cli
+```
+
+:::
+
+### CDN Usage (no bundler)
+
+`@sanghyuk-2i/huh-core` is a zero-dependency pure JS library, so you can use it directly via a `<script>` tag:
+
+```html
+<!-- unpkg -->
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
+
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/@sanghyuk-2i/huh-core"></script>
+```
+
+After loading, all APIs are available via the `window.HuhCore` global variable:
+
+```html
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
+<script>
+  var config = {
+    /* ErrorConfig JSON */
+  };
+  var resolved = HuhCore.resolveError(config, 'ERR_AUTH', { userName: 'Jane' });
+  console.log(resolved.message);
+</script>
+```
+
+### Step 1: Prepare a Data Source
+
+Create your data using the following column structure. (Same for Google Sheets, Airtable, Notion, CSV, and XLSX)
+
+| trackId             | type  | message                                   | title           | image           | severity | actionLabel | actionType | actionTarget |
+| ------------------- | ----- | ----------------------------------------- | --------------- | --------------- | -------- | ----------- | ---------- | ------------ |
+| ERR_LOGIN_FAILED    | TOAST | Login failed                              |                 |                 |          |             |            |              |
+| ERR_SESSION_EXPIRED | MODAL | \{\{userName\}\}'s session has expired    | Session Expired |                 | ERROR    | Login Again | REDIRECT   | /login       |
+| ERR_NOT_FOUND       | PAGE  | The page you requested could not be found | 404             | /images/404.png | INFO     | Go Home     | REDIRECT   | /            |
+
+::: tip
+  `type` and `actionType` are managed in uppercase. Even if you enter lowercase, the CLI will
+  automatically convert them to uppercase. In addition to the built-in types (`TOAST`, `MODAL`,
+  `PAGE`), you can freely add custom types such as `BANNER`, `SNACKBAR`, etc.
+:::
+
+Setup guides for each data source:
+
+  - **[Google Sheets](/en/guides/google-sheets)** - Google Sheet Setup Guide
+  - **[Airtable](/en/guides/airtable)** - Airtable Integration Guide
+  - **[Notion](/en/guides/notion)** - Notion Integration Guide
+  - **[CSV](/en/guides/csv)** - CSV File Guide
+  - **[XLSX](/en/guides/xlsx)** - XLSX File Guide
+
+### Step 2: Generate JSON with the CLI
+
+```bash
+# Create a config file in your project
+npx huh init
+
+# Configure your data source in .huh.config.ts (or .json), then run
+npx huh pull
+
+# Validate the generated JSON
+npx huh validate
+```
+
+Running the `pull` command generates the `src/huh.json` file:
+
+```json
+{
+  "ERR_LOGIN_FAILED": {
+    "type": "TOAST",
+    "message": "Login failed"
+  },
+  "ERR_SESSION_EXPIRED": {
+    "type": "MODAL",
+    "message": "{{userName}}'s session has expired",
+    "title": "Session Expired",
+    "action": {
+      "label": "Login Again",
+      "type": "REDIRECT",
+      "target": "/login"
+    }
+  }
+}
+```
+
+### Step 3: Use in Your App
+
+### React
+
+```tsx
+import errorContent from './huh.json';
+import { HuhProvider } from '@sanghyuk-2i/huh-react';
+import type { RendererMap } from '@sanghyuk-2i/huh-react';
+
+// Provide renderers for each error type you use (uppercase keys)
+// Custom types also work automatically when you add a renderer
+const renderers: RendererMap = {
+  TOAST: ({ error, onDismiss }) => (
+    <div className="toast">
+      <p>{error.message}</p>
+      <button onClick={onDismiss}>Close</button>
+    </div>
+  ),
+  MODAL: ({ error, onAction, onDismiss }) => (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>{error.title}</h2>
+        <p>{error.message}</p>
+        {error.action && <button onClick={onAction}>{error.action.label}</button>}
+        <button onClick={onDismiss}>Close</button>
+      </div>
+    </div>
+  ),
+  PAGE: ({ error, onAction }) => (
+    <div className="error-page">
+      {error.image && <img src={error.image} alt="" />}
+      <h1>{error.title}</h1>
+      <p>{error.message}</p>
+      {error.action && <button onClick={onAction}>{error.action.label}</button>}
+    </div>
+  ),
+};
+
+function App() {
+  return (
+    <HuhProvider source={errorContent} renderers={renderers}>
+      <YourApp />
+    </HuhProvider>
+  );
+}
+```
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-vue';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
+import errorContent from './huh.json';
+import { renderers } from './renderers'; // Renderers built with defineComponent
+
+const config = errorContent as ErrorConfig;
+</script>
+
+<template>
+  <HuhProvider :source="config" :renderers="renderers">
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-svelte';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
+  import errorContent from './huh.json';
+  import { renderers } from './renderers'; // Svelte component renderers
+
+  const config = errorContent as ErrorConfig;
+</script>
+
+<HuhProvider source={config} {renderers}>
+  <YourApp />
+</HuhProvider>
+```
+
+### Triggering Errors
+
+```tsx
+import { useHuh } from '@sanghyuk-2i/huh-react';
+
+function LoginForm() {
+  const { huh } = useHuh();
+
+  const onSubmit = async (formData: FormData) => {
+    try {
+      await login(formData);
+    } catch (error) {
+      // Trigger error UI by trackId
+      huh('ERR_LOGIN_FAILED');
+    }
+  };
+
+  return <form onSubmit={onSubmit}>{/* ... */}</form>;
+}
+```
+
+### Variable Substitution
+
+You can use template variables in the format `{{variableName}}` in your messages:
+
+```tsx
+// Sheet: "{{userName}}'s session has expired"
+huh('ERR_SESSION_EXPIRED', { userName: 'Jane' });
+// Result: "Jane's session has expired"
+```
+
+### Error Code Mapping with huh()
+
+Use `huh()` to map external error codes (e.g., API response codes) to trackIds:
+
+```tsx
+import { huh } = useHuh();
+
+try {
+  await api.call();
+} catch (e) {
+  // Maps 'API_500' → 'ERR_SERVER' via errorMap
+  huh(e.code);
+}
+```
+
+Configure the mapping in `HuhProvider`:
+
+```tsx
+<HuhProvider
+  source={errorContent}
+  renderers={renderers}
+  errorMap={{ API_500: 'ERR_SERVER', API_401: 'ERR_AUTH' }}
+  fallbackTrackId="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
+```
+
+## Next Steps
+
+  - **[@sanghyuk-2i/huh-core API Reference](/en/api/core)** - Types, parsing, validation details
+  - **[@sanghyuk-2i/huh-react Guide](/en/api/react)** - React Provider, hooks, renderer details
+  - **[@sanghyuk-2i/huh-vue Guide](/en/api/vue)** - Vue 3 Provider, composable details
+  - **[@sanghyuk-2i/huh-svelte Guide](/en/api/svelte)** - Svelte 5 Provider, context details
+  - **[@sanghyuk-2i/huh-cli Guide](/en/api/cli)** - CLI command details
+  - **[CSV File Guide](/en/guides/csv)** - Local CSV file integration
+  - **[XLSX File Guide](/en/guides/xlsx)** - Local XLSX file integration
+  - **[i18n Multi-Language](/en/guides/i18n)** - Spreadsheet tab-based multi-language error management
+

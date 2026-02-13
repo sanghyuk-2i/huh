@@ -1,0 +1,281 @@
+---
+title: '플러그인'
+description: '플러그인으로 에러 모니터링, 분석, 커스텀 연동 확장하기'
+
+---
+플러그인을 사용하면 huh의 에러 및 액션 라이프사이클에 훅을 걸 수 있습니다. Sentry, Datadog 같은 모니터링 서비스에 에러를 전송하거나, 분석 이벤트를 추적하거나, 커스텀 로깅을 추가할 수 있습니다 — Provider 설정을 수정하지 않고도요.
+
+## 동작 방식
+
+프레임워크의 `HuhProvider`에 `plugins` prop으로 플러그인 배열을 전달합니다. 각 플러그인은 두 가지 훅을 구현할 수 있습니다:
+
+- **`onError`** — `huh`가 에러를 resolve할 때 호출
+- **`onAction`** — 사용자가 액션을 트리거할 때 호출 (액션 실행 전)
+
+```tsx
+<HuhProvider source={errorConfig} renderers={renderers} plugins={[myPlugin()]}>
+  <App />
+</HuhProvider>
+```
+
+## HuhPlugin 인터페이스
+
+```ts
+interface HuhPlugin {
+  name: string;
+  onError?: (error: ResolvedError, context: HuhErrorContext) => void;
+  onAction?: (error: ResolvedError, action: ErrorAction) => void;
+}
+
+interface HuhErrorContext {
+  trackId: string;
+  variables?: Record<string, string>;
+  locale?: string;
+  severity?: Severity;
+}
+```
+
+두 훅 모두 선택사항입니다. 플러그인이 에러를 던지면 catch 후 경고로 로깅됩니다 — 앱이 깨지지 않습니다.
+
+## 커스텀 플러그인 작성
+
+플러그인은 `HuhPlugin` 객체를 반환하는 팩토리 함수입니다:
+
+```ts type { HuhPlugin } from '@sanghyuk-2i/huh-core';
+
+export function analyticsPlugin(): HuhPlugin {
+  return {
+    name: 'my-analytics',
+    onError(error, context) {
+      analytics.track('error_shown', {
+        trackId: context.trackId,
+        errorType: error.type,
+        locale: context.locale,
+      });
+    },
+    onAction(error, action) {
+      analytics.track('error_action', {
+        trackId: error.trackId,
+        actionType: action.type,
+      });
+    },
+  };
+}
+```
+
+## @sanghyuk-2i/huh-plugin-sentry 사용하기
+
+공식 Sentry 플러그인은 에러를 자동으로 리포트하고 액션 breadcrumb을 기록합니다.
+
+### 설치
+
+::: code-group
+
+```bash [pnpm]
+pnpm add @sanghyuk-2i/huh-plugin-sentry @sentry/browser
+```
+
+```bash [npm]
+npm install @sanghyuk-2i/huh-plugin-sentry @sentry/browser
+```
+
+```bash [yarn]
+yarn add @sanghyuk-2i/huh-plugin-sentry @sentry/browser
+```
+
+:::
+
+### 설정
+
+```tsx
+import { sentryPlugin } from '@sanghyuk-2i/huh-plugin-sentry';
+
+<HuhProvider source={errorConfig} renderers={renderers} plugins={[sentryPlugin()]}>
+  <App />
+</HuhProvider>;
+```
+
+에러가 트리거되면:
+
+- `Sentry.captureMessage`가 trackId와 함께 호출됩니다
+- `huh.trackId`, `huh.errorType`, `huh.locale` 태그가 설정됩니다
+- 변수들이 Sentry context로 첨부됩니다
+
+액션이 트리거되면:
+
+- `Sentry.addBreadcrumb`가 액션 타입과 trackId를 기록합니다
+
+### 옵션
+
+```ts [sentryPlugin]({
+  level: 'warning', // Sentry 심각도 (기본값: 'error')
+  tags: { env: 'production' }, // 추가 Sentry 태그
+  filter: (error) => error.type !== 'TOAST', // 특정 에러 건너뛰기
+  breadcrumbs: false, // 액션 breadcrumb 비활성화 (기본값: true)
+});
+```
+
+| 옵션             | 타입                                          | 기본값    | 설명                                   |
+| ---------------- | --------------------------------------------- | --------- | -------------------------------------- |
+| `level`          | `'fatal' \| 'error' \| 'warning' \| 'info'`   | `'error'` | Sentry 심각도 레벨                     |
+| `tags`           | `Record<string, string>`                      | `{}`      | Sentry scope에 설정할 추가 태그        |
+| `filter`         | `(error: ResolvedError) => boolean`           | —         | `false`를 반환하면 리포트를 건너뜁니다 |
+| `breadcrumbs`    | `boolean`                                     | `true`    | 액션 breadcrumb 기록 여부              |
+| `ignoreTypes`    | `string[]`                                    | `[]`      | 무시할 에러 타입 목록 (노이즈 필터링)  |
+| `ignoreTrackIds` | `string[]`                                    | `[]`      | 무시할 trackId 목록 (노이즈 필터링)    |
+| `urlPatterns`    | `Array<[RegExp, string]>`                     | `[]`      | URL 패턴 그룹핑 (동적 URL 정규화)      |
+| `enrichContext`  | `(error, context) => Record<string, unknown>` | -         | 추가 컨텍스트 보강 콜백                |
+| `sensitiveKeys`  | `Array<string \| RegExp>`                     | `[]`      | 민감 데이터 마스킹 키 목록             |
+
+### Severity 자동 매핑
+
+에러에 `severity`가 설정되어 있으면, Sentry 리포트 레벨이 자동으로 매핑됩니다:
+
+| Severity   | Sentry Level |
+| ---------- | ------------ |
+| `CRITICAL` | `fatal`      |
+| `ERROR`    | `error`      |
+| `WARNING`  | `warning`    |
+| `INFO`     | `info`       |
+
+인식할 수 없는 severity나 severity가 없는 경우 `level` 옵션 값이 사용됩니다 (기본값: `'error'`).
+
+### 노이즈 필터링
+
+```ts [sentryPlugin]({
+  ignoreTypes: ['TOAST'], // TOAST 에러는 Sentry에 보내지 않음
+  ignoreTrackIds: ['ERR_DISMISS'], // 특정 trackId 무시
+});
+```
+
+### 민감 데이터 마스킹
+
+```ts [sentryPlugin]({
+  sensitiveKeys: ['password', 'token', /^secret/],
+  // variables: { password: '1234', token: 'abc', secretKey: 'xyz' }
+  // → Sentry에는 { password: '[REDACTED]', token: '[REDACTED]', secretKey: '[REDACTED]' }
+});
+```
+
+### URL 그룹핑
+
+동적 URL 세그먼트를 정규화하여 Sentry fingerprint로 그룹핑합니다.
+
+```ts [sentryPlugin]({
+  urlPatterns: [
+    [/\/users\/\d+/, '/users/:id'],
+    [/\/orders\/[a-f0-9-]+/, '/orders/:orderId'],
+  ],
+});
+```
+
+### 컨텍스트 보강
+
+```ts [sentryPlugin]({
+  enrichContext: (error, context) => ({
+    requestId: getRequestId(),
+    userId: getCurrentUser()?.id,
+    route: window.location.pathname,
+  }),
+});
+```
+
+## @sanghyuk-2i/huh-plugin-datadog 사용하기
+
+공식 Datadog 플러그인은 `@datadog/browser-logs`를 통해 에러 로그를 전송하고 액션을 info 레벨 로그로 기록합니다.
+
+### 설치
+
+::: code-group
+
+```bash [pnpm]
+pnpm add @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
+```
+
+```bash [npm]
+npm install @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
+```
+
+```bash [yarn]
+yarn add @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
+```
+
+:::
+
+### 설정
+
+```tsx
+import { datadogLogs } from '@datadog/browser-logs';
+import { datadogPlugin } from '@sanghyuk-2i/huh-plugin-datadog';
+
+// Datadog Logs 먼저 초기화
+datadogLogs.init({
+  clientToken: '<CLIENT_TOKEN>',
+  site: 'datadoghq.com',
+  forwardErrorsToLogs: true,
+  sessionSampleRate: 100,
+});
+
+<HuhProvider source={errorConfig} renderers={renderers} plugins={[datadogPlugin()]}>
+  <App />
+</HuhProvider>;
+```
+
+에러가 트리거되면:
+
+- `datadogLogs.logger.error()`가 `[huh] <trackId>` 메시지와 함께 호출됩니다
+- `huh.trackId`, `huh.errorType`, `huh.locale`, `huh.variables`가 구조화된 컨텍스트로 첨부됩니다
+
+액션이 트리거되면:
+
+- `datadogLogs.logger.info()`가 액션 타입과 trackId를 로깅합니다
+
+### 옵션
+
+```ts [datadogPlugin]({
+  level: 'warn', // 로그 레벨 (기본값: 'error')
+  service: 'my-app', // 로그 컨텍스트에 추가할 서비스 이름
+  filter: (error) => error.type !== 'TOAST', // 특정 에러 건너뛰기
+  actionTracking: false, // 액션 로깅 비활성화 (기본값: true)
+});
+```
+
+| 옵션             | 타입                                     | 기본값    | 설명                                  |
+| ---------------- | ---------------------------------------- | --------- | ------------------------------------- |
+| `level`          | `'error' \| 'warn' \| 'info' \| 'debug'` | `'error'` | 에러 이벤트의 Datadog 로그 레벨       |
+| `service`        | `string`                                 | —         | 모든 로그 항목에 추가되는 서비스 이름 |
+| `filter`         | `(error: ResolvedError) => boolean`      | —         | `false`를 반환하면 로깅을 건너뜁니다  |
+| `actionTracking` | `boolean`                                | `true`    | 사용자 액션 로깅 여부                 |
+
+---
+## 여러 플러그인 조합
+
+여러 플러그인을 조합할 수 있습니다. 순서대로 실행됩니다:
+
+```tsx
+<HuhProvider
+  source={errorConfig}
+  renderers={renderers}
+  plugins={[sentryPlugin(), analyticsPlugin(), loggingPlugin()]}
+>
+  <App />
+</HuhProvider>
+```
+
+::: tip
+React에서는 불필요한 리렌더를 방지하기 위해 플러그인 배열을 컴포넌트 외부에 정의하거나 `useMemo`로 감싸세요:
+
+```tsx
+// 컴포넌트 외부 정의 (권장)
+const plugins = [sentryPlugin()];
+
+function App() {
+  return (
+    <HuhProvider plugins={plugins} ...>
+      ...
+    </HuhProvider>
+  );
+}
+```
+
+:::

@@ -1,0 +1,124 @@
+---
+title: 'Airtable Integration Guide'
+description: 'Base setup and token configuration for managing error content in Airtable'
+
+---
+## Quick Start with Template
+
+Clone the pre-configured Airtable template to get a base with the correct field structure and sample data.
+
+**[Clone Airtable Template](https://airtable.com/appo3UhuMSVi9br6f/shrjYOIeEDWkm8W3Y)**
+
+::: tip
+After cloning, edit the data and run `huh pull`.
+:::
+
+---
+### Airtable Base/Table Setup
+
+### Creating a New Base
+
+1. Log in to [Airtable](https://airtable.com).
+2. Select **Add a base** > **Start from scratch**.
+3. Name the base (e.g., `Error Content`).
+
+### Field (Column) Structure
+
+Create the following fields in your table:
+
+| Field Name     | Field Type              | Required | Description                                                |
+| -------------- | ----------------------- | -------- | ---------------------------------------------------------- |
+| `trackId`      | Single line text        | **Yes**  | Unique error identifier (e.g., `ERR_LOGIN_001`)            |
+| `type`         | Single select           | **Yes**  | `TOAST`, `MODAL`, `PAGE`, or custom type                   |
+| `message`      | Long text               | **Yes**  | Error message. Supports `{{variable}}` template variables  |
+| `title`        | Single line text        | Optional | Error title (used for modal, page)                         |
+| `image`        | URL or Single line text | Optional | Error image URL                                            |
+| `severity`     | Single select           | Optional | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
+| `actionLabel`  | Single line text        | Optional | Action button text                                         |
+| `actionType`   | Single select           | Optional | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action   |
+| `actionTarget` | URL or Single line text | Optional | URL to navigate to for REDIRECT                            |
+
+::: tip
+  Adding `TOAST`, `MODAL`, `PAGE`, etc. as Single select options for the `type` field helps prevent
+  input mistakes. The same applies to `severity` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`) and
+  `actionType`. Custom types can also be added as options. Even if entered in lowercase, the CLI
+  will automatically convert them to uppercase.
+:::
+
+### Example Data
+
+| trackId         | type  | message                                      | title          | severity | actionLabel     | actionType | actionTarget |
+| --------------- | ----- | -------------------------------------------- | -------------- | -------- | --------------- | ---------- | ------------ |
+| ERR_LOGIN_001   | TOAST | Login failed. Please try again.              |                | WARNING  | Retry           | RETRY      |              |
+| ERR_PAYMENT_001 | MODAL | An error occurred during payment processing. | Payment Error  | ERROR    | Contact Support | REDIRECT   | /support     |
+| ERR_NOT_FOUND   | PAGE  | The page you requested could not be found.   | Page Not Found | INFO     | Go Home         | REDIRECT   | /            |
+| ERR_NETWORK     | TOAST | Please check your network connection.        |                | WARNING  | Try Again       | RETRY      |              |
+
+### Personal Access Token
+
+1. Go to the [Airtable token page](https://airtable.com/create/tokens).
+2. Click **Create new token**.
+3. Enter a token name (e.g., `huh-cli`).
+4. Under **Scopes**, select `data.records:read`.
+5. Under **Access**, select the relevant base.
+6. Click **Create token** and copy the token.
+
+::: warning
+The token is shown only once. Store it in a safe place.
+:::
+
+### Finding the Base ID and Table ID
+
+1. Open the relevant base in Airtable.
+2. Find them in the browser URL:
+   ```
+   https://airtable.com/appXXXXXXXXXXXXXX/tblYYYYYYYYYYYYYY/...
+                        ^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^
+                        Base ID              Table ID
+   ```
+
+### Configuration
+
+### Environment Variable (Recommended)
+
+```bash AIRTABLE_TOKEN="patXXXXXXXXXXXXXX"
+```
+
+### `.huh.config.json` Example
+
+```json
+{
+  "source": {
+    "type": "airtable",
+    "baseId": "appXXXXXXXXXXXXXX",
+    "tableId": "tblYYYYYYYYYYYYYY"
+  },
+  "output": "./src/huh.json"
+}
+```
+
+To specify the token directly in the config:
+
+```json
+{
+  "source": {
+    "type": "airtable",
+    "baseId": "appXXXXXXXXXXXXXX",
+    "tableId": "tblYYYYYYYYYYYYYY",
+    "token": "patXXXXXXXXXXXXXX"
+  },
+  "output": "./src/huh.json"
+}
+```
+
+::: warning
+  If you include the token directly in the config file, add `.huh.config.json` to your `.gitignore`.
+:::
+
+### Fetching Data
+
+```bash [huh] pull
+```
+
+If successful, a JSON file will be generated at the `output` path.
+

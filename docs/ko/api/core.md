@@ -1,0 +1,509 @@
+---
+title: '@sanghyuk-2i/huh-core API'
+description: '에러 콘텐츠 JSON DSL의 타입 정의, 파싱, 변수 치환, 유효성 검증 핵심 패키지'
+
+---
+에러 콘텐츠 JSON DSL의 타입 정의, 시트 데이터 파싱, 변수 치환, 유효성 검증을 담당하는 핵심 패키지입니다. 외부 의존성이 없습니다.
+
+## 설치
+
+::: code-group
+
+```bash [pnpm]
+pnpm add @sanghyuk-2i/huh-core
+```
+
+```bash [npm]
+npm install @sanghyuk-2i/huh-core
+```
+
+```bash [yarn]
+yarn add @sanghyuk-2i/huh-core
+```
+
+:::
+
+### CDN
+
+```html
+<!-- unpkg -->
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
+
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/@sanghyuk-2i/huh-core"></script>
+
+<!-- 버전 고정 -->
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core@0.1.0"></script>
+```
+
+CDN으로 로드하면 `window.HuhCore` 글로벌 변수로 모든 API에 접근할 수 있습니다:
+
+```js
+const { resolveError, parseSheetData, validateConfig, renderTemplate } = HuhCore;
+```
+
+---
+## 타입
+
+### `ERROR_TYPES` (상수)
+
+기본 제공 에러 타입의 대문자 상수입니다.
+
+```ts
+const ERROR_TYPES = {
+  TOAST: 'TOAST',
+  MODAL: 'MODAL',
+  PAGE: 'PAGE',
+} as const;
+```
+
+### `ACTION_TYPES` (상수)
+
+기본 제공 액션 타입의 대문자 상수입니다.
+
+```ts
+const ACTION_TYPES = {
+  REDIRECT: 'REDIRECT',
+  RETRY: 'RETRY',
+  BACK: 'BACK',
+  DISMISS: 'DISMISS',
+} as const;
+```
+
+### `SEVERITY_LEVELS` (상수)
+
+기본 제공 심각도 수준의 대문자 상수입니다.
+
+```ts
+const SEVERITY_LEVELS = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+  CRITICAL: 'CRITICAL',
+} as const;
+```
+
+### `ErrorType`
+
+기본 제공 타입 + 커스텀 타입을 허용하는 확장 가능한 문자열 타입입니다. 값은 대문자로 관리됩니다.
+
+```ts
+type BuiltInErrorType = 'TOAST' | 'MODAL' | 'PAGE';
+type ErrorType = BuiltInErrorType | (string & {}); // 'BANNER', 'SNACKBAR' 등 자유 확장
+```
+
+### `ActionType`
+
+기본 제공 액션 타입 + 커스텀 액션 타입을 허용합니다.
+
+```ts
+type BuiltInActionType = 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS';
+type ActionType = BuiltInActionType | (string & {}); // 'OPEN_CHAT', 'SHARE' 등 자유 확장
+```
+
+### `Severity`
+
+기본 제공 심각도 + 커스텀 심각도를 허용합니다.
+
+```ts
+type BuiltInSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+type Severity = BuiltInSeverity | (string & {}); // 커스텀 심각도 확장 가능
+```
+
+### `ErrorAction`
+
+```ts
+interface ErrorAction {
+  label: string; // 액션 버튼 텍스트
+  type: ActionType; // 액션 종류
+  target?: string; // redirect 시 이동할 URL
+}
+```
+
+### `ErrorEntry`
+
+하나의 에러 항목을 나타냅니다.
+
+```ts
+interface ErrorEntry {
+  type: ErrorType; // 에러 표시 유형
+  message: string; // 에러 메시지 (템플릿 변수 포함 가능)
+  title?: string; // 제목 (modal, page용)
+  image?: string; // 이미지 URL (page용)
+  severity?: Severity; // 심각도 수준
+  action?: ErrorAction; // 사용자 액션
+}
+```
+
+### `ErrorConfig`
+
+전체 에러 설정. `trackId`를 키로 하는 `ErrorEntry` 맵입니다.
+
+```ts
+type ErrorConfig = Record<string, ErrorEntry>;
+```
+
+```json
+{
+  "ERR_LOGIN_FAILED": {
+    "type": "TOAST",
+    "message": "로그인에 실패했습니다"
+  },
+  "ERR_NOT_FOUND": {
+    "type": "PAGE",
+    "message": "페이지를 찾을 수 없습니다",
+    "title": "404"
+  },
+  "ERR_MAINTENANCE": {
+    "type": "BANNER",
+    "message": "서버 점검 중입니다"
+  }
+}
+```
+
+### `ResolvedError`
+
+`resolveError` 함수의 반환 타입. `ErrorEntry`에 `trackId`가 추가된 형태입니다.
+
+```ts
+type ResolvedError = ErrorEntry & {
+  trackId: string;
+}
+```
+
+### `LocalizedErrorConfig`
+
+다국어 에러 설정. 로케일 코드를 키로 하는 `ErrorConfig` 맵입니다.
+
+```ts
+type LocalizedErrorConfig = Record<string, ErrorConfig>;
+```
+
+```ts
+const locales: LocalizedErrorConfig = {
+  ko: {
+    ERR_AUTH: { type: 'MODAL', message: '인증 만료', title: '인증 오류' },
+  },
+  en: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired', title: 'Auth Error' },
+  },
+};
+```
+
+### `CrossLocaleValidationResult`
+
+`validateLocales` 함수의 반환 타입입니다.
+
+```ts
+interface CrossLocaleValidationResult {
+  valid: boolean; // 에러가 없으면 true
+  errors: CrossLocaleValidationError[]; // 에러 목록 (trackId 누락 등)
+  warnings: CrossLocaleValidationError[]; // 경고 목록 (type/actionType 불일치 등)
+}
+
+interface CrossLocaleValidationError {
+  trackId: string;
+  field?: string;
+  locales: string[]; // 문제가 있는 로케일 목록
+  message: string;
+}
+```
+
+### `ValidationResult`
+
+```ts
+interface ValidationResult {
+  valid: boolean; // 에러가 없으면 true
+  errors: ValidationError[]; // 에러 목록 (type 누락, 잘못된 값 등)
+  warnings: ValidationError[]; // 경고 목록 (toast에 title 사용 등)
+}
+
+interface ValidationError {
+  trackId?: string;
+  field?: string;
+  message: string;
+}
+```
+
+### `HuhPlugin`
+
+에러 및 액션 라이프사이클에 훅을 거는 플러그인을 정의합니다.
+
+```ts
+interface HuhPlugin {
+  name: string;
+  onError?: (error: ResolvedError, context: HuhErrorContext) => void;
+  onAction?: (error: ResolvedError, action: ErrorAction) => void;
+}
+```
+
+- `name` — 플러그인 식별자 (경고 메시지에 사용)
+- `onError` — `huh`가 에러를 resolve할 때 호출
+- `onAction` — 사용자가 액션을 트리거할 때 호출
+
+### `HuhErrorContext`
+
+`onError` 플러그인 훅에 전달되는 컨텍스트입니다.
+
+```ts
+interface HuhErrorContext {
+  trackId: string;
+  variables?: Record<string, string>;
+  locale?: string;
+  severity?: Severity;
+}
+```
+
+---
+## 함수
+
+### `parseSheetData(rows: string[][]): ErrorConfig`
+
+데이터 소스의 raw 데이터(헤더 + 데이터 행 배열)를 `ErrorConfig`로 변환합니다. Google Sheets, Airtable, Notion, CSV, XLSX 등 모든 소스에서 동일한 2D 문자열 배열 형식을 사용합니다.
+
+**매개변수**
+
+**`rows`** `string[][]` (required)
+
+첫 번째 행이 헤더인 2차원 문자열 배열
+
+**예외**
+
+- 행이 2개 미만이면 에러
+- `trackId`, `type`, `message` 헤더가 없으면 에러
+- `type`이 비어있으면 에러
+
+::: tip
+  `type`과 `actionType` 값은 자동으로 대문자로 변환됩니다. 데이터 소스에서 `toast`, `Toast`, `TOAST`
+  어느 것을 입력해도 `TOAST`로 처리됩니다. `severity` 값도 자동으로 대문자로 변환됩니다. 기본 제공
+  타입 외에도 커스텀 타입(`BANNER`, `SNACKBAR` 등)을 자유롭게 사용할 수 있습니다.
+:::
+
+**예시**
+
+```ts
+import { parseSheetData } from '@sanghyuk-2i/huh-core';
+
+const rows = [
+  [
+    'trackId',
+    'type',
+    'message',
+    'title',
+    'image',
+    'severity',
+    'actionLabel',
+    'actionType',
+    'actionTarget',
+  ],
+  ['ERR_001', 'toast', '오류가 발생했습니다', '', '', '', '', ''],
+  ['ERR_002', 'modal', '세션 만료', '알림', '', '확인', 'dismiss', ''],
+  ['ERR_003', 'banner', '서버 점검 중', '', '', '문의하기', 'open_chat', ''],
+];
+
+const config = parseSheetData(rows);
+// {
+//   ERR_001: { type: 'TOAST', message: '오류가 발생했습니다' },
+//   ERR_002: { type: 'MODAL', message: '세션 만료', title: '알림', action: { label: '확인', type: 'DISMISS' } },
+//   ERR_003: { type: 'BANNER', message: '서버 점검 중', action: { label: '문의하기', type: 'OPEN_CHAT' } }
+// }
+```
+
+---
+### `resolveError(config, trackId, variables?): ResolvedError`
+
+`trackId`로 에러를 조회하고, 메시지/제목/액션의 템플릿 변수를 치환합니다.
+
+**매개변수**
+
+**`config`** `ErrorConfig` (required)
+
+에러 설정
+
+**`trackId`** `string` (required)
+
+조회할 에러 ID
+
+**`variables`** `Record<string, string>`
+
+템플릿 변수 (선택)
+
+**예외**
+
+- `trackId`가 config에 없으면 `Unknown trackId` 에러
+
+**예시**
+
+```ts
+import { resolveError } from '@sanghyuk-2i/huh-core';
+
+const config = {
+  ERR_SESSION: {
+    type: 'MODAL',
+    message: '{{userName}}님의 세션이 만료되었습니다',
+    title: '{{userName}}님',
+    action: { label: '재로그인', type: 'REDIRECT', target: '/login' },
+  },
+};
+
+const resolved = resolveError(config, 'ERR_SESSION', { userName: '홍길동' });
+// resolved.message → "홍길동님의 세션이 만료되었습니다"
+// resolved.title   → "홍길동님"
+// resolved.trackId → "ERR_SESSION"
+```
+
+---
+### `renderTemplate(template, variables): string`
+
+문자열 내 `{{변수명}}` 플레이스홀더를 치환합니다. 매칭되지 않는 변수는 그대로 남습니다.
+
+**매개변수**
+
+**`template`** `string` (required)
+
+템플릿 문자열
+
+**`variables`** `Record<string, string>` (required)
+
+치환할 변수 맵
+
+**예시**
+
+```ts
+import { renderTemplate } from '@sanghyuk-2i/huh-core';
+
+renderTemplate('{{name}}님, 안녕하세요!', { name: '홍길동' });
+// → "홍길동님, 안녕하세요!"
+
+renderTemplate('{{a}} and {{b}}', { a: 'Hello' });
+// → "Hello and {{b}}"  (미매칭 변수는 유지)
+```
+
+---
+### `validateConfig(config): ValidationResult`
+
+`ErrorConfig`의 유효성을 검증합니다.
+
+**검증 규칙 (errors)**
+
+| 조건                                | 메시지                                       |
+| ----------------------------------- | -------------------------------------------- |
+| `type`이 비어있음                   | Missing required field: type                 |
+| `message`가 비어있음                | Missing required field: message              |
+| `action.label`이 비어있음           | Action is missing required field: label      |
+| `REDIRECT` 타입인데 `target`이 없음 | Action type "REDIRECT" requires a target URL |
+
+::: tip
+  커스텀 타입(`BANNER`, `SNACKBAR` 등)은 에러 없이 통과합니다. 타입 값 자체의 유효성은 검증하지
+  않으며, 비어있는 경우에만 에러를 발생시킵니다.
+:::
+
+**경고 규칙 (warnings)**
+
+기본 제공 타입에 대해서만 경고가 발생합니다. 커스텀 타입에는 경고가 발생하지 않습니다.
+
+| 조건                         | 메시지                                                                     |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| config가 비어있음            | Config is empty                                                            |
+| `TOAST`에 title이 있음       | Toast errors typically do not display a title                              |
+| `TOAST`에 image가 있음       | Toast errors typically do not display an image                             |
+| `PAGE`에 action이 없음       | Page errors should provide an action                                       |
+| 인식할 수 없는 `severity` 값 | Unrecognized severity "X". Built-in levels: INFO, WARNING, ERROR, CRITICAL |
+
+**예시**
+
+```ts
+import { validateConfig } from '@sanghyuk-2i/huh-core';
+
+const result = validateConfig({
+  ERR_001: { type: 'TOAST', message: '' },
+  ERR_002: { type: 'MODAL', message: 'OK', action: { label: 'Go', type: 'REDIRECT' } },
+  ERR_003: { type: 'BANNER', message: 'Custom type works' }, // 커스텀 타입 — 에러 없이 통과
+});
+
+// result.valid → false
+// result.errors → [
+//   { trackId: 'ERR_001', field: 'message', message: 'Missing required field: message' },
+//   { trackId: 'ERR_002', field: 'action.target', message: 'Action type "REDIRECT" requires a target URL' },
+// ]
+```
+
+---
+### `validateLocales(locales): CrossLocaleValidationResult`
+
+다국어 에러 설정의 로케일 간 일관성을 검증합니다.
+
+**매개변수**
+
+**`locales`** `LocalizedErrorConfig` (required)
+
+로케일별 에러 설정 맵
+
+**검증 규칙 (errors)**
+
+| 조건                                          | 메시지                                     |
+| --------------------------------------------- | ------------------------------------------ |
+| 한 로케일에 있는 trackId가 다른 로케일에 없음 | trackId "XXX" is missing in locale(s): ... |
+
+**경고 규칙 (warnings)**
+
+| 조건                                | 메시지                                                   |
+| ----------------------------------- | -------------------------------------------------------- |
+| 같은 trackId인데 type이 다름        | trackId "XXX" has different "type" across locales        |
+| 같은 trackId인데 action.type이 다름 | trackId "XXX" has different "action.type" across locales |
+
+::: tip
+로케일이 1개뿐이면 검증을 건너뛰고 valid: true를 반환합니다.
+:::
+
+**예시**
+
+```ts
+import { validateLocales } from '@sanghyuk-2i/huh-core';
+
+const result = validateLocales({
+  ko: {
+    ERR_AUTH: { type: 'MODAL', message: '인증 만료' },
+    ERR_NETWORK: { type: 'TOAST', message: '네트워크 오류' },
+  },
+  en: {
+    ERR_AUTH: { type: 'MODAL', message: 'Session expired' },
+    // ERR_NETWORK 누락 → error
+  },
+});
+
+// result.valid → false
+// result.errors → [{ trackId: 'ERR_NETWORK', locales: ['en'], message: '...' }]
+```
+
+---
+### `runPluginHook(plugins, hook, ...args): void`
+
+모든 플러그인의 특정 훅을 실행합니다. 개별 플러그인이 에러를 던지면 catch 후 경고로 로깅합니다.
+
+**매개변수**
+
+**`plugins`** `HuhPlugin[]` (required)
+
+실행할 플러그인 배열
+
+**`hook`** `'onError' | 'onAction'` (required)
+
+실행할 훅 이름
+
+**`args`** `Parameters` (required)
+
+훅 함수에 전달할 인자
+
+**예시**
+
+```ts
+import { runPluginHook } from '@sanghyuk-2i/huh-core';
+import type { HuhPlugin } from '@sanghyuk-2i/huh-core';
+
+const plugins: HuhPlugin[] = [myPlugin(), anotherPlugin()];
+
+// 프레임워크 Provider 내부에서 호출됨 — 일반적으로 직접 호출하지 않음
+runPluginHook(plugins, 'onError', resolvedError, { trackId: 'ERR_001' });
+runPluginHook(plugins, 'onAction', resolvedError, action);
+```

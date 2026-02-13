@@ -29,6 +29,8 @@ cd packages/core
 npm publish --access public
 cd ../..
 echo "✅ @sanghyuk-2i/huh-core published"
+echo "⏳ Waiting 30 seconds for npm to process..."
+sleep 30
 echo ""
 
 # 2. Framework bindings (depend on core)
@@ -37,6 +39,8 @@ cd packages/react
 npm publish --access public
 cd ../..
 echo "✅ @sanghyuk-2i/huh-react published"
+echo "⏳ Waiting 30 seconds for npm to process..."
+sleep 30
 echo ""
 
 echo "3/7 Publishing @sanghyuk-2i/huh-vue..."
@@ -44,6 +48,8 @@ cd packages/vue
 npm publish --access public
 cd ../..
 echo "✅ @sanghyuk-2i/huh-vue published"
+echo "⏳ Waiting 30 seconds for npm to process..."
+sleep 30
 echo ""
 
 echo "4/7 Publishing @sanghyuk-2i/huh-svelte..."
@@ -51,6 +57,8 @@ cd packages/svelte
 npm publish --access public
 cd ../..
 echo "✅ @sanghyuk-2i/huh-svelte published"
+echo "⏳ Waiting 30 seconds for npm to process..."
+sleep 30
 echo ""
 
 # 3. Plugins (depend on core)
@@ -59,6 +67,8 @@ cd packages/plugin-sentry
 npm publish --access public
 cd ../..
 echo "✅ @sanghyuk-2i/huh-plugin-sentry published"
+echo "⏳ Waiting 30 seconds for npm to process..."
+sleep 30
 echo ""
 
 echo "6/7 Publishing @sanghyuk-2i/huh-plugin-datadog..."
@@ -66,6 +76,8 @@ cd packages/plugin-datadog
 npm publish --access public
 cd ../..
 echo "✅ @sanghyuk-2i/huh-plugin-datadog published"
+echo "⏳ Waiting 30 seconds for npm to process..."
+sleep 30
 echo ""
 
 # 4. CLI (depends on core)

@@ -1,0 +1,281 @@
+---
+title: '@sanghyuk-2i/huh-vue API'
+description: 'Vue 3 provide/inject-based error UI rendering - HuhProvider, useHuh, RendererMap'
+
+---
+A Vue 3 provide/inject-based error UI rendering library. The Provider manages error state and displays error UI using user-provided custom renderers.
+
+## Installation
+
+::: code-group
+
+```bash [pnpm]
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+```
+
+```bash [npm]
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+```
+
+```bash [yarn]
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+```
+
+:::
+
+**Peer Dependencies**: `vue >= 3.3`
+
+---
+## HuhProvider
+
+Manages error state and invokes the appropriate type's renderer when an active error exists. This is a pure TypeScript render function component (not an SFC).
+
+### Props
+
+```ts
+interface HuhProviderProps {
+  source?: ErrorConfig; // JSON DSL data (single language mode)
+  locales?: LocalizedErrorConfig; // Multi-language error config (i18n mode)
+  defaultLocale?: string; // Default locale
+  locale?: string; // Current locale (externally controlled)
+  renderers: RendererMap; // Custom renderers (required)
+  onRetry?: () => void; // Callback invoked on RETRY action
+  onCustomAction?: (action: { type: string; target?: string }) => void; // Custom action callback
+  plugins?: HuhPlugin[]; // Plugin array for monitoring/analytics
+  errorMap?: Record<string, string>; // Error code to trackId mapping table
+  fallbackTrackId?: string; // Default trackId when no mapping is found
+  router?: HuhRouter; // Custom router for client-side navigation (e.g., Nuxt useRouter)
+}
+```
+
+::: tip
+  Either `source` or `locales` must be provided. `source` is for single language mode, `locales` is
+  for multi-language mode.
+:::
+
+### Basic Usage
+
+```vue
+<script setup lang="ts">
+import { HuhProvider } from '@sanghyuk-2i/huh-vue';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
+import errorContent from './huh.json';
+import { renderers } from './renderers';
+
+const config = errorContent as ErrorConfig;
+</script>
+
+<template>
+  <HuhProvider
+    :source="config"
+    :renderers="renderers"
+    :on-retry="() => window.location.reload()"
+    :on-custom-action="
+      (action) => {
+        if (action.type === 'OPEN_CHAT') openChatWidget();
+      }
+    "
+  >
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+### Router Integration
+
+Pass a `router` prop to use framework-specific client-side navigation instead of full page reloads:
+
+```vue
+<script setup lang="ts">
+// Nuxt
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+</script>
+
+<template>
+  <HuhProvider
+    :source="config"
+    :renderers="renderers"
+    :router="{ push: (url) => router.push(url), back: () => router.back() }"
+  >
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+When `router` is provided, `REDIRECT` actions use `router.push()` and `BACK` actions use `router.back()`. Without it, the default `window.location.href` and `window.history.back()` behavior is preserved.
+
+---
+## RendererMap
+
+Provides renderers for each error type. Uses Vue Component types. Keys are uppercase type names.
+
+```ts type { Component } from 'vue';
+
+type RendererMap = Record<string, Component<ErrorRenderProps>>;
+```
+
+### ErrorRenderProps
+
+Props passed to each renderer.
+
+```ts
+interface ErrorRenderProps {
+  error: ResolvedError; // Error info with variables already substituted
+  onAction: () => void; // Action button click handler
+  onDismiss: () => void; // Dismiss handler
+}
+```
+
+### onAction Behavior
+
+Uses the same action handling logic as the React package:
+
+| actionType  | Behavior                                                                              |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `REDIRECT`  | `router.push(target)` if `router` provided, otherwise `window.location.href = target` |
+| `BACK`      | `router.back()` if `router` provided, otherwise `window.history.back()`               |
+| `RETRY`     | Clear error + invoke `onRetry` callback                                               |
+| `DISMISS`   | Clear error                                                                           |
+| Custom type | Clear error + invoke `onCustomAction` callback                                        |
+
+### Renderer Implementation Example
+
+Implement renderers using `defineComponent` + `h` function (no SFC compiler needed):
+
+```ts
+const { defineComponent, h } from 'vue';
+import type { RendererMap } from '@sanghyuk-2i/huh-vue';
+
+const Toast = defineComponent({
+  props: {
+    error: { type: Object, required: true },
+    onAction: { type: Function, required: true },
+    onDismiss: { type: Function, required: true },
+  },
+  setup(props) {
+    return () => h('div', { class: 'toast', onClick: props.onDismiss }, props.error.message);
+  },
+});
+
+const Modal = defineComponent({
+  props: {
+    error: { type: Object, required: true },
+    onAction: { type: Function, required: true },
+    onDismiss: { type: Function, required: true },
+  },
+  setup(props) {
+    return () =>
+      h('div', { class: 'modal-overlay', onClick: props.onDismiss }, [
+        h('div', { class: 'modal', onClick: (e: Event) => e.stopPropagation() }, [
+          h('h2', props.error.title),
+          h('p', props.error.message),
+          h('div', { class: 'modal-actions' }, [
+            h('button', { onClick: props.onDismiss }, 'Close'),
+            props.error.action &&
+              h('button', { onClick: props.onAction }, props.error.action.label),
+          ]),
+        ]),
+      ]);
+  },
+});
+
+export const renderers: RendererMap = {
+  TOAST: Toast,
+  MODAL: Modal,
+};
+```
+
+---
+## useHuh
+
+A composable for triggering or clearing errors from within the Provider tree. Uses Vue's `inject()` internally.
+
+```ts [function] useHuh(): HuhContextValue;
+
+interface HuhContextValue {
+  huh: (code: string, variables?: Record<string, string>) => void;
+  clearError: () => void;
+  locale: string | undefined; // Current locale (i18n mode)
+  setLocale: (locale: string) => void; // Change locale (i18n mode)
+}
+```
+
+::: warning
+Throws an error if called outside of the Provider.
+:::
+
+### huh(code, variables?)
+
+The single function for triggering errors. Handles direct trackId, errorMap mapping, and fallback.
+
+**Lookup order:**
+
+1. Check `errorMap` for code mapping
+2. Check if code directly matches a trackId
+3. Use `fallbackTrackId`
+4. Throw error if no mapping found
+
+```vue
+<script setup lang="ts">
+import { useHuh } from '@sanghyuk-2i/huh-vue';
+
+const { huh } = useHuh();
+
+// Trigger by trackId directly
+huh('ERR_NETWORK');
+
+// Trigger with variable substitution
+huh('ERR_SESSION_EXPIRED', { userName: 'Jane' });
+
+// Map API error codes via errorMap
+async function callApi() {
+  try {
+    await api.call();
+  } catch (e) {
+    huh(e.code); // 'API_500' → errorMap → 'ERR_SERVER'
+  }
+}
+</script>
+```
+
+**errorMap setup:**
+
+```vue
+<HuhProvider
+  :source="config"
+  :renderers="renderers"
+  :error-map="{ API_500: 'ERR_SERVER', API_401: 'ERR_AUTH' }"
+  fallback-track-id="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
+```
+
+### clearError()
+
+Closes the currently active error UI.
+
+```vue
+<script setup lang="ts">
+import { useHuh } from '@sanghyuk-2i/huh-vue';
+
+const { clearError } = useHuh();
+</script>
+
+<template>
+  <button @click="clearError()">Close Error</button>
+</template>
+```
+
+---
+## Differences from React Package
+
+|                   | @sanghyuk-2i/huh-react                   | @sanghyuk-2i/huh-vue                                |
+| ----------------- | ---------------------------- | --------------------------------------- |
+| **State**         | `useState`                   | `ref()`                                 |
+| **Context**       | `createContext`/`useContext` | `provide()`/`inject()` + `InjectionKey` |
+| **Renderer type** | `(props) => ReactNode`       | `Component<ErrorRenderProps>`           |
+| **Build**         | tsup (CJS + ESM)             | tsup (CJS + ESM)                        |
+| **"use client"**  | Required (Next.js)           | Not needed                              |

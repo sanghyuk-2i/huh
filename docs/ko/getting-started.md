@@ -1,0 +1,296 @@
+---
+title: '시작하기'
+description: 'Huh 3단계 설정 가이드 - 데이터 소스 준비, CLI로 JSON 생성, React 앱에서 사용'
+
+---
+Huh는 3단계로 동작합니다:
+
+1. **데이터 소스** 에서 에러 메시지 작성 (비개발자)
+   - Google Sheets, Airtable, Notion, CSV, XLSX 지원
+2. **CLI** 로 데이터를 JSON 파일로 변환 (빌드 타임)
+3. **프레임워크 Provider** (React / Vue / Svelte) 에서 Track ID로 에러 UI 렌더링 (런타임)
+
+## 설치
+
+::: code-group
+
+```bash [pnpm]
+# React
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
+
+# Vue
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+
+# Svelte
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+
+# CLI (공통)
+pnpm add -D @sanghyuk-2i/huh-cli
+```
+
+```bash [npm]
+# React
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
+
+# Vue
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+
+# Svelte
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+
+# CLI (공통)
+npm install -D @sanghyuk-2i/huh-cli
+```
+
+```bash [yarn]
+# React
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
+
+# Vue
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
+
+# Svelte
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+
+# CLI (공통)
+yarn add -D @sanghyuk-2i/huh-cli
+```
+
+:::
+
+### CDN으로 사용하기 (번들러 없이)
+
+`@sanghyuk-2i/huh-core`는 의존성이 없는 순수 JS 라이브러리이므로, `<script>` 태그로 바로 사용할 수 있습니다:
+
+```html
+<!-- unpkg -->
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
+
+<!-- jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/@sanghyuk-2i/huh-core"></script>
+```
+
+로드 후 `window.HuhCore` 글로벌 변수로 모든 API에 접근할 수 있습니다:
+
+```html
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
+<script>
+  var config = {
+    /* ErrorConfig JSON */
+  };
+  var resolved = HuhCore.resolveError(config, 'ERR_AUTH', { userName: '홍길동' });
+  console.log(resolved.message);
+</script>
+```
+
+### 1단계: 데이터 소스 준비
+
+아래 컬럼 구조로 데이터를 작성합니다. (Google Sheets, Airtable, Notion, CSV, XLSX 모두 동일)
+
+| trackId             | type  | message                                    | title     | image           | severity | actionLabel | actionType | actionTarget |
+| ------------------- | ----- | ------------------------------------------ | --------- | --------------- | -------- | ----------- | ---------- | ------------ |
+| ERR_LOGIN_FAILED    | TOAST | 로그인에 실패했습니다                      |           |                 |          |             |            |              |
+| ERR_SESSION_EXPIRED | MODAL | {{userName}}님의 세션이 만료되었습니다 | 세션 만료 |                 | ERROR    | 다시 로그인 | REDIRECT   | /login       |
+| ERR_NOT_FOUND       | PAGE  | 요청하신 페이지를 찾을 수 없습니다         | 404       | /images/404.png | INFO     | 홈으로      | REDIRECT   | /            |
+
+::: tip
+  `type`과 `actionType`은 대문자로 관리됩니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
+  기본 제공 타입(`TOAST`, `MODAL`, `PAGE`) 외에도 `BANNER`, `SNACKBAR` 등 커스텀 타입을 자유롭게
+  추가할 수 있습니다.
+:::
+
+데이터 소스별 설정 가이드:
+
+  - **[Google Sheets 설정 가이드](/ko/guides/google-sheets)** - Google Sheets에서 에러 콘텐츠 관리
+  - **[Airtable 연동 가이드](/ko/guides/airtable)** - Airtable에서 에러 콘텐츠 관리
+  - **[Notion 연동 가이드](/ko/guides/notion)** - Notion 데이터베이스에서 에러 콘텐츠 관리
+  - **[CSV 파일 가이드](/ko/guides/csv)** - 로컬 CSV 파일에서 에러 콘텐츠 가져오기
+  - **[XLSX 파일 가이드](/ko/guides/xlsx)** - 로컬 XLSX 파일에서 에러 콘텐츠 가져오기
+
+### 2단계: CLI로 JSON 생성
+
+```bash
+# 프로젝트에 설정 파일 생성
+npx huh init
+
+# .huh.config.ts (또는 .json)에서 데이터 소스 설정 후 실행
+npx huh pull
+
+# 생성된 JSON 유효성 검증
+npx huh validate
+```
+
+`pull` 명령을 실행하면 `src/huh.json` 파일이 생성됩니다:
+
+```json
+{
+  "ERR_LOGIN_FAILED": {
+    "type": "TOAST",
+    "message": "로그인에 실패했습니다"
+  },
+  "ERR_SESSION_EXPIRED": {
+    "type": "MODAL",
+    "message": "{{userName}}님의 세션이 만료되었습니다",
+    "title": "세션 만료",
+    "action": {
+      "label": "다시 로그인",
+      "type": "REDIRECT",
+      "target": "/login"
+    }
+  }
+}
+```
+
+### 3단계: 앱에서 사용
+
+### React
+
+```tsx
+import errorContent from './huh.json';
+import { HuhProvider } from '@sanghyuk-2i/huh-react';
+import type { RendererMap } from '@sanghyuk-2i/huh-react';
+
+// 사용하는 에러 타입에 맞는 렌더러를 제공합니다 (대문자 키)
+// 커스텀 타입도 렌더러를 추가하면 자동으로 동작합니다
+const renderers: RendererMap = {
+  TOAST: ({ error, onDismiss }) => (
+    <div className="toast">
+      <p>{error.message}</p>
+      <button onClick={onDismiss}>닫기</button>
+    </div>
+  ),
+  MODAL: ({ error, onAction, onDismiss }) => (
+    <div className="modal-overlay">
+      <div className="modal">
+        <h2>{error.title}</h2>
+        <p>{error.message}</p>
+        {error.action && <button onClick={onAction}>{error.action.label}</button>}
+        <button onClick={onDismiss}>닫기</button>
+      </div>
+    </div>
+  ),
+  PAGE: ({ error, onAction }) => (
+    <div className="error-page">
+      {error.image && <img src={error.image} alt="" />}
+      <h1>{error.title}</h1>
+      <p>{error.message}</p>
+      {error.action && <button onClick={onAction}>{error.action.label}</button>}
+    </div>
+  ),
+};
+
+function App() {
+  return (
+    <HuhProvider source={errorContent} renderers={renderers}>
+      <YourApp />
+    </HuhProvider>
+  );
+}
+```
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-vue';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
+import errorContent from './huh.json';
+import { renderers } from './renderers'; // defineComponent로 구현한 렌더러
+
+const config = errorContent as ErrorConfig;
+</script>
+
+<template>
+  <HuhProvider :source="config" :renderers="renderers">
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+### Svelte
+
+```svelte
+<script lang="ts">
+  import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-svelte';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
+  import errorContent from './huh.json';
+  import { renderers } from './renderers'; // Svelte 컴포넌트 렌더러
+
+  const config = errorContent as ErrorConfig;
+</script>
+
+<HuhProvider source={config} {renderers}>
+  <YourApp />
+</HuhProvider>
+```
+
+### 에러 트리거
+
+```tsx
+import { useHuh } from '@sanghyuk-2i/huh-react';
+
+function LoginForm() {
+  const { huh } = useHuh();
+
+  const onSubmit = async (formData: FormData) => {
+    try {
+      await login(formData);
+    } catch (error) {
+      // trackId로 에러 UI 트리거
+      huh('ERR_LOGIN_FAILED');
+    }
+  };
+
+  return <form onSubmit={onSubmit}>{/* ... */}</form>;
+}
+```
+
+### 변수 치환
+
+메시지에 `{{변수명}}` 형태의 템플릿 변수를 사용할 수 있습니다:
+
+```tsx
+// Sheet: "{{userName}}님의 세션이 만료되었습니다"
+huh('ERR_SESSION_EXPIRED', { userName: '홍길동' });
+// 결과: "홍길동님의 세션이 만료되었습니다"
+```
+
+### huh()로 에러 코드 매핑
+
+`huh()`를 사용하면 외부 에러 코드(예: API 응답 코드)를 trackId로 매핑할 수 있습니다:
+
+```tsx
+import { huh } = useHuh();
+
+try {
+  await api.call();
+} catch (e) {
+  // errorMap을 통해 'API_500' → 'ERR_SERVER'로 매핑
+  huh(e.code);
+}
+```
+
+`HuhProvider`에서 매핑을 설정합니다:
+
+```tsx
+<HuhProvider
+  source={errorContent}
+  renderers={renderers}
+  errorMap={{ API_500: 'ERR_SERVER', API_401: 'ERR_AUTH' }}
+  fallbackTrackId="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
+```
+
+## 다음 단계
+
+  - **[@sanghyuk-2i/huh-core API 레퍼런스](/ko/api/core)** - 타입, 파싱, 검증 상세
+  - **[@sanghyuk-2i/huh-react 가이드](/ko/api/react)** - React Provider, 훅, 렌더러 상세
+  - **[@sanghyuk-2i/huh-vue 가이드](/ko/api/vue)** - Vue 3 Provider, composable 상세
+  - **[@sanghyuk-2i/huh-svelte 가이드](/ko/api/svelte)** - Svelte 5 Provider, context 상세
+  - **[@sanghyuk-2i/huh-cli 가이드](/ko/api/cli)** - CLI 명령어 상세
+  - **[CSV 파일 가이드](/ko/guides/csv)** - 로컬 CSV 파일 연동
+  - **[XLSX 파일 가이드](/ko/guides/xlsx)** - 로컬 XLSX 파일 연동
+  - **[i18n 다국어 지원](/ko/guides/i18n)** - 스프레드시트 탭 기반 다국어 에러 메시지 관리
+

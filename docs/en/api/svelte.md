@@ -1,0 +1,302 @@
+---
+title: '@sanghyuk-2i/huh-svelte API'
+description: 'Svelte 5 context-based error UI rendering - HuhProvider, useHuh, RendererMap'
+
+---
+A Svelte 5 setContext/getContext-based error UI rendering library. The Provider manages error state and displays error UI using user-provided custom renderers. Uses Svelte 5 runes (`$state`, `$props`, `$derived`).
+
+## Installation
+
+::: code-group
+
+```bash [pnpm]
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+```
+
+```bash [npm]
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+```
+
+```bash [yarn]
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
+```
+
+:::
+
+**Peer Dependencies**: `svelte >= 5.0.0`
+
+---
+## HuhProvider
+
+Manages error state and renders the appropriate type's renderer as a dynamic component when an active error exists.
+
+### Props
+
+```ts
+interface Props {
+  source?: ErrorConfig; // JSON DSL data (single language mode)
+  locales?: LocalizedErrorConfig; // Multi-language error config (i18n mode)
+  defaultLocale?: string; // Default locale
+  locale?: string; // Current locale (externally controlled)
+  renderers: RendererMap; // Custom renderers (required)
+  children: Snippet; // Child components
+  onRetry?: () => void; // Callback invoked on RETRY action
+  onCustomAction?: (action: { type: string; target?: string }) => void; // Custom action callback
+  plugins?: HuhPlugin[]; // Plugin array for monitoring/analytics
+  errorMap?: Record<string, string>; // Error code to trackId mapping table
+  fallbackTrackId?: string; // Default trackId when no mapping is found
+  router?: HuhRouter; // Custom router for client-side navigation (e.g., SvelteKit goto)
+}
+```
+
+::: tip
+  Either `source` or `locales` must be provided. `source` is for single language mode, `locales` is
+  for multi-language mode.
+:::
+
+### Basic Usage
+
+```svelte
+<script lang="ts">
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
+  import errorContent from './huh.json';
+  import { renderers } from './renderers';
+
+  const config = errorContent as ErrorConfig;
+</script>
+
+<HuhProvider
+  source={config}
+  {renderers}
+  onRetry={() => window.location.reload()}
+  onCustomAction={(action) => {
+    if (action.type === 'OPEN_CHAT') openChatWidget();
+  }}
+>
+  <YourApp />
+</HuhProvider>
+```
+
+### Router Integration
+
+Pass a `router` prop to use framework-specific client-side navigation instead of full page reloads:
+
+```svelte
+<script lang="ts">
+  // SvelteKit
+  import { goto } from '$app/navigation';
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
+</script>
+
+<HuhProvider
+  {source}
+  {renderers}
+  router={{ push: goto, back: () => history.back() }}
+>
+  <YourApp />
+</HuhProvider>
+```
+
+When `router` is provided, `REDIRECT` actions use `router.push()` and `BACK` actions use `router.back()`. Without it, the default `window.location.href` and `window.history.back()` behavior is preserved.
+
+---
+## RendererMap
+
+Provides renderers for each error type. Uses Svelte 5 Component types. Keys are uppercase type names.
+
+```ts type { Component } from 'svelte';
+
+type RendererMap = Record<string, Component<ErrorRenderProps>>;
+```
+
+### ErrorRenderProps
+
+Props passed to each renderer.
+
+```ts
+interface ErrorRenderProps {
+  error: ResolvedError; // Error info with variables already substituted
+  onAction: () => void; // Action button click handler
+  onDismiss: () => void; // Dismiss handler
+}
+```
+
+### onAction Behavior
+
+Uses the same action handling logic as the React/Vue packages:
+
+| actionType  | Behavior                                                                              |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `REDIRECT`  | `router.push(target)` if `router` provided, otherwise `window.location.href = target` |
+| `BACK`      | `router.back()` if `router` provided, otherwise `window.history.back()`               |
+| `RETRY`     | Clear error + invoke `onRetry` callback                                               |
+| `DISMISS`   | Clear error                                                                           |
+| Custom type | Clear error + invoke `onCustomAction` callback                                        |
+
+### Renderer Implementation Example
+
+Implement renderers as Svelte components:
+
+```svelte
+<!-- Toast.svelte -->
+<script lang="ts">
+  import type { ResolvedError } from '@sanghyuk-2i/huh-core';
+
+  interface Props {
+    error: ResolvedError;
+    onAction: () => void;
+    onDismiss: () => void;
+  }
+
+  let { error, onDismiss }: Props = $props();
+</script>
+
+<div class="toast" onclick={onDismiss} role="alert">
+  {error.message}
+</div>
+```
+
+```svelte
+<!-- Modal.svelte -->
+<script lang="ts">
+  import type { ResolvedError } from '@sanghyuk-2i/huh-core';
+
+  interface Props {
+    error: ResolvedError;
+    onAction: () => void;
+    onDismiss: () => void;
+  }
+
+  let { error, onAction, onDismiss }: Props = $props();
+</script>
+
+<div class="modal-overlay" onclick={onDismiss} role="dialog" tabindex="-1">
+  <div class="modal" onclick={(e) => e.stopPropagation()} role="document">
+    <h2>{error.title}</h2>
+    <p>{error.message}</p>
+    <div class="modal-actions">
+      <button onclick={onDismiss}>Close</button>
+      {#if error.action}
+        <button onclick={onAction}>{error.action.label}</button>
+      {/if}
+    </div>
+  </div>
+</div>
+```
+
+Assemble renderers into a `RendererMap`:
+
+```ts type { RendererMap } from '@sanghyuk-2i/huh-svelte';
+import Toast from './renderers/Toast.svelte';
+import Modal from './renderers/Modal.svelte';
+import Page from './renderers/Page.svelte';
+
+export const renderers: RendererMap = {
+  TOAST: Toast,
+  MODAL: Modal,
+  PAGE: Page,
+};
+```
+
+---
+## useHuh
+
+A function for triggering or clearing errors from within the Provider tree. Uses Svelte's `getContext()` internally.
+
+```ts [function] useHuh(): HuhContextValue;
+
+interface HuhContextValue {
+  huh: (code: string, variables?: Record<string, string>) => void;
+  clearError: () => void;
+  locale: string | undefined; // Current locale (i18n mode)
+  setLocale: (locale: string) => void; // Change locale (i18n mode)
+}
+```
+
+::: tip
+Throws an error if called outside of the Provider. Must be called at component initialization time (top-level `<script>` block).
+:::
+
+### huh(code, variables?)
+
+The single function for triggering errors. Handles direct trackId, errorMap mapping, and fallback.
+
+**Lookup order:**
+
+1. Check `errorMap` for code mapping
+2. Check if code directly matches a trackId
+3. Use `fallbackTrackId`
+4. Throw error if no mapping found
+
+```svelte
+<script lang="ts">
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
+
+  const { huh } = useHuh();
+</script>
+
+<!-- Trigger by trackId directly -->
+<button onclick={() => huh('ERR_NETWORK')}>Trigger Error</button>
+<button onclick={() => huh('ERR_AUTH', { userName: 'Jane' })}>With Variables</button>
+```
+
+**errorMap setup:**
+
+```svelte
+<HuhProvider
+  {source}
+  {renderers}
+  errorMap={{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }}
+  fallbackTrackId="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
+
+<!-- Map API error codes via errorMap -->
+<script>
+  const { huh } = useHuh();
+
+  async function callApi() {
+    try {
+      await api.call();
+    } catch (e) {
+      huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
+    }
+  }
+</script>
+```
+
+### clearError()
+
+Closes the currently active error UI.
+
+```svelte
+<script lang="ts">
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
+
+  const { clearError } = useHuh();
+</script>
+
+<button onclick={() => clearError()}>Close Error</button>
+```
+
+---
+## Build Configuration
+
+`@sanghyuk-2i/huh-svelte` is built with `svelte-package`, the standard Svelte library build tool (not tsup).
+
+- **Output**: ESM only (`"type": "module"`)
+- **Exports**: includes `"svelte"` condition
+- **Files**: `dist` + `src` (source included for IDE tooling)
+
+---
+## Differences from React Package
+
+|                   | @sanghyuk-2i/huh-react                   | @sanghyuk-2i/huh-svelte                                       |
+| ----------------- | ---------------------------- | ------------------------------------------------- |
+| **State**         | `useState`                   | `$state()`                                        |
+| **Context**       | `createContext`/`useContext` | `setContext()`/`getContext()` + Symbol            |
+| **Renderer type** | `(props) => ReactNode`       | `Component<ErrorRenderProps>` (Svelte components) |
+| **Children**      | `ReactNode`                  | `Snippet`                                         |
+| **Build**         | tsup (CJS + ESM)             | svelte-package (ESM)                              |
