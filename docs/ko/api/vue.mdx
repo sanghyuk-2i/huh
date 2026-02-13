@@ -46,6 +46,7 @@ interface HuhProviderProps {
   plugins?: HuhPlugin[];    // 모니터링/분석용 플러그인 배열
   errorMap?: Record<string, string>;  // 에러 코드→trackId 매핑 테이블
   fallbackTrackId?: string;           // 매핑이 없을 때 사용할 기본 trackId
+  router?: HuhRouter;       // 클라이언트 사이드 라우팅용 커스텀 라우터 (예: Nuxt useRouter)
 }
 ```
 
@@ -79,6 +80,31 @@ const config = errorContent as ErrorConfig;
 </template>
 ```
 
+### 라우터 연동
+
+`router` prop을 전달하면 full page reload 대신 프레임워크별 클라이언트 사이드 네비게이션을 사용합니다:
+
+```vue
+<script setup lang="ts">
+// Nuxt
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+</script>
+
+<template>
+  <HuhProvider
+    :source="config"
+    :renderers="renderers"
+    :router="{ push: (url) => router.push(url), back: () => router.back() }"
+  >
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+`router`가 제공되면 `REDIRECT` 액션은 `router.push()`를, `BACK` 액션은 `router.back()`을 사용합니다. 미제공 시 기존 `window.location.href` 및 `window.history.back()` 동작이 유지됩니다.
+
 ---
 
 ## RendererMap
@@ -109,8 +135,8 @@ React 패키지와 동일한 액션 처리 로직을 사용합니다:
 
 | actionType | 동작 |
 |------------|------|
-| `REDIRECT` | `window.location.href = action.target` |
-| `BACK` | `window.history.back()` |
+| `REDIRECT` | `router` 제공 시 `router.push(target)`, 미제공 시 `window.location.href = target` |
+| `BACK` | `router` 제공 시 `router.back()`, 미제공 시 `window.history.back()` |
 | `RETRY` | 에러 클리어 + `onRetry` 콜백 호출 |
 | `DISMISS` | 에러 클리어 |
 | 커스텀 타입 | 에러 클리어 + `onCustomAction` 콜백 호출 |
@@ -173,8 +199,7 @@ Provider 하위에서 에러를 트리거하거나 클리어하는 composable입
 function useHuh(): HuhContextValue;
 
 interface HuhContextValue {
-  handleError: (trackId: string, variables?: Record<string, string>) => void;
-  handleErrorByCode: (code: string, variables?: Record<string, string>) => void;
+  huh: (code: string, variables?: Record<string, string>) => void;
   clearError: () => void;
   locale: string | undefined;                // 현재 로케일 (i18n 모드)
   setLocale: (locale: string) => void;       // 로케일 변경 (i18n 모드)
@@ -185,20 +210,50 @@ interface HuhContextValue {
 Provider 밖에서 호출하면 에러가 발생합니다.
 </Warning>
 
-### handleError(trackId, variables?)
+### huh(code, variables?)
+
+에러를 트리거하는 단일 함수입니다. trackId 직접 지정, errorMap 매핑, fallback을 모두 처리합니다.
+
+**조회 순서:**
+1. `errorMap`에서 코드 매핑 확인
+2. 코드가 직접 trackId와 일치하는지 확인
+3. `fallbackTrackId` 사용
+4. 매핑이 없으면 에러 throw
 
 ```vue
 <script setup lang="ts">
 import { useHuh } from '@huh/vue';
 
-const { handleError } = useHuh();
+const { huh } = useHuh();
 
-// 단순 에러 트리거
-handleError('ERR_NETWORK');
+// trackId로 직접 에러 트리거
+huh('ERR_NETWORK');
 
 // 변수 치환과 함께 트리거
-handleError('ERR_SESSION_EXPIRED', { userName: '홍길동' });
+huh('ERR_SESSION_EXPIRED', { userName: '홍길동' });
+
+// API 에러 코드를 errorMap으로 매핑
+async function callApi() {
+  try {
+    await api.call();
+  } catch (e) {
+    huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
+  }
+}
 </script>
+```
+
+**errorMap 설정:**
+
+```vue
+<HuhProvider
+  :source="config"
+  :renderers="renderers"
+  :error-map="{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }"
+  fallback-track-id="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
 ```
 
 ### clearError()
@@ -215,41 +270,6 @@ const { clearError } = useHuh();
 <template>
   <button @click="clearError()">에러 닫기</button>
 </template>
-```
-
-### `handleErrorByCode`
-
-에러 코드(예: API 응답 코드)를 trackId로 매핑하여 에러를 표시합니다.
-
-**조회 순서:**
-1. `errorMap`에서 코드 매핑 확인
-2. 코드가 직접 trackId와 일치하는지 확인
-3. `fallbackTrackId` 사용
-4. 매핑이 없으면 에러 throw
-
-```vue
-<!-- Provider setup -->
-<HuhProvider
-  :source="config"
-  :renderers="renderers"
-  :error-map="{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }"
-  fallback-track-id="ERR_UNKNOWN"
->
-  <App />
-</HuhProvider>
-
-<!-- In a component -->
-<script setup>
-const { handleErrorByCode } = useHuh();
-
-async function callApi() {
-  try {
-    await api.call();
-  } catch (e) {
-    handleErrorByCode(e.code);
-  }
-}
-</script>
 ```
 
 ---

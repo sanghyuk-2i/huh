@@ -46,6 +46,7 @@ interface HuhProviderProps {
   plugins?: HuhPlugin[];    // Plugin array for monitoring/analytics
   errorMap?: Record<string, string>;  // Error code to trackId mapping table
   fallbackTrackId?: string;           // Default trackId when no mapping is found
+  router?: HuhRouter;       // Custom router for client-side navigation (e.g., Nuxt useRouter)
 }
 ```
 
@@ -79,6 +80,31 @@ const config = errorContent as ErrorConfig;
 </template>
 ```
 
+### Router Integration
+
+Pass a `router` prop to use framework-specific client-side navigation instead of full page reloads:
+
+```vue
+<script setup lang="ts">
+// Nuxt
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+</script>
+
+<template>
+  <HuhProvider
+    :source="config"
+    :renderers="renderers"
+    :router="{ push: (url) => router.push(url), back: () => router.back() }"
+  >
+    <YourApp />
+  </HuhProvider>
+</template>
+```
+
+When `router` is provided, `REDIRECT` actions use `router.push()` and `BACK` actions use `router.back()`. Without it, the default `window.location.href` and `window.history.back()` behavior is preserved.
+
 ---
 
 ## RendererMap
@@ -109,8 +135,8 @@ Uses the same action handling logic as the React package:
 
 | actionType | Behavior |
 |------------|----------|
-| `REDIRECT` | `window.location.href = action.target` |
-| `BACK` | `window.history.back()` |
+| `REDIRECT` | `router.push(target)` if `router` provided, otherwise `window.location.href = target` |
+| `BACK` | `router.back()` if `router` provided, otherwise `window.history.back()` |
 | `RETRY` | Clear error + invoke `onRetry` callback |
 | `DISMISS` | Clear error |
 | Custom type | Clear error + invoke `onCustomAction` callback |
@@ -173,8 +199,7 @@ A composable for triggering or clearing errors from within the Provider tree. Us
 function useHuh(): HuhContextValue;
 
 interface HuhContextValue {
-  handleError: (trackId: string, variables?: Record<string, string>) => void;
-  handleErrorByCode: (code: string, variables?: Record<string, string>) => void;
+  huh: (code: string, variables?: Record<string, string>) => void;
   clearError: () => void;
   locale: string | undefined;                // Current locale (i18n mode)
   setLocale: (locale: string) => void;       // Change locale (i18n mode)
@@ -185,20 +210,50 @@ interface HuhContextValue {
 Throws an error if called outside of the Provider.
 </Warning>
 
-### handleError(trackId, variables?)
+### huh(code, variables?)
+
+The single function for triggering errors. Handles direct trackId, errorMap mapping, and fallback.
+
+**Lookup order:**
+1. Check `errorMap` for code mapping
+2. Check if code directly matches a trackId
+3. Use `fallbackTrackId`
+4. Throw error if no mapping found
 
 ```vue
 <script setup lang="ts">
 import { useHuh } from '@huh/vue';
 
-const { handleError } = useHuh();
+const { huh } = useHuh();
 
-// Simple error trigger
-handleError('ERR_NETWORK');
+// Trigger by trackId directly
+huh('ERR_NETWORK');
 
 // Trigger with variable substitution
-handleError('ERR_SESSION_EXPIRED', { userName: 'Jane' });
+huh('ERR_SESSION_EXPIRED', { userName: 'Jane' });
+
+// Map API error codes via errorMap
+async function callApi() {
+  try {
+    await api.call();
+  } catch (e) {
+    huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
+  }
+}
 </script>
+```
+
+**errorMap setup:**
+
+```vue
+<HuhProvider
+  :source="config"
+  :renderers="renderers"
+  :error-map="{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }"
+  fallback-track-id="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
 ```
 
 ### clearError()
@@ -215,41 +270,6 @@ const { clearError } = useHuh();
 <template>
   <button @click="clearError()">Close Error</button>
 </template>
-```
-
-### `handleErrorByCode`
-
-Maps an error code (e.g., API response code) to a trackId and displays the error.
-
-**Lookup order:**
-1. Check `errorMap` for code mapping
-2. Check if code directly matches a trackId
-3. Use `fallbackTrackId`
-4. Throw error if no mapping found
-
-```vue
-<!-- Provider setup -->
-<HuhProvider
-  :source="config"
-  :renderers="renderers"
-  :error-map="{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }"
-  fallback-track-id="ERR_UNKNOWN"
->
-  <App />
-</HuhProvider>
-
-<!-- In a component -->
-<script setup>
-const { handleErrorByCode } = useHuh();
-
-async function callApi() {
-  try {
-    await api.call();
-  } catch (e) {
-    handleErrorByCode(e.code);
-  }
-}
-</script>
 ```
 
 ---

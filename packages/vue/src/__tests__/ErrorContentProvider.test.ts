@@ -29,6 +29,16 @@ const testConfig: ErrorConfig = {
       type: 'BACK',
     },
   },
+  ERR_REDIRECT: {
+    type: 'PAGE',
+    message: 'Redirecting',
+    title: 'Redirect',
+    action: {
+      label: 'Go home',
+      type: 'REDIRECT',
+      target: '/home',
+    },
+  },
   ERR_CUSTOM: {
     type: 'BANNER',
     message: 'Custom banner error',
@@ -112,17 +122,18 @@ const mockRenderers: RendererMap = {
 
 const TestConsumer = defineComponent({
   setup() {
-    const { handleError, clearError } = useHuh();
+    const { huh, clearError } = useHuh();
     return () =>
       h('div', [
-        h('button', { onClick: () => handleError('ERR_001') }, 'trigger toast'),
+        h('button', { onClick: () => huh('ERR_001') }, 'trigger toast'),
         h(
           'button',
-          { onClick: () => handleError('ERR_002', { userName: '이재민' }) },
+          { onClick: () => huh('ERR_002', { userName: '이재민' }) },
           'trigger modal',
         ),
-        h('button', { onClick: () => handleError('ERR_003') }, 'trigger page'),
-        h('button', { onClick: () => handleError('ERR_CUSTOM') }, 'trigger custom'),
+        h('button', { onClick: () => huh('ERR_003') }, 'trigger page'),
+        h('button', { onClick: () => huh('ERR_CUSTOM') }, 'trigger custom'),
+        h('button', { onClick: () => huh('ERR_REDIRECT') }, 'trigger redirect'),
         h('button', { onClick: () => clearError() }, 'clear'),
       ]);
   },
@@ -139,7 +150,7 @@ describe('HuhProvider', () => {
     expect(wrapper.find('[data-testid="child"]').exists()).toBe(true);
   });
 
-  it('renders toast error when handleError is called', async () => {
+  it('renders toast error when huh is called', async () => {
     const wrapper = mount(HuhProvider, {
       props: { source: testConfig, renderers: mockRenderers },
       slots: {
@@ -234,7 +245,7 @@ describe('HuhProvider', () => {
 });
 
 describe('plugins', () => {
-  it('calls onError when handleError is called', async () => {
+  it('calls onError when huh is called', async () => {
     const onError = vi.fn();
     const plugin: HuhPlugin = { name: 'test-plugin', onError };
 
@@ -297,15 +308,15 @@ describe('plugins', () => {
   });
 });
 
-describe('handleErrorByCode', () => {
+describe('huh', () => {
   const CodeConsumer = defineComponent({
     setup() {
-      const { handleErrorByCode } = useHuh();
+      const { huh } = useHuh();
       return () =>
         h('div', [
-          h('button', { onClick: () => handleErrorByCode('API_500') }, 'by-code'),
-          h('button', { onClick: () => handleErrorByCode('ERR_001') }, 'direct-trackid'),
-          h('button', { onClick: () => handleErrorByCode('UNKNOWN_CODE') }, 'unknown-code'),
+          h('button', { onClick: () => huh('API_500') }, 'by-code'),
+          h('button', { onClick: () => huh('ERR_001') }, 'direct-trackid'),
+          h('button', { onClick: () => huh('UNKNOWN_CODE') }, 'unknown-code'),
         ]);
     },
   });
@@ -346,8 +357,8 @@ describe('handleErrorByCode', () => {
 
     const CaptureConsumer = defineComponent({
       setup() {
-        const { handleErrorByCode } = useHuh();
-        capturedHandleErrorByCode = handleErrorByCode;
+        const { huh } = useHuh();
+        capturedHandleErrorByCode = huh;
         return () => null;
       },
     });
@@ -361,6 +372,48 @@ describe('handleErrorByCode', () => {
     expect(() => capturedHandleErrorByCode!('UNKNOWN_CODE')).toThrow(
       'No mapping found for error code',
     );
+  });
+});
+
+describe('router prop', () => {
+  it('calls router.push on REDIRECT action', async () => {
+    const mockRouter = { push: vi.fn(), back: vi.fn() };
+
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers, router: mockRouter },
+      slots: {
+        default: () => h(TestConsumer),
+      },
+    });
+
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger redirect')[0]
+      .trigger('click');
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'Go home')[0].trigger('click');
+
+    expect(mockRouter.push).toHaveBeenCalledWith('/home');
+  });
+
+  it('calls router.back on BACK action', async () => {
+    const mockRouter = { push: vi.fn(), back: vi.fn() };
+
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers, router: mockRouter },
+      slots: {
+        default: () => h(TestConsumer),
+      },
+    });
+
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger page')[0]
+      .trigger('click');
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'Go back')[0].trigger('click');
+
+    expect(mockRouter.back).toHaveBeenCalled();
   });
 });
 

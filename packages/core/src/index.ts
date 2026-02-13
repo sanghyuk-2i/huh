@@ -14,6 +14,7 @@ export type {
   ValidationResult,
   CrossLocaleValidationError,
   CrossLocaleValidationResult,
+  HuhRouter,
   HuhPlugin,
   HuhErrorContext,
 } from './schema';

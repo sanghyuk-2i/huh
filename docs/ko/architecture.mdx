@@ -32,7 +32,7 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
     │
     ├─ source prop으로 JSON 데이터 주입 (단일 언어)
     ├─ locales prop으로 다국어 데이터 주입 (i18n)
-    ├─ handleError(trackId, variables)로 에러 트리거
+    ├─ huh(code, variables)로 에러 트리거 (trackId 직접 또는 errorMap 경유)
     ├─ @huh/core의 resolveError로 조회 + 변수 치환
     │
     ▼
@@ -79,7 +79,7 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 | 모듈 | 역할 |
 |------|------|
 | `ErrorContentProvider.tsx` | Context Provider, 에러 상태 관리, 렌더러 호출 |
-| `useErrorContent.ts` | handleError/clearError 훅 |
+| `useErrorContent.ts` | huh/clearError 훅 |
 | `types.ts` | ErrorRenderProps, RendererMap 타입 정의 |
 
 ### @huh/vue
@@ -160,8 +160,8 @@ Provider는 기본 렌더러를 제공하지 않습니다. 이는 의도적인 �
 ```
 사용자가 액션 버튼 클릭 → onAction() 호출
     │
-    ├── REDIRECT → window.location.href = target
-    ├── BACK     → window.history.back()
+    ├── REDIRECT → router 제공 시 router.push(target), 미제공 시 window.location.href = target
+    ├── BACK     → router 제공 시 router.back(), 미제공 시 window.history.back()
     ├── RETRY    → clearError() + onRetry 콜백
     ├── DISMISS  → clearError()
     └── 커스텀    → clearError() + onCustomAction 콜백
@@ -174,7 +174,7 @@ Provider는 기본 렌더러를 제공하지 않습니다. 이는 의도적인 �
 ### 플러그인 라이프사이클
 
 ```
-handleError(trackId, variables)
+huh(code, variables)
     │
     ├── resolveError → 활성 에러 설정
     ├── runPluginHook(plugins, 'onError', resolved, context)  ◀── 플러그인 훅

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin, HuhRouter } from '@huh/core';
 import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
@@ -18,6 +18,7 @@ export interface HuhProviderProps {
   plugins?: HuhPlugin[];
   errorMap?: Record<string, string>;
   fallbackTrackId?: string;
+  router?: HuhRouter;
 }
 
 export function HuhProvider({
@@ -32,6 +33,7 @@ export function HuhProvider({
   plugins = [],
   errorMap,
   fallbackTrackId,
+  router,
 }: HuhProviderProps) {
   const [activeError, setActiveError] = useState<ResolvedError | null>(null);
   const [internalLocale, setInternalLocale] = useState<string>(
@@ -72,7 +74,7 @@ export function HuhProvider({
     [getActiveSource, plugins, locales, currentLocale],
   );
 
-  const handleErrorByCode = useCallback(
+  const huh = useCallback(
     (code: string, variables?: Record<string, string>) => {
       // 1. Check errorMap
       if (errorMap && code in errorMap) {
@@ -103,13 +105,12 @@ export function HuhProvider({
 
   const contextValue = useMemo<HuhContextValue>(
     () => ({
-      handleError,
-      handleErrorByCode,
+      huh,
       clearError,
       locale: locales ? currentLocale : undefined,
       setLocale,
     }),
-    [handleError, handleErrorByCode, clearError, currentLocale, setLocale, locales],
+    [huh, clearError, currentLocale, setLocale, locales],
   );
 
   const createOnAction = useCallback(
@@ -125,12 +126,18 @@ export function HuhProvider({
 
         switch (action.type) {
           case ACTION_TYPES.REDIRECT:
-            if (action.target && typeof window !== 'undefined') {
-              window.location.href = action.target;
+            if (action.target) {
+              if (router) {
+                router.push(action.target);
+              } else if (typeof window !== 'undefined') {
+                window.location.href = action.target;
+              }
             }
             break;
           case ACTION_TYPES.BACK:
-            if (typeof window !== 'undefined') {
+            if (router) {
+              router.back();
+            } else if (typeof window !== 'undefined') {
               window.history.back();
             }
             break;
@@ -149,7 +156,7 @@ export function HuhProvider({
         }
       };
     },
-    [clearError, onRetry, onCustomAction, plugins],
+    [clearError, onRetry, onCustomAction, plugins, router],
   );
 
   const renderError = () => {

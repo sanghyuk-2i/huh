@@ -34,6 +34,16 @@ const testConfig = {
             type: 'BACK',
         },
     },
+    ERR_REDIRECT: {
+        type: 'PAGE',
+        message: 'Redirecting',
+        title: 'Redirect',
+        action: {
+            label: 'Go home',
+            type: 'REDIRECT',
+            target: '/home',
+        },
+    },
     ERR_CUSTOM: {
         type: 'BANNER',
         message: 'Custom banner error',
@@ -56,7 +66,7 @@ describe('HuhProvider', () => {
         });
         expect(screen.getByTestId('child')).toBeDefined();
     });
-    it('renders toast error when handleError is called', async () => {
+    it('renders toast error when huh is called', async () => {
         render(TestWrapper, {
             props: { source: testConfig, renderers: mockRenderers },
         });
@@ -110,7 +120,7 @@ describe('HuhProvider', () => {
     });
 });
 describe('plugins', () => {
-    it('calls onError when handleError is called', async () => {
+    it('calls onError when huh is called', async () => {
         const onError = vi.fn();
         const plugin = { name: 'test-plugin', onError };
         render(TestWrapper, {
@@ -146,7 +156,7 @@ describe('plugins', () => {
         warnSpy.mockRestore();
     });
 });
-describe('handleErrorByCode', () => {
+describe('huh', () => {
     it('maps error code to trackId via errorMap', async () => {
         render(TestWrapper, {
             props: { source: testConfig, renderers: mockRenderers, errorMap: { API_500: 'ERR_001' } },
@@ -187,6 +197,26 @@ describe('handleErrorByCode', () => {
         window.removeEventListener('error', handler);
         expect(caughtError).not.toBeNull();
         expect(caughtError.message).toContain('No mapping found for error code');
+    });
+});
+describe('router prop', () => {
+    it('calls router.push on REDIRECT action', async () => {
+        const mockRouter = { push: vi.fn(), back: vi.fn() };
+        render(TestWrapper, {
+            props: { source: testConfig, renderers: mockRenderers, router: mockRouter },
+        });
+        await fireEvent.click(screen.getByText('trigger redirect'));
+        await fireEvent.click(screen.getByText('Go home'));
+        expect(mockRouter.push).toHaveBeenCalledWith('/home');
+    });
+    it('calls router.back on BACK action', async () => {
+        const mockRouter = { push: vi.fn(), back: vi.fn() };
+        render(TestWrapper, {
+            props: { source: testConfig, renderers: mockRenderers, router: mockRouter },
+        });
+        await fireEvent.click(screen.getByText('trigger page'));
+        await fireEvent.click(screen.getByText('Go back'));
+        expect(mockRouter.back).toHaveBeenCalled();
     });
 });
 describe('useHuh', () => {

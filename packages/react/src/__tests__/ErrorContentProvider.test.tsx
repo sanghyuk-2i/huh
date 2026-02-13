@@ -33,6 +33,16 @@ const testConfig: ErrorConfig = {
       type: 'BACK',
     },
   },
+  ERR_REDIRECT: {
+    type: 'PAGE',
+    message: 'Redirecting',
+    title: 'Redirect',
+    action: {
+      label: 'Go home',
+      type: 'REDIRECT',
+      target: '/home',
+    },
+  },
   ERR_CUSTOM: {
     type: 'BANNER',
     message: 'Custom banner error',
@@ -75,15 +85,16 @@ const mockRenderers: RendererMap = {
 };
 
 function TestConsumer() {
-  const { handleError, clearError } = useHuh();
+  const { huh, clearError } = useHuh();
   return (
     <div>
-      <button onClick={() => handleError('ERR_001')}>trigger toast</button>
-      <button onClick={() => handleError('ERR_002', { userName: '이재민' })}>
+      <button onClick={() => huh('ERR_001')}>trigger toast</button>
+      <button onClick={() => huh('ERR_002', { userName: '이재민' })}>
         trigger modal
       </button>
-      <button onClick={() => handleError('ERR_003')}>trigger page</button>
-      <button onClick={() => handleError('ERR_CUSTOM')}>trigger custom</button>
+      <button onClick={() => huh('ERR_003')}>trigger page</button>
+      <button onClick={() => huh('ERR_CUSTOM')}>trigger custom</button>
+      <button onClick={() => huh('ERR_REDIRECT')}>trigger redirect</button>
       <button onClick={() => clearError()}>clear</button>
     </div>
   );
@@ -99,7 +110,7 @@ describe('HuhProvider', () => {
     expect(screen.getByTestId('child')).toBeDefined();
   });
 
-  it('renders toast error when handleError is called', () => {
+  it('renders toast error when huh is called', () => {
     render(
       <HuhProvider source={testConfig} renderers={mockRenderers}>
         <TestConsumer />
@@ -207,7 +218,7 @@ describe('HuhProvider', () => {
 });
 
 describe('plugins', () => {
-  it('calls onError when handleError is called', () => {
+  it('calls onError when huh is called', () => {
     const onError = vi.fn();
     const plugin: HuhPlugin = { name: 'test-plugin', onError };
 
@@ -276,14 +287,14 @@ describe('plugins', () => {
   });
 });
 
-describe('handleErrorByCode', () => {
+describe('huh', () => {
   function CodeConsumer() {
-    const { handleErrorByCode } = useHuh();
+    const { huh } = useHuh();
     return (
       <div>
-        <button onClick={() => handleErrorByCode('API_500')}>by-code</button>
-        <button onClick={() => handleErrorByCode('ERR_001')}>direct-trackid</button>
-        <button onClick={() => handleErrorByCode('UNKNOWN_CODE')}>unknown-code</button>
+        <button onClick={() => huh('API_500')}>by-code</button>
+        <button onClick={() => huh('ERR_001')}>direct-trackid</button>
+        <button onClick={() => huh('UNKNOWN_CODE')}>unknown-code</button>
       </div>
     );
   }
@@ -343,8 +354,8 @@ describe('handleErrorByCode', () => {
     let capturedHandleErrorByCode: ((code: string) => void) | null = null;
 
     function CaptureConsumer() {
-      const { handleErrorByCode } = useHuh();
-      capturedHandleErrorByCode = handleErrorByCode;
+      const { huh } = useHuh();
+      capturedHandleErrorByCode = huh;
       return null;
     }
 
@@ -358,6 +369,48 @@ describe('handleErrorByCode', () => {
     expect(() => capturedHandleErrorByCode!('UNKNOWN_CODE')).toThrow(
       'No mapping found for error code',
     );
+  });
+});
+
+describe('router prop', () => {
+  it('calls router.push on REDIRECT action', () => {
+    const mockRouter = { push: vi.fn(), back: vi.fn() };
+
+    render(
+      <HuhProvider source={testConfig} renderers={mockRenderers} router={mockRouter}>
+        <TestConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('trigger redirect').click();
+    });
+
+    act(() => {
+      screen.getByText('Go home').click();
+    });
+
+    expect(mockRouter.push).toHaveBeenCalledWith('/home');
+  });
+
+  it('calls router.back on BACK action', () => {
+    const mockRouter = { push: vi.fn(), back: vi.fn() };
+
+    render(
+      <HuhProvider source={testConfig} renderers={mockRenderers} router={mockRouter}>
+        <TestConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('trigger page').click();
+    });
+
+    act(() => {
+      screen.getByText('Go back').click();
+    });
+
+    expect(mockRouter.back).toHaveBeenCalled();
   });
 });
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ErrorConfig, HuhPlugin } from '@huh/core';
+  import type { ErrorConfig, HuhPlugin, HuhRouter } from '@huh/core';
   import HuhProvider from '../HuhProvider.svelte';
   import type { RendererMap } from '../types';
   import TestConsumer from './TestConsumer.svelte';
@@ -12,11 +12,12 @@
     plugins?: HuhPlugin[];
     errorMap?: Record<string, string>;
     fallbackTrackId?: string;
+    router?: HuhRouter;
   }
 
-  let { source, renderers, onRetry, onCustomAction, plugins, errorMap, fallbackTrackId }: Props = $props();
+  let { source, renderers, onRetry, onCustomAction, plugins, errorMap, fallbackTrackId, router }: Props = $props();
 </script>
 
-<HuhProvider {source} {renderers} {onRetry} {onCustomAction} {plugins} {errorMap} {fallbackTrackId}>
+<HuhProvider {source} {renderers} {onRetry} {onCustomAction} {plugins} {errorMap} {fallbackTrackId} {router}>
   <TestConsumer />
 </HuhProvider>

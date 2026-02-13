@@ -1,6 +1,6 @@
 import { defineComponent, ref, provide, h, toRaw, computed } from 'vue';
 import type { PropType, InjectionKey } from 'vue';
-import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin, HuhRouter } from '@huh/core';
 import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
@@ -49,6 +49,10 @@ export const HuhProvider = defineComponent({
       type: String,
       default: undefined,
     },
+    router: {
+      type: Object as PropType<HuhRouter>,
+      default: undefined,
+    },
   },
   setup(props, { slots }) {
     const activeError = ref<ResolvedError | null>(null);
@@ -85,7 +89,7 @@ export const HuhProvider = defineComponent({
       });
     };
 
-    const handleErrorByCode = (code: string, variables?: Record<string, string>) => {
+    const huh = (code: string, variables?: Record<string, string>) => {
       if (props.errorMap && code in props.errorMap) {
         handleError(props.errorMap[code], variables);
         return;
@@ -109,8 +113,7 @@ export const HuhProvider = defineComponent({
     };
 
     provide(HuhInjectionKey, {
-      handleError,
-      handleErrorByCode,
+      huh,
       clearError,
       get locale() {
         return props.locales ? currentLocale.value : undefined;
@@ -130,12 +133,18 @@ export const HuhProvider = defineComponent({
 
         switch (action.type) {
           case ACTION_TYPES.REDIRECT:
-            if (action.target && typeof window !== 'undefined') {
-              window.location.href = action.target;
+            if (action.target) {
+              if (props.router) {
+                props.router.push(action.target);
+              } else if (typeof window !== 'undefined') {
+                window.location.href = action.target;
+              }
             }
             break;
           case ACTION_TYPES.BACK:
-            if (typeof window !== 'undefined') {
+            if (props.router) {
+              props.router.back();
+            } else if (typeof window !== 'undefined') {
               window.history.back();
             }
             break;

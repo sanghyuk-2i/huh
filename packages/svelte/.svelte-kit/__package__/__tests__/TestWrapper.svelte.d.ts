@@ -1,4 +1,4 @@
-import type { ErrorConfig, HuhPlugin } from '@huh/core';
+import type { ErrorConfig, HuhPlugin, HuhRouter } from '@huh/core';
 import type { RendererMap } from '../types';
 interface Props {
     source: ErrorConfig;
@@ -11,6 +11,7 @@ interface Props {
     plugins?: HuhPlugin[];
     errorMap?: Record<string, string>;
     fallbackTrackId?: string;
+    router?: HuhRouter;
 }
 declare const TestWrapper: import("svelte").Component<Props, {}, "">;
 type TestWrapper = ReturnType<typeof TestWrapper>;

@@ -85,6 +85,11 @@ export interface HuhErrorContext {
   severity?: Severity;
 }
 
+export interface HuhRouter {
+  push: (url: string) => void;
+  back: () => void;
+}
+
 export interface HuhPlugin {
   name: string;
   onError?: (error: ResolvedError, context: HuhErrorContext) => void;

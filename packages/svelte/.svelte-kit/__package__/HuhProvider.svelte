@@ -1,7 +1,7 @@
 <script lang="ts">
   import { setContext } from 'svelte';
   import type { Snippet } from 'svelte';
-  import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin } from '@huh/core';
+  import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin, HuhRouter } from '@huh/core';
   import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
   import { HUH_CONTEXT_KEY } from './context';
   import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
@@ -18,6 +18,7 @@
     plugins?: HuhPlugin[];
     errorMap?: Record<string, string>;
     fallbackTrackId?: string;
+    router?: HuhRouter;
   }
 
   let {
@@ -32,6 +33,7 @@
     plugins = [],
     errorMap,
     fallbackTrackId,
+    router,
   }: Props = $props();
 
   let activeError: ResolvedError | null = $state(null);
@@ -68,7 +70,7 @@
     });
   }
 
-  function handleErrorByCode(code: string, variables?: Record<string, string>) {
+  function huh(code: string, variables?: Record<string, string>) {
     if (errorMap && code in errorMap) {
       handleError(errorMap[code], variables);
       return;
@@ -92,8 +94,7 @@
   }
 
   setContext<HuhContextValue>(HUH_CONTEXT_KEY, {
-    handleError,
-    handleErrorByCode,
+    huh,
     clearError,
     get locale() {
       return locales ? currentLocale : undefined;
@@ -113,12 +114,18 @@
 
       switch (action.type) {
         case ACTION_TYPES.REDIRECT:
-          if (action.target && typeof window !== 'undefined') {
-            window.location.href = action.target;
+          if (action.target) {
+            if (router) {
+              router.push(action.target);
+            } else if (typeof window !== 'undefined') {
+              window.location.href = action.target;
+            }
           }
           break;
         case ACTION_TYPES.BACK:
-          if (typeof window !== 'undefined') {
+          if (router) {
+            router.back();
+          } else if (typeof window !== 'undefined') {
             window.history.back();
           }
           break;

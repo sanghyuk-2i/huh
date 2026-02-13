@@ -32,7 +32,7 @@ huh.json  or  huh/ directory (build-time artifact)
     |
     +-- Inject JSON data via source prop (single language)
     +-- Inject multi-language data via locales prop (i18n)
-    +-- Trigger errors with handleError(trackId, variables)
+    +-- Trigger errors with huh(code, variables) (direct trackId or via errorMap)
     +-- Look up + substitute variables via @huh/core's resolveError
     |
     v
@@ -79,7 +79,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | Module | Responsibility |
 |--------|---------------|
 | `ErrorContentProvider.tsx` | Context Provider, error state management, renderer invocation |
-| `useErrorContent.ts` | handleError/clearError hook |
+| `useErrorContent.ts` | huh/clearError hook |
 | `types.ts` | ErrorRenderProps, RendererMap type definitions |
 
 ### @huh/vue
@@ -160,8 +160,8 @@ The Provider does not supply default renderers. This is intentional:
 ```
 User clicks action button -> onAction() called
     |
-    +-- REDIRECT -> window.location.href = target
-    +-- BACK     -> window.history.back()
+    +-- REDIRECT -> router.push(target) if router provided, else window.location.href = target
+    +-- BACK     -> router.back() if router provided, else window.history.back()
     +-- RETRY    -> clearError() + onRetry callback
     +-- DISMISS  -> clearError()
     +-- Custom   -> clearError() + onCustomAction callback
@@ -174,7 +174,7 @@ Plugins provide extension points for error monitoring, analytics, and custom int
 ### Plugin Lifecycle
 
 ```
-handleError(trackId, variables)
+huh(code, variables)
     |
     +-- resolveError -> set active error
     +-- runPluginHook(plugins, 'onError', resolved, context)  <-- Plugin hook
