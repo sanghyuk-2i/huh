@@ -14,7 +14,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 
-[시작하기](./docs/ko/getting-started.mdx) | [API 레퍼런스](./docs/ko/api/core.mdx) | [아키텍처](./docs/ko/architecture.mdx)
+[시작하기](https://sanghyuk-2i.github.io/huh/ko/getting-started) | [API 레퍼런스](https://sanghyuk-2i.github.io/huh/ko/api/core) | [아키텍처](https://sanghyuk-2i.github.io/huh/ko/architecture)
 
 **[English / 영어](./README.en.md)**
 
@@ -238,14 +238,14 @@ CI/CD 파이프라인에 적합합니다. 콘텐츠 오류를 프로덕션에 �
 
 ## 문서
 
-- [시작하기](./docs/ko/getting-started.mdx) - 전체 설정 가이드
-- [Google Sheet 설정](./docs/ko/guides/google-sheets.mdx) · [Airtable](./docs/ko/guides/airtable.mdx) · [Notion](./docs/ko/guides/notion.mdx) · [CSV](./docs/ko/guides/csv.mdx) · [XLSX](./docs/ko/guides/xlsx.mdx)
-- [@sanghyuk-2i/huh-core API](./docs/ko/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
-- [@sanghyuk-2i/huh-react API](./docs/ko/api/react.mdx) - `HuhProvider`, `useHuh`, 렌더러 타입
-- [@sanghyuk-2i/huh-vue API](./docs/ko/api/vue.mdx) - Vue 3 바인딩
-- [@sanghyuk-2i/huh-svelte API](./docs/ko/api/svelte.mdx) - Svelte 5 바인딩
-- [@sanghyuk-2i/huh-cli API](./docs/ko/api/cli.mdx) - CLI 명령어 및 설정 옵션
-- [아키텍처](./docs/ko/architecture.mdx) - 설계 결정 및 데이터 흐름
+- [시작하기](https://sanghyuk-2i.github.io/huh/ko/getting-started) - 전체 설정 가이드
+- [Google Sheet 설정](https://sanghyuk-2i.github.io/huh/ko/guides/google-sheets) · [Airtable](https://sanghyuk-2i.github.io/huh/ko/guides/airtable) · [Notion](https://sanghyuk-2i.github.io/huh/ko/guides/notion) · [CSV](https://sanghyuk-2i.github.io/huh/ko/guides/csv) · [XLSX](https://sanghyuk-2i.github.io/huh/ko/guides/xlsx)
+- [@sanghyuk-2i/huh-core API](https://sanghyuk-2i.github.io/huh/ko/api/core) - `parseSheetData`, `resolveError`, `validateConfig`
+- [@sanghyuk-2i/huh-react API](https://sanghyuk-2i.github.io/huh/ko/api/react) - `HuhProvider`, `useHuh`, 렌더러 타입
+- [@sanghyuk-2i/huh-vue API](https://sanghyuk-2i.github.io/huh/ko/api/vue) - Vue 3 바인딩
+- [@sanghyuk-2i/huh-svelte API](https://sanghyuk-2i.github.io/huh/ko/api/svelte) - Svelte 5 바인딩
+- [@sanghyuk-2i/huh-cli API](https://sanghyuk-2i.github.io/huh/ko/api/cli) - CLI 명령어 및 설정 옵션
+- [아키텍처](https://sanghyuk-2i.github.io/huh/ko/architecture) - 설계 결정 및 데이터 흐름
 
 ## CI/CD 연동
 

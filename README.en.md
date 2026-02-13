@@ -14,7 +14,7 @@ Developers get type-safe, auto-rendered error UI at runtime.
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 
-[Getting Started](./docs/en/getting-started.mdx) | [API Reference](./docs/en/api/core.mdx) | [Architecture](./docs/en/architecture.mdx)
+[Getting Started](https://sanghyuk-2i.github.io/huh/en/getting-started) | [API Reference](https://sanghyuk-2i.github.io/huh/en/api/core) | [Architecture](https://sanghyuk-2i.github.io/huh/en/architecture)
 
 **[Korean / 한국어](./README.md)**
 
@@ -238,14 +238,14 @@ Copy or download a template for your data source to get started quickly:
 
 ## Documentation
 
-- [Getting Started](./docs/en/getting-started.mdx) - Full setup guide
-- [Google Sheet Setup](./docs/en/guides/google-sheets.mdx) · [Airtable](./docs/en/guides/airtable.mdx) · [Notion](./docs/en/guides/notion.mdx) · [CSV](./docs/en/guides/csv.mdx) · [XLSX](./docs/en/guides/xlsx.mdx)
-- [@sanghyuk-2i/huh-core API](./docs/en/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
-- [@sanghyuk-2i/huh-react API](./docs/en/api/react.mdx) - `HuhProvider`, `useHuh`, renderer types
-- [@sanghyuk-2i/huh-vue API](./docs/en/api/vue.mdx) - Vue 3 bindings
-- [@sanghyuk-2i/huh-svelte API](./docs/en/api/svelte.mdx) - Svelte 5 bindings
-- [@sanghyuk-2i/huh-cli API](./docs/en/api/cli.mdx) - CLI commands and config options
-- [Architecture](./docs/en/architecture.mdx) - Design decisions and data flow
+- [Getting Started](https://sanghyuk-2i.github.io/huh/en/getting-started) - Full setup guide
+- [Google Sheet Setup](https://sanghyuk-2i.github.io/huh/en/guides/google-sheets) · [Airtable](https://sanghyuk-2i.github.io/huh/en/guides/airtable) · [Notion](https://sanghyuk-2i.github.io/huh/en/guides/notion) · [CSV](https://sanghyuk-2i.github.io/huh/en/guides/csv) · [XLSX](https://sanghyuk-2i.github.io/huh/en/guides/xlsx)
+- [@sanghyuk-2i/huh-core API](https://sanghyuk-2i.github.io/huh/en/api/core) - `parseSheetData`, `resolveError`, `validateConfig`
+- [@sanghyuk-2i/huh-react API](https://sanghyuk-2i.github.io/huh/en/api/react) - `HuhProvider`, `useHuh`, renderer types
+- [@sanghyuk-2i/huh-vue API](https://sanghyuk-2i.github.io/huh/en/api/vue) - Vue 3 bindings
+- [@sanghyuk-2i/huh-svelte API](https://sanghyuk-2i.github.io/huh/en/api/svelte) - Svelte 5 bindings
+- [@sanghyuk-2i/huh-cli API](https://sanghyuk-2i.github.io/huh/en/api/cli) - CLI commands and config options
+- [Architecture](https://sanghyuk-2i.github.io/huh/en/architecture) - Design decisions and data flow
 
 ## CI/CD Integration
 
