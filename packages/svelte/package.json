@@ -27,6 +27,9 @@
     "url": "https://github.com/sanghyuk-2i/huh/issues"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "sanghyuk-2i",
   "keywords": ["error", "error-handling", "svelte", "runes", "i18n"],
   "scripts": {

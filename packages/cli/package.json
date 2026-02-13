@@ -21,6 +21,9 @@
     "url": "https://github.com/sanghyuk-2i/huh/issues"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "sanghyuk-2i",
   "keywords": ["error", "cli", "google-sheets", "airtable", "notion", "i18n"],
   "scripts": {
