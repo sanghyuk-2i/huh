@@ -58,9 +58,16 @@ export function generateReport(options: GenerateReportOptions): ReportData {
   let warningCount = 0;
 
   for (const entry of entries) {
-    if (!entry.success || entry.coreValidationErrors.length > 0 || entry.validationIssues.some((i) => i.severity === 'error')) {
+    if (
+      !entry.success ||
+      entry.coreValidationErrors.length > 0 ||
+      entry.validationIssues.some((i) => i.severity === 'error')
+    ) {
       failCount++;
-    } else if (entry.coreValidationWarnings.length > 0 || entry.validationIssues.some((i) => i.severity === 'warning')) {
+    } else if (
+      entry.coreValidationWarnings.length > 0 ||
+      entry.validationIssues.some((i) => i.severity === 'warning')
+    ) {
       warningCount++;
     } else {
       passCount++;

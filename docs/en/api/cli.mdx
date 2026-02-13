@@ -1,7 +1,7 @@
 ---
-title: "@huh/cli API"
-description: "CLI tool - init, pull, validate commands and data source configuration"
-icon: "terminal"
+title: '@huh/cli API'
+description: 'CLI tool - init, pull, validate commands and data source configuration'
+icon: 'terminal'
 ---
 
 A CLI tool that fetches error content from various data sources (Google Sheets, Airtable, Notion, CSV, XLSX) and converts it to a JSON file.
@@ -41,7 +41,7 @@ npx huh init
 The generated file includes configuration examples for all 5 data sources: Google Sheets, Airtable, Notion, CSV, and XLSX. Uncomment the source you want to use.
 
 <Note>
-If a config file already exists, it will not be overwritten and a warning will be displayed.
+  If a config file already exists, it will not be overwritten and a warning will be displayed.
 </Note>
 
 ---
@@ -60,29 +60,24 @@ With i18n configuration, per-locale files (`ko.json`, `en.json`, `index.ts`) are
 
 <Steps>
 
-<Step title="Read config file">
-  Read `.huh.config.json` from the project root.
-</Step>
+<Step title="Read config file">Read `.huh.config.json` from the project root.</Step>
 
 <Step title="Fetch data">
-  Fetch data from the configured data source via the Adapter pattern.
-  In i18n mode, data is fetched for each locale separately.
+  Fetch data from the configured data source via the Adapter pattern. In i18n mode, data is fetched
+  for each locale separately.
 </Step>
 
-<Step title="Convert to JSON DSL">
-  Convert fetched data with `parseSheetData`.
-</Step>
+<Step title="Convert to JSON DSL">Convert fetched data with `parseSheetData`.</Step>
 
 <Step title="Validate">
-  Validate each locale with `validateConfig`.
-  In i18n mode, additionally runs `validateLocales` for cross-locale validation.
-  - If only warnings, print them and continue
-  - If errors exist, print errors and exit (exit code 1)
+  Validate each locale with `validateConfig`. In i18n mode, additionally runs `validateLocales` for
+  cross-locale validation. - If only warnings, print them and continue - If errors exist, print
+  errors and exit (exit code 1)
 </Step>
 
 <Step title="Generate JSON file">
-  Generate the JSON file at the specified output path.
-  In i18n mode, generates per-locale JSON files and an `index.ts` barrel file.
+  Generate the JSON file at the specified output path. In i18n mode, generates per-locale JSON files
+  and an `index.ts` barrel file.
 </Step>
 
 </Steps>
@@ -110,11 +105,11 @@ The current v0.1 supports the `.huh.config.json` format.
 
 **Authentication:**
 
-| Method | Configuration |
-|--------|--------------|
-| API Key (env var) | Set `GOOGLE_API_KEY` environment variable |
-| API Key (config) | Specify directly in `source.apiKey` |
-| Service Account | Specify JSON key file path in `source.credentials` |
+| Method            | Configuration                                      |
+| ----------------- | -------------------------------------------------- |
+| API Key (env var) | Set `GOOGLE_API_KEY` environment variable          |
+| API Key (config)  | Specify directly in `source.apiKey`                |
+| Service Account   | Specify JSON key file path in `source.credentials` |
 
 ```bash
 GOOGLE_API_KEY=AIza... npx huh pull
@@ -246,7 +241,9 @@ Exits with exit code 1 if there is at least one error. Passes if there are only 
 ## CI/CD Integration
 
 <Warning>
-Never commit API tokens or secrets directly to your repository. Always use environment variables or your CI/CD platform's secret management to pass sensitive credentials like `GOOGLE_API_KEY`, `AIRTABLE_TOKEN`, and `NOTION_TOKEN`.
+  Never commit API tokens or secrets directly to your repository. Always use environment variables
+  or your CI/CD platform's secret management to pass sensitive credentials like `GOOGLE_API_KEY`,
+  `AIRTABLE_TOKEN`, and `NOTION_TOKEN`.
 </Warning>
 
 <Accordion title="GitHub Actions Example">
@@ -255,7 +252,7 @@ Never commit API tokens or secrets directly to your repository. Always use envir
 name: Huh Error Content Sync
 on:
   schedule:
-    - cron: '0 9 * * 1-5'  # Weekdays at 9 AM
+    - cron: '0 9 * * 1-5' # Weekdays at 9 AM
   workflow_dispatch:
 
 jobs:
@@ -319,8 +316,8 @@ import type { HuhCliConfig } from '@huh/cli';
 ```ts
 interface HuhCliConfig {
   source: HuhSource;
-  output: string;  // JSON file output path (directory path in i18n mode)
-  i18n?: I18nConfig;  // Multi-language config (optional)
+  output: string; // JSON file output path (directory path in i18n mode)
+  i18n?: I18nConfig; // Multi-language config (optional)
 }
 
 interface I18nConfig {
@@ -329,18 +326,18 @@ interface I18nConfig {
 }
 
 interface LocaleSourceOverride {
-  sheet?: string;       // XLSX sheet name
-  range?: string;       // Google Sheets tab name
-  filePath?: string;    // CSV file path
-  tableId?: string;     // Airtable table ID
-  databaseId?: string;  // Notion database ID
+  sheet?: string; // XLSX sheet name
+  range?: string; // Google Sheets tab name
+  filePath?: string; // CSV file path
+  tableId?: string; // Airtable table ID
+  databaseId?: string; // Notion database ID
 }
 
 // Google Sheets
 type GoogleSheetsSource = {
   type: 'google-sheets';
   sheetId: string;
-  range?: string;       // Default: 'Sheet1'
+  range?: string; // Default: 'Sheet1'
   apiKey?: string;
   credentials?: string; // Service account JSON key file path
 };
@@ -370,13 +367,8 @@ type CsvSource = {
 type XlsxSource = {
   type: 'xlsx';
   filePath: string;
-  sheet?: string;  // Uses first sheet if not specified
+  sheet?: string; // Uses first sheet if not specified
 };
 
-type HuhSource =
-  | GoogleSheetsSource
-  | AirtableSource
-  | NotionSource
-  | CsvSource
-  | XlsxSource;
+type HuhSource = GoogleSheetsSource | AirtableSource | NotionSource | CsvSource | XlsxSource;
 ```

@@ -1,7 +1,7 @@
 ---
-title: "@huh/react API"
-description: "React Context-based error UI rendering - HuhProvider, useHuh, RendererMap"
-icon: "react"
+title: '@huh/react API'
+description: 'React Context-based error UI rendering - HuhProvider, useHuh, RendererMap'
+icon: 'react'
 ---
 
 A React Context-based error UI rendering library. The Provider manages error state and displays error UI using user-provided custom renderers.
@@ -36,23 +36,24 @@ Manages error state and invokes the appropriate type's renderer when an active e
 
 ```ts
 interface HuhProviderProps {
-  source?: ErrorConfig;       // JSON DSL data (single language mode)
-  locales?: LocalizedErrorConfig;  // Multi-language error config (i18n mode)
-  defaultLocale?: string;     // Default locale
-  locale?: string;            // Current locale (externally controlled)
-  renderers: RendererMap;     // Custom renderers (required)
+  source?: ErrorConfig; // JSON DSL data (single language mode)
+  locales?: LocalizedErrorConfig; // Multi-language error config (i18n mode)
+  defaultLocale?: string; // Default locale
+  locale?: string; // Current locale (externally controlled)
+  renderers: RendererMap; // Custom renderers (required)
   children: ReactNode;
-  onRetry?: () => void;       // Callback invoked on RETRY action
-  onCustomAction?: (action: { type: string; target?: string }) => void;  // Custom action callback
-  plugins?: HuhPlugin[];    // Plugin array for monitoring/analytics
-  errorMap?: Record<string, string>;  // Error code to trackId mapping table
-  fallbackTrackId?: string;           // Default trackId when no mapping is found
-  router?: HuhRouter;       // Custom router for client-side navigation (e.g., Next.js useRouter)
+  onRetry?: () => void; // Callback invoked on RETRY action
+  onCustomAction?: (action: { type: string; target?: string }) => void; // Custom action callback
+  plugins?: HuhPlugin[]; // Plugin array for monitoring/analytics
+  errorMap?: Record<string, string>; // Error code to trackId mapping table
+  fallbackTrackId?: string; // Default trackId when no mapping is found
+  router?: HuhRouter; // Custom router for client-side navigation (e.g., Next.js useRouter)
 }
 ```
 
 <Note>
-Either `source` or `locales` must be provided. `source` is for single language mode, `locales` is for multi-language mode.
+  Either `source` or `locales` must be provided. `source` is for single language mode, `locales` is
+  for multi-language mode.
 </Note>
 
 ### Basic Usage
@@ -131,9 +132,9 @@ Props passed to each renderer.
 
 ```ts
 interface ErrorRenderProps {
-  error: ResolvedError;    // Error info with variables already substituted
-  onAction: () => void;    // Action button click handler
-  onDismiss: () => void;   // Dismiss handler
+  error: ResolvedError; // Error info with variables already substituted
+  onAction: () => void; // Action button click handler
+  onDismiss: () => void; // Dismiss handler
 }
 ```
 
@@ -147,14 +148,14 @@ interface ErrorRenderProps {
 
 `onAction` behaves automatically based on the error's `action.type`:
 
-| actionType | Behavior |
-|------------|----------|
-| `REDIRECT` | `router.push(target)` if `router` provided, otherwise `window.location.href = target` |
-| `BACK` | `router.back()` if `router` provided, otherwise `window.history.back()` |
-| `RETRY` | Clear error + invoke `onRetry` callback |
-| `DISMISS` | Clear error |
-| Custom type | Clear error + invoke `onCustomAction` callback |
-| No action | Clear error |
+| actionType  | Behavior                                                                              |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `REDIRECT`  | `router.push(target)` if `router` provided, otherwise `window.location.href = target` |
+| `BACK`      | `router.back()` if `router` provided, otherwise `window.history.back()`               |
+| `RETRY`     | Clear error + invoke `onRetry` callback                                               |
+| `DISMISS`   | Clear error                                                                           |
+| Custom type | Clear error + invoke `onCustomAction` callback                                        |
+| No action   | Clear error                                                                           |
 
 Custom action types (e.g., `OPEN_CHAT`, `SHARE`) pass a `{ type, target }` object to the `onCustomAction` callback.
 
@@ -166,18 +167,14 @@ import { Toast } from '@/components/Toast';
 import { Modal } from '@/components/Modal';
 
 const renderers: RendererMap = {
-  TOAST: ({ error, onDismiss }) => (
-    <Toast message={error.message} onClose={onDismiss} />
-  ),
+  TOAST: ({ error, onDismiss }) => <Toast message={error.message} onClose={onDismiss} />,
 
   MODAL: ({ error, onAction, onDismiss }) => (
     <Modal open onClose={onDismiss}>
       <Modal.Title>{error.title}</Modal.Title>
       <Modal.Body>{error.message}</Modal.Body>
       <Modal.Footer>
-        {error.action && (
-          <button onClick={onAction}>{error.action.label}</button>
-        )}
+        {error.action && <button onClick={onAction}>{error.action.label}</button>}
         <button onClick={onDismiss}>Close</button>
       </Modal.Footer>
     </Modal>
@@ -219,20 +216,19 @@ function useHuh(): HuhContextValue;
 interface HuhContextValue {
   huh: (code: string, variables?: Record<string, string>) => void;
   clearError: () => void;
-  locale: string | undefined;                // Current locale (i18n mode)
-  setLocale: (locale: string) => void;       // Change locale (i18n mode)
+  locale: string | undefined; // Current locale (i18n mode)
+  setLocale: (locale: string) => void; // Change locale (i18n mode)
 }
 ```
 
-<Note>
-Throws an error if called outside of the Provider.
-</Note>
+<Note>Throws an error if called outside of the Provider.</Note>
 
 ### huh(code, variables?)
 
 The single function for triggering errors. Handles direct trackId, errorMap mapping, and fallback.
 
 **Lookup order:**
+
 1. Check `errorMap` for code mapping
 2. Check if code directly matches a trackId
 3. Use `fallbackTrackId`
@@ -251,7 +247,7 @@ huh('ERR_SESSION_EXPIRED', { userName: 'Jane' });
 try {
   await api.call();
 } catch (e) {
-  huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
+  huh(e.code); // 'API_500' → errorMap → 'ERR_SERVER'
 }
 ```
 
@@ -261,7 +257,7 @@ try {
 <HuhProvider
   source={config}
   renderers={renderers}
-  errorMap={{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }}
+  errorMap={{ API_500: 'ERR_SERVER', API_401: 'ERR_AUTH' }}
   fallbackTrackId="ERR_UNKNOWN"
 >
   <App />
@@ -292,7 +288,9 @@ const renderers: RendererMap = {
   TOAST: ({ error, onDismiss }) => (
     <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded">
       {error.message}
-      <button onClick={onDismiss} className="ml-2">X</button>
+      <button onClick={onDismiss} className="ml-2">
+        X
+      </button>
     </div>
   ),
   MODAL: ({ error, onAction, onDismiss }) => (

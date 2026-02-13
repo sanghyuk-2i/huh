@@ -1,7 +1,7 @@
 ---
-title: "i18n 다국어 지원"
-description: "스프레드시트 탭 기반 다국어 에러 메시지 관리 - 설정, 출력, 프레임워크 연동"
-icon: "globe"
+title: 'i18n 다국어 지원'
+description: '스프레드시트 탭 기반 다국어 에러 메시지 관리 - 설정, 출력, 프레임워크 연동'
+icon: 'globe'
 ---
 
 데이터 소스별로 언어를 분리하여 다국어 에러 메시지를 관리할 수 있습니다. 데이터 소스에 따라 스프레드시트 탭, 별도 파일, Airtable 테이블, Notion 데이터베이스로 언어를 분리합니다. 비개발자(기획자, 콘텐츠 담당)도 각 소스에서 번역을 직접 관리할 수 있습니다.
@@ -84,7 +84,8 @@ errors.ko.csv    errors.en.csv    errors.ja.csv    <- 파일 = 언어
 </Tabs>
 
 <Note>
-`type`, `actionType`은 모든 언어에서 동일해야 합니다 (렌더링 구조가 같으므로). `message`, `title`, `actionLabel`만 번역합니다.
+  `type`, `actionType`은 모든 언어에서 동일해야 합니다 (렌더링 구조가 같으므로). `message`, `title`,
+  `actionLabel`만 번역합니다.
 </Note>
 
 ## 설정
@@ -241,11 +242,11 @@ interface I18nConfig {
 }
 
 interface LocaleSourceOverride {
-  sheet?: string;       // XLSX 시트 이름
-  range?: string;       // Google Sheets 탭 이름
-  filePath?: string;    // CSV 파일 경로
-  tableId?: string;     // Airtable 테이블 ID
-  databaseId?: string;  // Notion 데이터베이스 ID
+  sheet?: string; // XLSX 시트 이름
+  range?: string; // Google Sheets 탭 이름
+  filePath?: string; // CSV 파일 경로
+  tableId?: string; // Airtable 테이블 ID
+  databaseId?: string; // Notion 데이터베이스 ID
 }
 ```
 
@@ -297,10 +298,9 @@ export const locales: Record<HuhLocale, ErrorConfig> = { ko, en };
 ```
 
 <Note>
-파일 분리 방식의 장점:
-- **Tree-shaking**: 사용하지 않는 언어는 번들에 포함되지 않음
-- **Lazy loading**: 필요한 시점에 `import('./huh/en.json')`으로 동적 로드 가능
-- **기존 호환**: `validate` 명령어가 개별 파일에 그대로 동작
+  파일 분리 방식의 장점: - **Tree-shaking**: 사용하지 않는 언어는 번들에 포함되지 않음 - **Lazy
+  loading**: 필요한 시점에 `import('./huh/en.json')`으로 동적 로드 가능 - **기존 호환**: `validate`
+  명령어가 개별 파일에 그대로 동작
 </Note>
 
 ## 프레임워크 연동
@@ -315,12 +315,7 @@ function App() {
   const [lang, setLang] = useState('ko');
 
   return (
-    <HuhProvider
-      locales={locales}
-      defaultLocale="ko"
-      locale={lang}
-      renderers={renderers}
-    >
+    <HuhProvider locales={locales} defaultLocale="ko" locale={lang} renderers={renderers}>
       <YourApp />
     </HuhProvider>
   );
@@ -351,12 +346,7 @@ const lang = ref('ko');
 </script>
 
 <template>
-  <HuhProvider
-    :locales="locales"
-    default-locale="ko"
-    :locale="lang"
-    :renderers="renderers"
-  >
+  <HuhProvider :locales="locales" default-locale="ko" :locale="lang" :renderers="renderers">
     <YourApp />
   </HuhProvider>
 </template>
@@ -413,19 +403,20 @@ const { locale, setLocale } = useHuh();
 ```
 
 <Note>
-`locale` prop을 전달하면 외부에서 언어를 제어합니다. 전달하지 않으면 Provider 내부 상태로 관리되며, `useHuh()`의 `setLocale()`로 변경할 수 있습니다.
+  `locale` prop을 전달하면 외부에서 언어를 제어합니다. 전달하지 않으면 Provider 내부 상태로
+  관리되며, `useHuh()`의 `setLocale()`로 변경할 수 있습니다.
 </Note>
 
 ## Cross-Locale 검증
 
 `huh pull` 실행 시 로케일 간 일관성을 자동 검증합니다:
 
-| 검증 항목 | 레벨 | 설명 |
-|-----------|------|------|
-| trackId 누락 | error | 한 로케일에 있는 trackId가 다른 로케일에 없으면 |
-| type 불일치 | warning | 같은 trackId인데 로케일마다 type이 다르면 |
+| 검증 항목         | 레벨    | 설명                                             |
+| ----------------- | ------- | ------------------------------------------------ |
+| trackId 누락      | error   | 한 로케일에 있는 trackId가 다른 로케일에 없으면  |
+| type 불일치       | warning | 같은 trackId인데 로케일마다 type이 다르면        |
 | actionType 불일치 | warning | 같은 trackId인데 로케일마다 action.type이 다르면 |
-| 개별 로케일 검증 | 그대로 | 각 로케일별로 기존 `validateConfig` 적용 |
+| 개별 로케일 검증  | 그대로  | 각 로케일별로 기존 `validateConfig` 적용         |
 
 ```
 Cross-locale validation:

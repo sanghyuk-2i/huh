@@ -1,7 +1,7 @@
 ---
-title: "Plugins"
-description: "Extend huh with plugins for error monitoring, analytics, and custom integrations"
-icon: "plug"
+title: 'Plugins'
+description: 'Extend huh with plugins for error monitoring, analytics, and custom integrations'
+icon: 'plug'
 ---
 
 Plugins let you hook into huh's error and action lifecycle. Use them to send errors to monitoring services (Sentry, Datadog), track analytics events, or add custom logging — without modifying your Provider setup.
@@ -14,11 +14,7 @@ Pass an array of plugins to your framework's `HuhProvider` via the `plugins` pro
 - **`onAction`** — Called when a user triggers an action (before the action is executed)
 
 ```tsx
-<HuhProvider
-  source={errorConfig}
-  renderers={renderers}
-  plugins={[myPlugin()]}
->
+<HuhProvider source={errorConfig} renderers={renderers} plugins={[myPlugin()]}>
   <App />
 </HuhProvider>
 ```
@@ -96,56 +92,54 @@ yarn add @huh/plugin-sentry @sentry/browser
 ```tsx
 import { sentryPlugin } from '@huh/plugin-sentry';
 
-<HuhProvider
-  source={errorConfig}
-  renderers={renderers}
-  plugins={[sentryPlugin()]}
->
+<HuhProvider source={errorConfig} renderers={renderers} plugins={[sentryPlugin()]}>
   <App />
-</HuhProvider>
+</HuhProvider>;
 ```
 
 When an error is triggered:
+
 - `Sentry.captureMessage` is called with the trackId
 - Tags are set for `huh.trackId`, `huh.errorType`, and `huh.locale`
 - Variables are attached as Sentry context
 
 When an action is triggered:
+
 - `Sentry.addBreadcrumb` records the action type and trackId
 
 ### Options
 
 ```ts
 sentryPlugin({
-  level: 'warning',           // Sentry severity (default: 'error')
+  level: 'warning', // Sentry severity (default: 'error')
   tags: { env: 'production' }, // Additional Sentry tags
-  filter: (error) => error.type !== 'TOAST',  // Skip certain errors
-  breadcrumbs: false,          // Disable action breadcrumbs (default: true)
-})
+  filter: (error) => error.type !== 'TOAST', // Skip certain errors
+  breadcrumbs: false, // Disable action breadcrumbs (default: true)
+});
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `level` | `'fatal' \| 'error' \| 'warning' \| 'info'` | `'error'` | Sentry severity level |
-| `tags` | `Record<string, string>` | `{}` | Additional tags to set on the Sentry scope |
-| `filter` | `(error: ResolvedError) => boolean` | — | Return `false` to skip reporting |
-| `breadcrumbs` | `boolean` | `true` | Whether to record action breadcrumbs |
-| `ignoreTypes` | `string[]` | `[]` | Error types to ignore (noise filtering) |
-| `ignoreTrackIds` | `string[]` | `[]` | trackIds to ignore (noise filtering) |
-| `urlPatterns` | `Array<[RegExp, string]>` | `[]` | URL pattern grouping (dynamic URL normalization) |
-| `enrichContext` | `(error, context) => Record<string, unknown>` | - | Additional context enrichment callback |
-| `sensitiveKeys` | `Array<string \| RegExp>` | `[]` | Sensitive data masking key patterns |
+| Option           | Type                                          | Default   | Description                                      |
+| ---------------- | --------------------------------------------- | --------- | ------------------------------------------------ |
+| `level`          | `'fatal' \| 'error' \| 'warning' \| 'info'`   | `'error'` | Sentry severity level                            |
+| `tags`           | `Record<string, string>`                      | `{}`      | Additional tags to set on the Sentry scope       |
+| `filter`         | `(error: ResolvedError) => boolean`           | —         | Return `false` to skip reporting                 |
+| `breadcrumbs`    | `boolean`                                     | `true`    | Whether to record action breadcrumbs             |
+| `ignoreTypes`    | `string[]`                                    | `[]`      | Error types to ignore (noise filtering)          |
+| `ignoreTrackIds` | `string[]`                                    | `[]`      | trackIds to ignore (noise filtering)             |
+| `urlPatterns`    | `Array<[RegExp, string]>`                     | `[]`      | URL pattern grouping (dynamic URL normalization) |
+| `enrichContext`  | `(error, context) => Record<string, unknown>` | -         | Additional context enrichment callback           |
+| `sensitiveKeys`  | `Array<string \| RegExp>`                     | `[]`      | Sensitive data masking key patterns              |
 
 ### Severity Auto-Mapping
 
 When an error has a `severity` set, the Sentry report level is automatically mapped:
 
-| Severity | Sentry Level |
-|----------|-------------|
-| `CRITICAL` | `fatal` |
-| `ERROR` | `error` |
-| `WARNING` | `warning` |
-| `INFO` | `info` |
+| Severity   | Sentry Level |
+| ---------- | ------------ |
+| `CRITICAL` | `fatal`      |
+| `ERROR`    | `error`      |
+| `WARNING`  | `warning`    |
+| `INFO`     | `info`       |
 
 For unrecognized severity values or when severity is absent, the `level` option is used as fallback (default: `'error'`).
 
@@ -153,9 +147,9 @@ For unrecognized severity values or when severity is absent, the `level` option 
 
 ```ts
 sentryPlugin({
-  ignoreTypes: ['TOAST'],           // Don't send TOAST errors to Sentry
-  ignoreTrackIds: ['ERR_DISMISS'],  // Ignore specific trackIds
-})
+  ignoreTypes: ['TOAST'], // Don't send TOAST errors to Sentry
+  ignoreTrackIds: ['ERR_DISMISS'], // Ignore specific trackIds
+});
 ```
 
 ### Sensitive Data Masking
@@ -165,7 +159,7 @@ sentryPlugin({
   sensitiveKeys: ['password', 'token', /^secret/],
   // variables: { password: '1234', token: 'abc', secretKey: 'xyz' }
   // → Sent to Sentry as { password: '[REDACTED]', token: '[REDACTED]', secretKey: '[REDACTED]' }
-})
+});
 ```
 
 ### URL Grouping
@@ -178,7 +172,7 @@ sentryPlugin({
     [/\/users\/\d+/, '/users/:id'],
     [/\/orders\/[a-f0-9-]+/, '/orders/:orderId'],
   ],
-})
+});
 ```
 
 ### Context Enrichment
@@ -190,7 +184,7 @@ sentryPlugin({
     userId: getCurrentUser()?.id,
     route: window.location.pathname,
   }),
-})
+});
 ```
 
 ## Using @huh/plugin-datadog
@@ -229,39 +223,37 @@ datadogLogs.init({
   sessionSampleRate: 100,
 });
 
-<HuhProvider
-  source={errorConfig}
-  renderers={renderers}
-  plugins={[datadogPlugin()]}
->
+<HuhProvider source={errorConfig} renderers={renderers} plugins={[datadogPlugin()]}>
   <App />
-</HuhProvider>
+</HuhProvider>;
 ```
 
 When an error is triggered:
+
 - `datadogLogs.logger.error()` is called with `[huh] <trackId>` as the message
 - `huh.trackId`, `huh.errorType`, `huh.locale`, and `huh.variables` are attached as structured context
 
 When an action is triggered:
+
 - `datadogLogs.logger.info()` logs the action type and trackId
 
 ### Options
 
 ```ts
 datadogPlugin({
-  level: 'warn',              // Log level (default: 'error')
-  service: 'my-app',          // Service name added to log context
-  filter: (error) => error.type !== 'TOAST',  // Skip certain errors
-  actionTracking: false,       // Disable action logging (default: true)
-})
+  level: 'warn', // Log level (default: 'error')
+  service: 'my-app', // Service name added to log context
+  filter: (error) => error.type !== 'TOAST', // Skip certain errors
+  actionTracking: false, // Disable action logging (default: true)
+});
 ```
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `level` | `'error' \| 'warn' \| 'info' \| 'debug'` | `'error'` | Datadog log level for error events |
-| `service` | `string` | — | Service name added to all log entries |
-| `filter` | `(error: ResolvedError) => boolean` | — | Return `false` to skip logging |
-| `actionTracking` | `boolean` | `true` | Whether to log user actions |
+| Option           | Type                                     | Default   | Description                           |
+| ---------------- | ---------------------------------------- | --------- | ------------------------------------- |
+| `level`          | `'error' \| 'warn' \| 'info' \| 'debug'` | `'error'` | Datadog log level for error events    |
+| `service`        | `string`                                 | —         | Service name added to all log entries |
+| `filter`         | `(error: ResolvedError) => boolean`      | —         | Return `false` to skip logging        |
+| `actionTracking` | `boolean`                                | `true`    | Whether to log user actions           |
 
 ---
 
@@ -294,4 +286,5 @@ function App() {
   );
 }
 ```
+
 </Note>

@@ -1,7 +1,7 @@
 ---
-title: "@huh/core API"
-description: "Core package for type definitions, sheet data parsing, variable substitution, and validation"
-icon: "cube"
+title: '@huh/core API'
+description: 'Core package for type definitions, sheet data parsing, variable substitution, and validation'
+icon: 'cube'
 ---
 
 The core package responsible for type definitions, sheet data parsing, variable substitution, and validation of the error content JSON DSL. Has zero external dependencies.
@@ -91,7 +91,7 @@ An extensible string type that allows built-in types + custom types. Values are 
 
 ```ts
 type BuiltInErrorType = 'TOAST' | 'MODAL' | 'PAGE';
-type ErrorType = BuiltInErrorType | (string & {});  // Freely extensible: 'BANNER', 'SNACKBAR', etc.
+type ErrorType = BuiltInErrorType | (string & {}); // Freely extensible: 'BANNER', 'SNACKBAR', etc.
 ```
 
 ### `ActionType`
@@ -100,7 +100,7 @@ Allows built-in action types + custom action types.
 
 ```ts
 type BuiltInActionType = 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS';
-type ActionType = BuiltInActionType | (string & {});  // Freely extensible: 'OPEN_CHAT', 'SHARE', etc.
+type ActionType = BuiltInActionType | (string & {}); // Freely extensible: 'OPEN_CHAT', 'SHARE', etc.
 ```
 
 ### `Severity`
@@ -109,16 +109,16 @@ Allows built-in severity levels + custom severity levels.
 
 ```ts
 type BuiltInSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
-type Severity = BuiltInSeverity | (string & {});  // Freely extensible custom severity
+type Severity = BuiltInSeverity | (string & {}); // Freely extensible custom severity
 ```
 
 ### `ErrorAction`
 
 ```ts
 interface ErrorAction {
-  label: string;       // Action button text
-  type: ActionType;    // Action kind
-  target?: string;     // URL to navigate to for redirect
+  label: string; // Action button text
+  type: ActionType; // Action kind
+  target?: string; // URL to navigate to for redirect
 }
 ```
 
@@ -128,12 +128,12 @@ Represents a single error entry.
 
 ```ts
 interface ErrorEntry {
-  type: ErrorType;        // Error display type
-  message: string;        // Error message (may contain template variables)
-  title?: string;         // Title (for modal, page)
-  image?: string;         // Image URL (for page)
-  severity?: Severity;   // Severity level
-  action?: ErrorAction;   // User action
+  type: ErrorType; // Error display type
+  message: string; // Error message (may contain template variables)
+  title?: string; // Title (for modal, page)
+  image?: string; // Image URL (for page)
+  severity?: Severity; // Severity level
+  action?: ErrorAction; // User action
 }
 ```
 
@@ -198,15 +198,15 @@ The return type of the `validateLocales` function.
 
 ```ts
 interface CrossLocaleValidationResult {
-  valid: boolean;                          // true if no errors
-  errors: CrossLocaleValidationError[];    // Error list (missing trackId, etc.)
-  warnings: CrossLocaleValidationError[];  // Warning list (type/actionType mismatch, etc.)
+  valid: boolean; // true if no errors
+  errors: CrossLocaleValidationError[]; // Error list (missing trackId, etc.)
+  warnings: CrossLocaleValidationError[]; // Warning list (type/actionType mismatch, etc.)
 }
 
 interface CrossLocaleValidationError {
   trackId: string;
   field?: string;
-  locales: string[];    // List of locales with the issue
+  locales: string[]; // List of locales with the issue
   message: string;
 }
 ```
@@ -215,9 +215,9 @@ interface CrossLocaleValidationError {
 
 ```ts
 interface ValidationResult {
-  valid: boolean;                  // true if no errors
-  errors: ValidationError[];       // Error list (missing type, invalid values, etc.)
-  warnings: ValidationError[];     // Warning list (title used on toast, etc.)
+  valid: boolean; // true if no errors
+  errors: ValidationError[]; // Error list (missing type, invalid values, etc.)
+  warnings: ValidationError[]; // Warning list (title used on toast, etc.)
 }
 
 interface ValidationError {
@@ -275,9 +275,10 @@ Converts raw data from a data source (header + data row array) into an `ErrorCon
 - Error if `type` is empty
 
 <Note>
-`type` and `actionType` values are automatically converted to uppercase. Whether you enter `toast`, `Toast`, or `TOAST` in the data source, it will be processed as `TOAST`.
-`severity` values are also automatically converted to uppercase.
-Custom types (`BANNER`, `SNACKBAR`, etc.) can be freely used in addition to built-in types.
+  `type` and `actionType` values are automatically converted to uppercase. Whether you enter
+  `toast`, `Toast`, or `TOAST` in the data source, it will be processed as `TOAST`. `severity`
+  values are also automatically converted to uppercase. Custom types (`BANNER`, `SNACKBAR`, etc.)
+  can be freely used in addition to built-in types.
 </Note>
 
 **Example**
@@ -286,7 +287,17 @@ Custom types (`BANNER`, `SNACKBAR`, etc.) can be freely used in addition to buil
 import { parseSheetData } from '@huh/core';
 
 const rows = [
-  ['trackId', 'type', 'message', 'title', 'image', 'severity', 'actionLabel', 'actionType', 'actionTarget'],
+  [
+    'trackId',
+    'type',
+    'message',
+    'title',
+    'image',
+    'severity',
+    'actionLabel',
+    'actionType',
+    'actionTarget',
+  ],
   ['ERR_001', 'toast', 'An error occurred', '', '', '', '', ''],
   ['ERR_002', 'modal', 'Session expired', 'Notice', '', 'OK', 'dismiss', ''],
   ['ERR_003', 'banner', 'Server under maintenance', '', '', 'Contact Us', 'open_chat', ''],
@@ -349,7 +360,7 @@ const resolved = resolveError(config, 'ERR_SESSION', { userName: 'Jane' });
 Substitutes `{{variableName}}` placeholders in a string. Unmatched variables are left as-is.
 
 <ParamField path="template" type="string" required>
-  Template string containing `{{variableName}}` placeholders.
+  Template string containing `{{ variableName }}` placeholders.
 </ParamField>
 
 <ParamField path="variables" type="Record<string, string>" required>
@@ -376,27 +387,28 @@ Validates an `ErrorConfig`.
 
 **Validation Rules (errors)**
 
-| Condition | Message |
-|-----------|---------|
-| `type` is empty | Missing required field: type |
-| `message` is empty | Missing required field: message |
-| `action.label` is empty | Action is missing required field: label |
+| Condition                        | Message                                      |
+| -------------------------------- | -------------------------------------------- |
+| `type` is empty                  | Missing required field: type                 |
+| `message` is empty               | Missing required field: message              |
+| `action.label` is empty          | Action is missing required field: label      |
 | `REDIRECT` type without `target` | Action type "REDIRECT" requires a target URL |
 
 <Note>
-Custom types (`BANNER`, `SNACKBAR`, etc.) pass without errors. The validator does not check the type value itself -- it only raises an error when the value is empty.
+  Custom types (`BANNER`, `SNACKBAR`, etc.) pass without errors. The validator does not check the
+  type value itself -- it only raises an error when the value is empty.
 </Note>
 
 **Warning Rules (warnings)**
 
 Warnings are only generated for built-in types. Custom types do not trigger warnings.
 
-| Condition | Message |
-|-----------|---------|
-| Config is empty | Config is empty |
-| `TOAST` has title | Toast errors typically do not display a title |
-| `TOAST` has image | Toast errors typically do not display an image |
-| `PAGE` has no action | Page errors should provide an action |
+| Condition                     | Message                                                                    |
+| ----------------------------- | -------------------------------------------------------------------------- |
+| Config is empty               | Config is empty                                                            |
+| `TOAST` has title             | Toast errors typically do not display a title                              |
+| `TOAST` has image             | Toast errors typically do not display an image                             |
+| `PAGE` has no action          | Page errors should provide an action                                       |
 | Unrecognized `severity` value | Unrecognized severity "X". Built-in levels: INFO, WARNING, ERROR, CRITICAL |
 
 **Example**
@@ -407,7 +419,7 @@ import { validateConfig } from '@huh/core';
 const result = validateConfig({
   ERR_001: { type: 'TOAST', message: '' },
   ERR_002: { type: 'MODAL', message: 'OK', action: { label: 'Go', type: 'REDIRECT' } },
-  ERR_003: { type: 'BANNER', message: 'Custom type works' },  // Custom type — passes without errors
+  ERR_003: { type: 'BANNER', message: 'Custom type works' }, // Custom type — passes without errors
 });
 
 // result.valid -> false
@@ -429,20 +441,18 @@ Validates cross-locale consistency of multi-language error configurations.
 
 **Validation Rules (errors)**
 
-| Condition | Message |
-|-----------|---------|
+| Condition                                     | Message                                    |
+| --------------------------------------------- | ------------------------------------------ |
 | A trackId in one locale is missing in another | trackId "XXX" is missing in locale(s): ... |
 
 **Warning Rules (warnings)**
 
-| Condition | Message |
-|-----------|---------|
-| Same trackId has different types | trackId "XXX" has different "type" across locales |
+| Condition                               | Message                                                  |
+| --------------------------------------- | -------------------------------------------------------- |
+| Same trackId has different types        | trackId "XXX" has different "type" across locales        |
 | Same trackId has different action types | trackId "XXX" has different "action.type" across locales |
 
-<Note>
-If there is only one locale, validation is skipped and returns valid: true.
-</Note>
+<Note>If there is only one locale, validation is skipped and returns valid: true.</Note>
 
 **Example**
 

@@ -106,9 +106,7 @@ describe('sentryPlugin', () => {
     const plugin = sentryPlugin();
     plugin.onError!(mockError, { trackId: 'ERR_001' });
 
-    const localeCall = mockScope.setTag.mock.calls.find(
-      (c: string[]) => c[0] === 'huh.locale',
-    );
+    const localeCall = mockScope.setTag.mock.calls.find((c: string[]) => c[0] === 'huh.locale');
     expect(localeCall).toBeUndefined();
   });
 
@@ -164,37 +162,25 @@ describe('severity → Sentry level mapping', () => {
 
   it('maps ERROR severity to error', () => {
     const plugin = sentryPlugin();
-    plugin.onError!(
-      { ...mockError, severity: 'ERROR' },
-      { ...mockContext, severity: 'ERROR' },
-    );
+    plugin.onError!({ ...mockError, severity: 'ERROR' }, { ...mockContext, severity: 'ERROR' });
     expect(Sentry.captureMessage).toHaveBeenCalledWith('[huh] ERR_001', 'error');
   });
 
   it('maps WARNING severity to warning', () => {
     const plugin = sentryPlugin();
-    plugin.onError!(
-      { ...mockError, severity: 'WARNING' },
-      { ...mockContext, severity: 'WARNING' },
-    );
+    plugin.onError!({ ...mockError, severity: 'WARNING' }, { ...mockContext, severity: 'WARNING' });
     expect(Sentry.captureMessage).toHaveBeenCalledWith('[huh] ERR_001', 'warning');
   });
 
   it('maps INFO severity to info', () => {
     const plugin = sentryPlugin();
-    plugin.onError!(
-      { ...mockError, severity: 'INFO' },
-      { ...mockContext, severity: 'INFO' },
-    );
+    plugin.onError!({ ...mockError, severity: 'INFO' }, { ...mockContext, severity: 'INFO' });
     expect(Sentry.captureMessage).toHaveBeenCalledWith('[huh] ERR_001', 'info');
   });
 
   it('falls back to level option when severity is unrecognized', () => {
     const plugin = sentryPlugin({ level: 'warning' });
-    plugin.onError!(
-      { ...mockError, severity: 'CUSTOM' },
-      { ...mockContext, severity: 'CUSTOM' },
-    );
+    plugin.onError!({ ...mockError, severity: 'CUSTOM' }, { ...mockContext, severity: 'CUSTOM' });
     expect(Sentry.captureMessage).toHaveBeenCalledWith('[huh] ERR_001', 'warning');
   });
 
@@ -319,15 +305,15 @@ describe('enrichContext', () => {
 
 describe('resolveSentryLevel', () => {
   it('returns mapped level for known severity', () => {
-    expect(
-      resolveSentryLevel(mockError, { ...mockContext, severity: 'CRITICAL' }, 'error'),
-    ).toBe('fatal');
+    expect(resolveSentryLevel(mockError, { ...mockContext, severity: 'CRITICAL' }, 'error')).toBe(
+      'fatal',
+    );
   });
 
   it('returns fallback for unknown severity', () => {
-    expect(
-      resolveSentryLevel(mockError, { ...mockContext, severity: 'CUSTOM' }, 'warning'),
-    ).toBe('warning');
+    expect(resolveSentryLevel(mockError, { ...mockContext, severity: 'CUSTOM' }, 'warning')).toBe(
+      'warning',
+    );
   });
 
   it('returns fallback when no severity', () => {
@@ -342,10 +328,7 @@ describe('maskSensitiveData', () => {
   });
 
   it('masks matching RegExp keys', () => {
-    const result = maskSensitiveData(
-      { tokenA: 'x', tokenB: 'y', name: 'Jane' },
-      [/^token/],
-    );
+    const result = maskSensitiveData({ tokenA: 'x', tokenB: 'y', name: 'Jane' }, [/^token/]);
     expect(result).toEqual({ tokenA: '[REDACTED]', tokenB: '[REDACTED]', name: 'Jane' });
   });
 });

@@ -84,17 +84,7 @@ describe('airtableRecordsToRows', () => {
 
     const rows = airtableRecordsToRows(records);
 
-    expect(rows[1]).toEqual([
-      'ERR_001',
-      'toast',
-      'Error occurred',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
+    expect(rows[1]).toEqual(['ERR_001', 'toast', 'Error occurred', '', '', '', '', '', '']);
   });
 
   it('handles null field values as empty strings', () => {
@@ -136,9 +126,7 @@ describe('fetchAirtableData', () => {
     const mockFetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
-        records: [
-          { id: 'rec1', fields: { trackId: 'ERR_001', type: 'toast', message: 'Test' } },
-        ],
+        records: [{ id: 'rec1', fields: { trackId: 'ERR_001', type: 'toast', message: 'Test' } }],
       }),
     });
     vi.stubGlobal('fetch', mockFetch);

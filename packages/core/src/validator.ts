@@ -29,10 +29,18 @@ export function validateConfig(config: ErrorConfig): ValidationResult {
     // Action validation
     if (entry.action) {
       if (!entry.action.label) {
-        errors.push({ trackId, field: 'action.label', message: 'Action is missing required field: label' });
+        errors.push({
+          trackId,
+          field: 'action.label',
+          message: 'Action is missing required field: label',
+        });
       }
       if (!entry.action.type) {
-        errors.push({ trackId, field: 'action.type', message: 'Action is missing required field: type' });
+        errors.push({
+          trackId,
+          field: 'action.type',
+          message: 'Action is missing required field: type',
+        });
       }
 
       // REDIRECT requires target (built-in rule)

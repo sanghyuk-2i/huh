@@ -126,11 +126,7 @@ const TestConsumer = defineComponent({
     return () =>
       h('div', [
         h('button', { onClick: () => huh('ERR_001') }, 'trigger toast'),
-        h(
-          'button',
-          { onClick: () => huh('ERR_002', { userName: '이재민' }) },
-          'trigger modal',
-        ),
+        h('button', { onClick: () => huh('ERR_002', { userName: '이재민' }) }, 'trigger modal'),
         h('button', { onClick: () => huh('ERR_003') }, 'trigger page'),
         h('button', { onClick: () => huh('ERR_CUSTOM') }, 'trigger custom'),
         h('button', { onClick: () => huh('ERR_REDIRECT') }, 'trigger redirect'),
@@ -158,7 +154,10 @@ describe('HuhProvider', () => {
       },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'trigger toast')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger toast')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Something went wrong');
   });
@@ -171,7 +170,10 @@ describe('HuhProvider', () => {
       },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'trigger modal')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger modal')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="modal"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Hello, 이재민!');
   });
@@ -184,10 +186,16 @@ describe('HuhProvider', () => {
       },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'trigger toast')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger toast')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'clear')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'clear')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="toast"]').exists()).toBe(false);
   });
 
@@ -199,10 +207,16 @@ describe('HuhProvider', () => {
       },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'trigger modal')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger modal')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="modal"]').exists()).toBe(true);
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'Dismiss')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'Dismiss')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="modal"]').exists()).toBe(false);
   });
 
@@ -237,7 +251,10 @@ describe('HuhProvider', () => {
       .filter((b) => b.text() === 'trigger custom')[0]
       .trigger('click');
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'Open chat')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'Open chat')[0]
+      .trigger('click');
 
     expect(onCustomAction).toHaveBeenCalledWith({ type: 'OPEN_CHAT', target: undefined });
     expect(wrapper.find('[data-testid="banner"]').exists()).toBe(false);
@@ -256,7 +273,10 @@ describe('plugins', () => {
       },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'trigger toast')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger toast')[0]
+      .trigger('click');
 
     expect(onError).toHaveBeenCalledWith(
       expect.objectContaining({ trackId: 'ERR_001', type: 'TOAST' }),
@@ -275,8 +295,14 @@ describe('plugins', () => {
       },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'trigger modal')[0].trigger('click');
-    await wrapper.findAll('button').filter((b) => b.text() === 'Dismiss')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger modal')[0]
+      .trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'Dismiss')[0]
+      .trigger('click');
 
     expect(onAction).toHaveBeenCalledWith(
       expect.objectContaining({ trackId: 'ERR_002' }),
@@ -300,7 +326,10 @@ describe('plugins', () => {
       },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'trigger toast')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'trigger toast')[0]
+      .trigger('click');
 
     expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
     expect(warnSpy).toHaveBeenCalled();
@@ -327,7 +356,10 @@ describe('huh', () => {
       slots: { default: () => h(CodeConsumer) },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'by-code')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'by-code')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
     expect(wrapper.text()).toContain('Something went wrong');
   });
@@ -338,7 +370,10 @@ describe('huh', () => {
       slots: { default: () => h(CodeConsumer) },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'direct-trackid')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'direct-trackid')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
   });
 
@@ -348,7 +383,10 @@ describe('huh', () => {
       slots: { default: () => h(CodeConsumer) },
     });
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'unknown-code')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'unknown-code')[0]
+      .trigger('click');
     expect(wrapper.find('[data-testid="modal"]').exists()).toBe(true);
   });
 
@@ -391,7 +429,10 @@ describe('router prop', () => {
       .filter((b) => b.text() === 'trigger redirect')[0]
       .trigger('click');
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'Go home')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'Go home')[0]
+      .trigger('click');
 
     expect(mockRouter.push).toHaveBeenCalledWith('/home');
   });
@@ -411,7 +452,10 @@ describe('router prop', () => {
       .filter((b) => b.text() === 'trigger page')[0]
       .trigger('click');
 
-    await wrapper.findAll('button').filter((b) => b.text() === 'Go back')[0].trigger('click');
+    await wrapper
+      .findAll('button')
+      .filter((b) => b.text() === 'Go back')[0]
+      .trigger('click');
 
     expect(mockRouter.back).toHaveBeenCalled();
   });

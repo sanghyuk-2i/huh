@@ -1,7 +1,7 @@
 ---
-title: "huh test"
-description: "Capture screenshots of error UIs with Playwright, run extended validation, and auto-generate HTML reports"
-icon: "camera"
+title: 'huh test'
+description: 'Capture screenshots of error UIs with Playwright, run extended validation, and auto-generate HTML reports'
+icon: 'camera'
 ---
 
 `huh test` launches a Playwright browser against your ErrorConfig JSON, captures screenshots of each error entry's UI, runs extended validation, and auto-generates an HTML report.
@@ -15,7 +15,8 @@ npx playwright install chromium
 ```
 
 <Note>
-`huh test` uses headless Chromium internally. In CI environments, make sure the Playwright browser binaries are installed.
+  `huh test` uses headless Chromium internally. In CI environments, make sure the Playwright browser
+  binaries are installed.
 </Note>
 
 ---
@@ -46,18 +47,18 @@ npx huh test --ci
 
 ## CLI Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `--mode <mode>` | `standalone` \| `app` | `standalone` | Preview mode |
-| `--url <url>` | `string` | — | App URL (required for `app` mode) |
-| `--config <path>` | `string` | `src/huh.json` | Path to ErrorConfig JSON file |
-| `--output <dir>` | `string` | `.huh-report` | Report output directory |
-| `--filter <ids>` | `string` | — | Filter by trackId (comma-separated) |
-| `--type <types>` | `string` | — | Filter by error type (comma-separated) |
-| `--device <preset>` | `desktop` \| `mobile` \| `tablet` | `desktop` | Device preset |
-| `--open` | `boolean` | `false` | Open report in browser after generation |
-| `--ci` | `boolean` | `false` | CI mode: exit with code 1 on failures |
-| `--diff` | `boolean` | `false` | Compare with previous report |
+| Option              | Type                              | Default        | Description                             |
+| ------------------- | --------------------------------- | -------------- | --------------------------------------- |
+| `--mode <mode>`     | `standalone` \| `app`             | `standalone`   | Preview mode                            |
+| `--url <url>`       | `string`                          | —              | App URL (required for `app` mode)       |
+| `--config <path>`   | `string`                          | `src/huh.json` | Path to ErrorConfig JSON file           |
+| `--output <dir>`    | `string`                          | `.huh-report`  | Report output directory                 |
+| `--filter <ids>`    | `string`                          | —              | Filter by trackId (comma-separated)     |
+| `--type <types>`    | `string`                          | —              | Filter by error type (comma-separated)  |
+| `--device <preset>` | `desktop` \| `mobile` \| `tablet` | `desktop`      | Device preset                           |
+| `--open`            | `boolean`                         | `false`        | Open report in browser after generation |
+| `--ci`              | `boolean`                         | `false`        | CI mode: exit with code 1 on failures   |
+| `--diff`            | `boolean`                         | `false`        | Compare with previous report            |
 
 ---
 
@@ -66,8 +67,8 @@ npx huh test --ci
 <Steps>
 
 <Step title="Load ErrorConfig">
-  Reads the JSON file from the `--config` path and parses it as ErrorConfig.
-  If a `simulate` section exists in `.huh.config.json`, it is also loaded.
+  Reads the JSON file from the `--config` path and parses it as ErrorConfig. If a `simulate` section
+  exists in `.huh.config.json`, it is also loaded.
 </Step>
 
 <Step title="Filter trackIds">
@@ -75,25 +76,23 @@ npx huh test --ci
 </Step>
 
 <Step title="Start preview server">
-  Starts an internal HTTP server that renders each error entry as an isolated HTML page.
-  Built-in renderers for TOAST, MODAL, and PAGE types are applied automatically.
+  Starts an internal HTTP server that renders each error entry as an isolated HTML page. Built-in
+  renderers for TOAST, MODAL, and PAGE types are applied automatically.
 </Step>
 
 <Step title="Capture screenshots with Playwright">
-  Headless Chromium visits each error entry page and captures a screenshot.
-  Type-specific delays are applied:
-  - **TOAST**: 350ms
-  - **MODAL**: 250ms
-  - **PAGE**: 400ms
+  Headless Chromium visits each error entry page and captures a screenshot. Type-specific delays are
+  applied: - **TOAST**: 350ms - **MODAL**: 250ms - **PAGE**: 400ms
 </Step>
 
 <Step title="Extended Validation">
-  Runs `@huh/core` base validation plus additional extended checks.
-  See the [Extended Validation section](#extended-validation) below.
+  Runs `@huh/core` base validation plus additional extended checks. See the [Extended Validation
+  section](#extended-validation) below.
 </Step>
 
 <Step title="Generate HTML report">
-  Produces `report.html` with base64-encoded screenshots and `report-data.json` with structured validation results.
+  Produces `report.html` with base64-encoded screenshots and `report-data.json` with structured
+  validation results.
 </Step>
 
 </Steps>
@@ -102,11 +101,11 @@ npx huh test --ci
 
 ## Device Presets
 
-| Preset | Resolution | Scale Factor | Mobile |
-|--------|-----------|-------------|--------|
-| `desktop` | 1280 x 720 | 1x | No |
-| `mobile` | 375 x 812 | 2x | Yes |
-| `tablet` | 768 x 1024 | 2x | Yes |
+| Preset    | Resolution | Scale Factor | Mobile |
+| --------- | ---------- | ------------ | ------ |
+| `desktop` | 1280 x 720 | 1x           | No     |
+| `mobile`  | 375 x 812  | 2x           | Yes    |
+| `tablet`  | 768 x 1024 | 2x           | Yes    |
 
 ```bash
 # Test with mobile viewport
@@ -142,16 +141,17 @@ Add a `simulate` field to `.huh.config.json` to control template variables and t
 }
 ```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `defaultVariables` | `Record<string, string>` | Default variables applied to all trackIds |
-| `variables` | `Record<string, Record<string, string>>` | Per-trackId variables (overrides defaultVariables) |
-| `waitTimeout` | `number` | Max wait time for render completion (ms) |
-| `screenshotDelay` | `number` | Additional delay after render before capturing screenshot (ms) |
+| Field              | Type                                     | Description                                                    |
+| ------------------ | ---------------------------------------- | -------------------------------------------------------------- |
+| `defaultVariables` | `Record<string, string>`                 | Default variables applied to all trackIds                      |
+| `variables`        | `Record<string, Record<string, string>>` | Per-trackId variables (overrides defaultVariables)             |
+| `waitTimeout`      | `number`                                 | Max wait time for render completion (ms)                       |
+| `screenshotDelay`  | `number`                                 | Additional delay after render before capturing screenshot (ms) |
 
 <Note>
-When a trackId has entries in `variables`, those values override the same keys in `defaultVariables`.
-For example, with the config above, `ERR_AUTH`'s `userName` will be "Admin", while all other trackIds will use "Jane".
+  When a trackId has entries in `variables`, those values override the same keys in
+  `defaultVariables`. For example, with the config above, `ERR_AUTH`'s `userName` will be "Admin",
+  while all other trackIds will use "Jane".
 </Note>
 
 ---
@@ -160,21 +160,21 @@ For example, with the config above, `ERR_AUTH`'s `userName` will be "Admin", whi
 
 `huh test` runs `@huh/core`'s base validation plus the following extended checks:
 
-| Check | Severity | Description |
-|-------|----------|-------------|
-| `render-failure` | error | Playwright failed to render the error UI |
-| `image-url-broken` | warning | The `image` field URL is invalid |
-| `message-too-long` | warning | Message length exceeds the recommended limit for its type |
-| `slow-render` | warning | Render time exceeded 3000ms |
-| `missing-template-variable` | warning | Unresolved `\{\{variable\}\}` patterns remain in the output |
+| Check                       | Severity | Description                                                 |
+| --------------------------- | -------- | ----------------------------------------------------------- |
+| `render-failure`            | error    | Playwright failed to render the error UI                    |
+| `image-url-broken`          | warning  | The `image` field URL is invalid                            |
+| `message-too-long`          | warning  | Message length exceeds the recommended limit for its type   |
+| `slow-render`               | warning  | Render time exceeded 3000ms                                 |
+| `missing-template-variable` | warning  | Unresolved `\{\{variable\}\}` patterns remain in the output |
 
 **Recommended message length limits:**
 
-| Type | Max Characters |
-|------|---------------|
-| TOAST | 120 |
-| MODAL | 500 |
-| PAGE | 300 |
+| Type  | Max Characters |
+| ----- | -------------- |
+| TOAST | 120            |
+| MODAL | 500            |
+| PAGE  | 300            |
 
 ---
 
@@ -182,10 +182,10 @@ For example, with the config above, `ERR_AUTH`'s `userName` will be "Admin", whi
 
 The following files are generated in the `--output` directory (default: `.huh-report`):
 
-| File | Description |
-|------|-------------|
-| `report.html` | Visual report with embedded base64 screenshots and validation results |
-| `report-data.json` | Structured report data for programmatic use (without screenshots) |
+| File               | Description                                                           |
+| ------------------ | --------------------------------------------------------------------- |
+| `report.html`      | Visual report with embedded base64 screenshots and validation results |
+| `report-data.json` | Structured report data for programmatic use (without screenshots)     |
 
 **report-data.json structure:**
 
@@ -224,12 +224,12 @@ npx huh test --diff
 
 **Detected changes:**
 
-| Status | Description |
-|--------|-------------|
-| `added` | Newly added trackId |
-| `removed` | Deleted trackId |
-| `changed` | Type, success/fail status, or issue count changed |
-| `unchanged` | No changes |
+| Status      | Description                                       |
+| ----------- | ------------------------------------------------- |
+| `added`     | Newly added trackId                               |
+| `removed`   | Deleted trackId                                   |
+| `changed`   | Type, success/fail status, or issue count changed |
+| `unchanged` | No changes                                        |
 
 **Example output:**
 
@@ -284,7 +284,8 @@ jobs:
 </Accordion>
 
 <Warning>
-In `--ci` mode, the process exits with code 1 if there is at least one error (e.g., render-failure). Warnings alone do not cause a failure.
+  In `--ci` mode, the process exits with code 1 if there is at least one error (e.g.,
+  render-failure). Warnings alone do not cause a failure.
 </Warning>
 
 ---

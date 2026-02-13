@@ -1,7 +1,7 @@
 ---
-title: "Google Sheets 설정 가이드"
-description: "Google Sheets에서 에러 콘텐츠를 관리하기 위한 시트 구조 및 접근 권한 설정"
-icon: "table"
+title: 'Google Sheets 설정 가이드'
+description: 'Google Sheets에서 에러 콘텐츠를 관리하기 위한 시트 구조 및 접근 권한 설정'
+icon: 'table'
 ---
 
 이 문서는 에러 콘텐츠를 관리할 Google Sheet의 작성 규칙을 설명합니다.
@@ -12,9 +12,7 @@ icon: "table"
 
 **[Google Sheets 템플릿 복사하기](https://docs.google.com/spreadsheets/d/1HNCxgmi_kNaVWz-63A3EQ4u6Rx8vPRJgIcdXgd8MMAY/copy)**
 
-<Note>
-복사 후 데이터를 수정하고 `huh pull`을 실행하세요.
-</Note>
+<Note>복사 후 데이터를 수정하고 `huh pull`을 실행하세요.</Note>
 
 ---
 
@@ -22,45 +20,47 @@ icon: "table"
 
 첫 번째 행은 반드시 헤더 행이어야 하며, 아래 컬럼명을 사용합니다:
 
-| 컬럼명 | 필수 | 설명 |
-|--------|------|------|
-| `trackId` | O | 에러를 식별하는 고유 ID (예: `ERR_LOGIN_FAILED`) |
-| `type` | O | 에러 표시 유형: `TOAST`, `MODAL`, `PAGE` 또는 커스텀 타입 |
-| `message` | O | 사용자에게 보여줄 에러 메시지 |
-| `title` | | 에러 제목 (modal, page에서 사용) |
-| `image` | | 이미지 URL (page에서 사용) |
-| `severity` | | 심각도: `INFO`, `WARNING`, `ERROR`, `CRITICAL` 또는 커스텀 심각도 |
-| `actionLabel` | | 액션 버튼 텍스트 |
-| `actionType` | | 액션 종류: `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
-| `actionTarget` | | 액션 대상 URL (`REDIRECT` 시 필수) |
+| 컬럼명         | 필수 | 설명                                                               |
+| -------------- | ---- | ------------------------------------------------------------------ |
+| `trackId`      | O    | 에러를 식별하는 고유 ID (예: `ERR_LOGIN_FAILED`)                   |
+| `type`         | O    | 에러 표시 유형: `TOAST`, `MODAL`, `PAGE` 또는 커스텀 타입          |
+| `message`      | O    | 사용자에게 보여줄 에러 메시지                                      |
+| `title`        |      | 에러 제목 (modal, page에서 사용)                                   |
+| `image`        |      | 이미지 URL (page에서 사용)                                         |
+| `severity`     |      | 심각도: `INFO`, `WARNING`, `ERROR`, `CRITICAL` 또는 커스텀 심각도  |
+| `actionLabel`  |      | 액션 버튼 텍스트                                                   |
+| `actionType`   |      | 액션 종류: `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
+| `actionTarget` |      | 액션 대상 URL (`REDIRECT` 시 필수)                                 |
 
 ## 에러 타입 (`type`)
 
 기본 제공 타입:
 
-| 타입 | 용도 | 권장 필드 |
-|------|------|-----------|
-| `TOAST` | 간단한 알림 메시지 | message만 사용. title/image 사용 시 경고 발생 |
-| `MODAL` | 팝업 형태의 에러 안내 | message + title + action |
-| `PAGE` | 전체 화면 에러 페이지 | message + title + image + action (action 없으면 경고) |
+| 타입    | 용도                  | 권장 필드                                             |
+| ------- | --------------------- | ----------------------------------------------------- |
+| `TOAST` | 간단한 알림 메시지    | message만 사용. title/image 사용 시 경고 발생         |
+| `MODAL` | 팝업 형태의 에러 안내 | message + title + action                              |
+| `PAGE`  | 전체 화면 에러 페이지 | message + title + image + action (action 없으면 경고) |
 
 <Note>
-커스텀 타입(`BANNER`, `SNACKBAR` 등)도 자유롭게 사용할 수 있습니다. 소문자로 입력해도 자동으로 대문자로 변환됩니다.
+  커스텀 타입(`BANNER`, `SNACKBAR` 등)도 자유롭게 사용할 수 있습니다. 소문자로 입력해도 자동으로
+  대문자로 변환됩니다.
 </Note>
 
 ## 액션 타입 (`actionType`)
 
 기본 제공 액션 타입:
 
-| 타입 | 동작 | target 필요 |
-|------|------|-------------|
-| `REDIRECT` | 지정된 URL로 이동 | O (`actionTarget`에 URL 입력) |
-| `RETRY` | 에러 닫기 + 재시도 콜백 실행 | X |
-| `BACK` | 브라우저 뒤로가기 (`history.back()`) | X |
-| `DISMISS` | 에러 UI 닫기 | X |
+| 타입       | 동작                                 | target 필요                   |
+| ---------- | ------------------------------------ | ----------------------------- |
+| `REDIRECT` | 지정된 URL로 이동                    | O (`actionTarget`에 URL 입력) |
+| `RETRY`    | 에러 닫기 + 재시도 콜백 실행         | X                             |
+| `BACK`     | 브라우저 뒤로가기 (`history.back()`) | X                             |
+| `DISMISS`  | 에러 UI 닫기                         | X                             |
 
 <Note>
-커스텀 액션 타입(`OPEN_CHAT`, `SHARE` 등)도 사용할 수 있습니다. `HuhProvider`의 `onCustomAction` 콜백에서 처리합니다.
+  커스텀 액션 타입(`OPEN_CHAT`, `SHARE` 등)도 사용할 수 있습니다. `HuhProvider`의 `onCustomAction`
+  콜백에서 처리합니다.
 </Note>
 
 ## 템플릿 변수
@@ -74,13 +74,13 @@ icon: "table"
 
 ## 작성 예시
 
-| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
-| ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요 | | | WARNING | | | |
-| ERR_AUTH | MODAL | 인증이 필요합니다 | 로그인 필요 | | ERROR | 로그인하기 | REDIRECT | /login |
-| ERR_TIMEOUT | MODAL | 요청 시간이 초과되었습니다 | 시간 초과 | | ERROR | 다시 시도 | RETRY | |
-| ERR_FORBIDDEN | PAGE | {`{{userName}}`}님은 접근 권한이 없습니다 | 접근 거부 | /img/403.png | CRITICAL | 뒤로가기 | BACK | |
-| ERR_NOT_FOUND | PAGE | 페이지를 찾을 수 없습니다 | 404 | /img/404.png | INFO | 홈으로 | REDIRECT | / |
+| trackId       | type  | message                                   | title       | image        | severity | actionLabel | actionType | actionTarget |
+| ------------- | ----- | ----------------------------------------- | ----------- | ------------ | -------- | ----------- | ---------- | ------------ |
+| ERR_NETWORK   | TOAST | 네트워크 연결을 확인해주세요              |             |              | WARNING  |             |            |              |
+| ERR_AUTH      | MODAL | 인증이 필요합니다                         | 로그인 필요 |              | ERROR    | 로그인하기  | REDIRECT   | /login       |
+| ERR_TIMEOUT   | MODAL | 요청 시간이 초과되었습니다                | 시간 초과   |              | ERROR    | 다시 시도   | RETRY      |              |
+| ERR_FORBIDDEN | PAGE  | {`{{userName}}`}님은 접근 권한이 없습니다 | 접근 거부   | /img/403.png | CRITICAL | 뒤로가기    | BACK       |              |
+| ERR_NOT_FOUND | PAGE  | 페이지를 찾을 수 없습니다                 | 404         | /img/404.png | INFO     | 홈으로      | REDIRECT   | /            |
 
 ## 규칙 요약
 

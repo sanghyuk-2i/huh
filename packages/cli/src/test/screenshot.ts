@@ -11,9 +11,7 @@ export interface CaptureOptions {
   simulate?: SimulateConfig;
 }
 
-export async function captureAllScreenshots(
-  options: CaptureOptions,
-): Promise<ScreenshotResult[]> {
+export async function captureAllScreenshots(options: CaptureOptions): Promise<ScreenshotResult[]> {
   const { config, trackIds, device, simulate } = options;
   const waitTimeout = simulate?.waitTimeout ?? 5000;
   const screenshotDelay = simulate?.screenshotDelay ?? 300;

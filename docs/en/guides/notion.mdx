@@ -1,7 +1,7 @@
 ---
-title: "Notion Integration Guide"
-description: "Database setup guide for managing error content in Notion"
-icon: "book"
+title: 'Notion Integration Guide'
+description: 'Database setup guide for managing error content in Notion'
+icon: 'book'
 ---
 
 ## Quick Start with Template
@@ -10,9 +10,7 @@ Duplicate the pre-configured Notion template to get a database with the correct 
 
 **[Duplicate Notion Template](https://www.notion.so/sanghyuk2i/Hur-Error-304d49b044d8808194a0fa50b490a6e2)**
 
-<Note>
-After duplicating, edit the data and run `huh pull`.
-</Note>
+<Note>After duplicating, edit the data and run `huh pull`.</Note>
 
 ---
 
@@ -30,34 +28,37 @@ After duplicating, edit the data and run `huh pull`.
 
 Set up the following properties in the database:
 
-| Property Name | Property Type | Required | Description |
-|--------------|--------------|----------|-------------|
-| `trackId` | Title | **Yes** | Unique error identifier (e.g., `ERR_LOGIN_001`) |
-| `type` | Select | **Yes** | `TOAST`, `MODAL`, `PAGE`, or custom type |
-| `message` | Rich text | **Yes** | Error message. Supports `{{variable}}` template variables |
-| `title` | Rich text | Optional | Error title (used for modal, page) |
-| `image` | URL | Optional | Error image URL |
-| `severity` | Select | Optional | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
-| `actionLabel` | Rich text | Optional | Action button text |
-| `actionType` | Select | Optional | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
-| `actionTarget` | URL | Optional | URL to navigate to for REDIRECT |
+| Property Name  | Property Type | Required | Description                                                |
+| -------------- | ------------- | -------- | ---------------------------------------------------------- |
+| `trackId`      | Title         | **Yes**  | Unique error identifier (e.g., `ERR_LOGIN_001`)            |
+| `type`         | Select        | **Yes**  | `TOAST`, `MODAL`, `PAGE`, or custom type                   |
+| `message`      | Rich text     | **Yes**  | Error message. Supports `{{variable}}` template variables  |
+| `title`        | Rich text     | Optional | Error title (used for modal, page)                         |
+| `image`        | URL           | Optional | Error image URL                                            |
+| `severity`     | Select        | Optional | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
+| `actionLabel`  | Rich text     | Optional | Action button text                                         |
+| `actionType`   | Select        | Optional | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action   |
+| `actionTarget` | URL           | Optional | URL to navigate to for REDIRECT                            |
 
 <Note>
-In Notion, `trackId` is the default Title property. Rename the default "Name" property to `trackId`.
+  In Notion, `trackId` is the default Title property. Rename the default "Name" property to
+  `trackId`.
 </Note>
 
 <Note>
-Setting `type`, `severity`, and `actionType` as Select types lets you predefine options to prevent input mistakes. Custom types can also be added as options. Even if entered in lowercase, the CLI will automatically convert them to uppercase.
+  Setting `type`, `severity`, and `actionType` as Select types lets you predefine options to prevent
+  input mistakes. Custom types can also be added as options. Even if entered in lowercase, the CLI
+  will automatically convert them to uppercase.
 </Note>
 
 ### Example Data
 
-| trackId | type | message | title | severity | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|----------|-------------|------------|--------------|
-| ERR_LOGIN_001 | TOAST | Login failed. Please try again. | | WARNING | Retry | RETRY | |
-| ERR_PAYMENT_001 | MODAL | An error occurred during payment processing. | Payment Error | ERROR | Contact Support | REDIRECT | /support |
-| ERR_NOT_FOUND | PAGE | The page you requested could not be found. | Page Not Found | INFO | Go Home | REDIRECT | / |
-| ERR_NETWORK | TOAST | Please check your network connection. | | WARNING | Try Again | RETRY | |
+| trackId         | type  | message                                      | title          | severity | actionLabel     | actionType | actionTarget |
+| --------------- | ----- | -------------------------------------------- | -------------- | -------- | --------------- | ---------- | ------------ |
+| ERR_LOGIN_001   | TOAST | Login failed. Please try again.              |                | WARNING  | Retry           | RETRY      |              |
+| ERR_PAYMENT_001 | MODAL | An error occurred during payment processing. | Payment Error  | ERROR    | Contact Support | REDIRECT   | /support     |
+| ERR_NOT_FOUND   | PAGE  | The page you requested could not be found.   | Page Not Found | INFO     | Go Home         | REDIRECT   | /            |
+| ERR_NETWORK     | TOAST | Please check your network connection.        |                | WARNING  | Try Again       | RETRY      |              |
 
 </Step>
 
@@ -82,9 +83,7 @@ After creating the integration, you need to connect it to the database:
 3. Under **Connections** > **Connect to**, select the integration you created.
 4. Click **Confirm**.
 
-<Warning>
-If the integration is not connected, API calls will return a `404` error.
-</Warning>
+<Warning>If the integration is not connected, API calls will return a `404` error.</Warning>
 
 </Step>
 
@@ -99,9 +98,7 @@ If the integration is not connected, API calls will return a `404` error.
    ```
 3. Or extract it from the URL copied via **Share** > **Copy link**.
 
-<Note>
-The Database ID can include hyphens or not. The API handles both formats automatically.
-</Note>
+<Note>The Database ID can include hyphens or not. The API handles both formats automatically.</Note>
 
 </Step>
 
@@ -139,7 +136,7 @@ To specify the token directly in the config:
 ```
 
 <Warning>
-If you include the token directly in the config file, add `.huh.config.json` to your `.gitignore`.
+  If you include the token directly in the config file, add `.huh.config.json` to your `.gitignore`.
 </Warning>
 
 </Step>

@@ -109,10 +109,7 @@ describe('datadogPlugin', () => {
     const plugin = datadogPlugin({ level: 'info' });
     plugin.onError!(mockError, mockContext);
 
-    expect(datadogLogs.logger.info).toHaveBeenCalledWith(
-      '[huh] ERR_001',
-      expect.any(Object),
-    );
+    expect(datadogLogs.logger.info).toHaveBeenCalledWith('[huh] ERR_001', expect.any(Object));
   });
 
   it('respects custom level option: debug', () => {

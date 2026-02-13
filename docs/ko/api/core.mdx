@@ -1,7 +1,7 @@
 ---
-title: "@huh/core API"
-description: "에러 콘텐츠 JSON DSL의 타입 정의, 파싱, 변수 치환, 유효성 검증 핵심 패키지"
-icon: "cube"
+title: '@huh/core API'
+description: '에러 콘텐츠 JSON DSL의 타입 정의, 파싱, 변수 치환, 유효성 검증 핵심 패키지'
+icon: 'cube'
 ---
 
 에러 콘텐츠 JSON DSL의 타입 정의, 시트 데이터 파싱, 변수 치환, 유효성 검증을 담당하는 핵심 패키지입니다. 외부 의존성이 없습니다.
@@ -91,7 +91,7 @@ const SEVERITY_LEVELS = {
 
 ```ts
 type BuiltInErrorType = 'TOAST' | 'MODAL' | 'PAGE';
-type ErrorType = BuiltInErrorType | (string & {});  // 'BANNER', 'SNACKBAR' 등 자유 확장
+type ErrorType = BuiltInErrorType | (string & {}); // 'BANNER', 'SNACKBAR' 등 자유 확장
 ```
 
 ### `ActionType`
@@ -100,7 +100,7 @@ type ErrorType = BuiltInErrorType | (string & {});  // 'BANNER', 'SNACKBAR' 등 
 
 ```ts
 type BuiltInActionType = 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS';
-type ActionType = BuiltInActionType | (string & {});  // 'OPEN_CHAT', 'SHARE' 등 자유 확장
+type ActionType = BuiltInActionType | (string & {}); // 'OPEN_CHAT', 'SHARE' 등 자유 확장
 ```
 
 ### `Severity`
@@ -109,16 +109,16 @@ type ActionType = BuiltInActionType | (string & {});  // 'OPEN_CHAT', 'SHARE' �
 
 ```ts
 type BuiltInSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
-type Severity = BuiltInSeverity | (string & {});  // 커스텀 심각도 확장 가능
+type Severity = BuiltInSeverity | (string & {}); // 커스텀 심각도 확장 가능
 ```
 
 ### `ErrorAction`
 
 ```ts
 interface ErrorAction {
-  label: string;       // 액션 버튼 텍스트
-  type: ActionType;    // 액션 종류
-  target?: string;     // redirect 시 이동할 URL
+  label: string; // 액션 버튼 텍스트
+  type: ActionType; // 액션 종류
+  target?: string; // redirect 시 이동할 URL
 }
 ```
 
@@ -128,12 +128,12 @@ interface ErrorAction {
 
 ```ts
 interface ErrorEntry {
-  type: ErrorType;        // 에러 표시 유형
-  message: string;        // 에러 메시지 (템플릿 변수 포함 가능)
-  title?: string;         // 제목 (modal, page용)
-  image?: string;         // 이미지 URL (page용)
-  severity?: Severity;   // 심각도 수준
-  action?: ErrorAction;   // 사용자 액션
+  type: ErrorType; // 에러 표시 유형
+  message: string; // 에러 메시지 (템플릿 변수 포함 가능)
+  title?: string; // 제목 (modal, page용)
+  image?: string; // 이미지 URL (page용)
+  severity?: Severity; // 심각도 수준
+  action?: ErrorAction; // 사용자 액션
 }
 ```
 
@@ -198,15 +198,15 @@ const locales: LocalizedErrorConfig = {
 
 ```ts
 interface CrossLocaleValidationResult {
-  valid: boolean;                          // 에러가 없으면 true
-  errors: CrossLocaleValidationError[];    // 에러 목록 (trackId 누락 등)
-  warnings: CrossLocaleValidationError[];  // 경고 목록 (type/actionType 불일치 등)
+  valid: boolean; // 에러가 없으면 true
+  errors: CrossLocaleValidationError[]; // 에러 목록 (trackId 누락 등)
+  warnings: CrossLocaleValidationError[]; // 경고 목록 (type/actionType 불일치 등)
 }
 
 interface CrossLocaleValidationError {
   trackId: string;
   field?: string;
-  locales: string[];    // 문제가 있는 로케일 목록
+  locales: string[]; // 문제가 있는 로케일 목록
   message: string;
 }
 ```
@@ -215,9 +215,9 @@ interface CrossLocaleValidationError {
 
 ```ts
 interface ValidationResult {
-  valid: boolean;                  // 에러가 없으면 true
-  errors: ValidationError[];       // 에러 목록 (type 누락, 잘못된 값 등)
-  warnings: ValidationError[];     // 경고 목록 (toast에 title 사용 등)
+  valid: boolean; // 에러가 없으면 true
+  errors: ValidationError[]; // 에러 목록 (type 누락, 잘못된 값 등)
+  warnings: ValidationError[]; // 경고 목록 (toast에 title 사용 등)
 }
 
 interface ValidationError {
@@ -277,9 +277,9 @@ interface HuhErrorContext {
 - `type`이 비어있으면 에러
 
 <Note>
-`type`과 `actionType` 값은 자동으로 대문자로 변환됩니다. 데이터 소스에서 `toast`, `Toast`, `TOAST` 어느 것을 입력해도 `TOAST`로 처리됩니다.
-`severity` 값도 자동으로 대문자로 변환됩니다.
-기본 제공 타입 외에도 커스텀 타입(`BANNER`, `SNACKBAR` 등)을 자유롭게 사용할 수 있습니다.
+  `type`과 `actionType` 값은 자동으로 대문자로 변환됩니다. 데이터 소스에서 `toast`, `Toast`, `TOAST`
+  어느 것을 입력해도 `TOAST`로 처리됩니다. `severity` 값도 자동으로 대문자로 변환됩니다. 기본 제공
+  타입 외에도 커스텀 타입(`BANNER`, `SNACKBAR` 등)을 자유롭게 사용할 수 있습니다.
 </Note>
 
 **예시**
@@ -288,7 +288,17 @@ interface HuhErrorContext {
 import { parseSheetData } from '@huh/core';
 
 const rows = [
-  ['trackId', 'type', 'message', 'title', 'image', 'severity', 'actionLabel', 'actionType', 'actionTarget'],
+  [
+    'trackId',
+    'type',
+    'message',
+    'title',
+    'image',
+    'severity',
+    'actionLabel',
+    'actionType',
+    'actionTarget',
+  ],
   ['ERR_001', 'toast', '오류가 발생했습니다', '', '', '', '', ''],
   ['ERR_002', 'modal', '세션 만료', '알림', '', '확인', 'dismiss', ''],
   ['ERR_003', 'banner', '서버 점검 중', '', '', '문의하기', 'open_chat', ''],
@@ -382,27 +392,28 @@ renderTemplate('{{a}} and {{b}}', { a: 'Hello' });
 
 **검증 규칙 (errors)**
 
-| 조건 | 메시지 |
-|------|--------|
-| `type`이 비어있음 | Missing required field: type |
-| `message`가 비어있음 | Missing required field: message |
-| `action.label`이 비어있음 | Action is missing required field: label |
+| 조건                                | 메시지                                       |
+| ----------------------------------- | -------------------------------------------- |
+| `type`이 비어있음                   | Missing required field: type                 |
+| `message`가 비어있음                | Missing required field: message              |
+| `action.label`이 비어있음           | Action is missing required field: label      |
 | `REDIRECT` 타입인데 `target`이 없음 | Action type "REDIRECT" requires a target URL |
 
 <Note>
-커스텀 타입(`BANNER`, `SNACKBAR` 등)은 에러 없이 통과합니다. 타입 값 자체의 유효성은 검증하지 않으며, 비어있는 경우에만 에러를 발생시킵니다.
+  커스텀 타입(`BANNER`, `SNACKBAR` 등)은 에러 없이 통과합니다. 타입 값 자체의 유효성은 검증하지
+  않으며, 비어있는 경우에만 에러를 발생시킵니다.
 </Note>
 
 **경고 규칙 (warnings)**
 
 기본 제공 타입에 대해서만 경고가 발생합니다. 커스텀 타입에는 경고가 발생하지 않습니다.
 
-| 조건 | 메시지 |
-|------|--------|
-| config가 비어있음 | Config is empty |
-| `TOAST`에 title이 있음 | Toast errors typically do not display a title |
-| `TOAST`에 image가 있음 | Toast errors typically do not display an image |
-| `PAGE`에 action이 없음 | Page errors should provide an action |
+| 조건                         | 메시지                                                                     |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| config가 비어있음            | Config is empty                                                            |
+| `TOAST`에 title이 있음       | Toast errors typically do not display a title                              |
+| `TOAST`에 image가 있음       | Toast errors typically do not display an image                             |
+| `PAGE`에 action이 없음       | Page errors should provide an action                                       |
 | 인식할 수 없는 `severity` 값 | Unrecognized severity "X". Built-in levels: INFO, WARNING, ERROR, CRITICAL |
 
 **예시**
@@ -413,7 +424,7 @@ import { validateConfig } from '@huh/core';
 const result = validateConfig({
   ERR_001: { type: 'TOAST', message: '' },
   ERR_002: { type: 'MODAL', message: 'OK', action: { label: 'Go', type: 'REDIRECT' } },
-  ERR_003: { type: 'BANNER', message: 'Custom type works' },  // 커스텀 타입 — 에러 없이 통과
+  ERR_003: { type: 'BANNER', message: 'Custom type works' }, // 커스텀 타입 — 에러 없이 통과
 });
 
 // result.valid → false
@@ -437,20 +448,18 @@ const result = validateConfig({
 
 **검증 규칙 (errors)**
 
-| 조건 | 메시지 |
-|------|--------|
+| 조건                                          | 메시지                                     |
+| --------------------------------------------- | ------------------------------------------ |
 | 한 로케일에 있는 trackId가 다른 로케일에 없음 | trackId "XXX" is missing in locale(s): ... |
 
 **경고 규칙 (warnings)**
 
-| 조건 | 메시지 |
-|------|--------|
-| 같은 trackId인데 type이 다름 | trackId "XXX" has different "type" across locales |
+| 조건                                | 메시지                                                   |
+| ----------------------------------- | -------------------------------------------------------- |
+| 같은 trackId인데 type이 다름        | trackId "XXX" has different "type" across locales        |
 | 같은 trackId인데 action.type이 다름 | trackId "XXX" has different "action.type" across locales |
 
-<Note>
-로케일이 1개뿐이면 검증을 건너뛰고 valid: true를 반환합니다.
-</Note>
+<Note>로케일이 1개뿐이면 검증을 건너뛰고 valid: true를 반환합니다.</Note>
 
 **예시**
 

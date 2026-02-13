@@ -89,9 +89,7 @@ function TestConsumer() {
   return (
     <div>
       <button onClick={() => huh('ERR_001')}>trigger toast</button>
-      <button onClick={() => huh('ERR_002', { userName: '이재민' })}>
-        trigger modal
-      </button>
+      <button onClick={() => huh('ERR_002', { userName: '이재민' })}>trigger modal</button>
       <button onClick={() => huh('ERR_003')}>trigger page</button>
       <button onClick={() => huh('ERR_CUSTOM')}>trigger custom</button>
       <button onClick={() => huh('ERR_REDIRECT')}>trigger redirect</button>
@@ -195,11 +193,7 @@ describe('HuhProvider', () => {
     const onCustomAction = vi.fn();
 
     render(
-      <HuhProvider
-        source={testConfig}
-        renderers={mockRenderers}
-        onCustomAction={onCustomAction}
-      >
+      <HuhProvider source={testConfig} renderers={mockRenderers} onCustomAction={onCustomAction}>
         <TestConsumer />
       </HuhProvider>,
     );
@@ -301,11 +295,7 @@ describe('huh', () => {
 
   it('maps error code to trackId via errorMap', () => {
     render(
-      <HuhProvider
-        source={testConfig}
-        renderers={mockRenderers}
-        errorMap={{ API_500: 'ERR_001' }}
-      >
+      <HuhProvider source={testConfig} renderers={mockRenderers} errorMap={{ API_500: 'ERR_001' }}>
         <CodeConsumer />
       </HuhProvider>,
     );
@@ -334,11 +324,7 @@ describe('huh', () => {
 
   it('uses fallbackTrackId when no mapping or direct match', () => {
     render(
-      <HuhProvider
-        source={testConfig}
-        renderers={mockRenderers}
-        fallbackTrackId="ERR_002"
-      >
+      <HuhProvider source={testConfig} renderers={mockRenderers} fallbackTrackId="ERR_002">
         <CodeConsumer />
       </HuhProvider>,
     );

@@ -7,7 +7,10 @@ import type { ScreenshotResult } from '../test/types';
 import { DEVICE_CONFIGS } from '../test/types';
 import { generateReport } from '../test/report-generator';
 
-function makeScreenshot(trackId: string, overrides: Partial<ScreenshotResult> = {}): ScreenshotResult {
+function makeScreenshot(
+  trackId: string,
+  overrides: Partial<ScreenshotResult> = {},
+): ScreenshotResult {
   return {
     trackId,
     type: 'TOAST',
@@ -54,10 +57,7 @@ describe('generateReport', () => {
       ERR_001: { type: 'TOAST', message: 'Toast msg' },
       ERR_002: { type: 'MODAL', title: 'Title', message: 'Modal msg' },
     };
-    const screenshots = [
-      makeScreenshot('ERR_001'),
-      makeScreenshot('ERR_002', { type: 'MODAL' }),
-    ];
+    const screenshots = [makeScreenshot('ERR_001'), makeScreenshot('ERR_002', { type: 'MODAL' })];
 
     generateReport({
       config,

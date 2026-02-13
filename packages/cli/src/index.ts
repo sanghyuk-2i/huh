@@ -9,7 +9,9 @@ const program = new Command();
 
 program
   .name('huh')
-  .description('CLI tool for managing error content from Google Sheets, Airtable, Notion, CSV, or XLSX')
+  .description(
+    'CLI tool for managing error content from Google Sheets, Airtable, Notion, CSV, or XLSX',
+  )
   .version('0.1.0');
 
 program
@@ -21,7 +23,9 @@ program
 
 program
   .command('pull')
-  .description('Fetch error content from data source (Google Sheets, Airtable, Notion, CSV, or XLSX), parse, validate, and generate JSON')
+  .description(
+    'Fetch error content from data source (Google Sheets, Airtable, Notion, CSV, or XLSX), parse, validate, and generate JSON',
+  )
   .action(async () => {
     await runPull();
   });

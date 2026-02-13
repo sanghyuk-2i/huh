@@ -48,11 +48,11 @@
 
 **데이터 소스는 이렇게 생겼습니다:**
 
-| trackId | type | message | title | action |
-|---|---|---|---|---|
-| ERR_NETWORK | toast | 네트워크 연결이 불안정합니다. | | |
-| ERR_AUTH | modal | {{userName}}님의 인증이 만료되었습니다. | 인증 만료 | 로그인 → redirect:/login |
-| ERR_NOT_FOUND | page | 요청하신 페이지가 존재하지 않습니다. | 404 | 돌아가기 → back |
+| trackId       | type  | message                                 | title     | action                   |
+| ------------- | ----- | --------------------------------------- | --------- | ------------------------ |
+| ERR_NETWORK   | toast | 네트워크 연결이 불안정합니다.           |           |                          |
+| ERR_AUTH      | modal | {{userName}}님의 인증이 만료되었습니다. | 인증 만료 | 로그인 → redirect:/login |
+| ERR_NOT_FOUND | page  | 요청하신 페이지가 존재하지 않습니다.    | 404       | 돌아가기 → back          |
 
 **코드는 이것만 작성하면 됩니다:**
 
@@ -63,7 +63,7 @@ const { huh } = useHuh();
 huh('ERR_AUTH', { userName: '홍길동' });
 
 // API 에러 코드를 trackId로 매핑하여 트리거
-huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
+huh(e.code); // 'API_500' → errorMap → 'ERR_SERVER'
 ```
 
 ## 빠른 시작
@@ -103,7 +103,9 @@ import { HuhProvider, useHuh } from '@huh/react';
 
 const renderers = {
   toast: ({ error, onDismiss }) => (
-    <div className="toast" onClick={onDismiss}>{error.message}</div>
+    <div className="toast" onClick={onDismiss}>
+      {error.message}
+    </div>
   ),
   modal: ({ error, onAction, onDismiss }) => (
     <div className="modal-overlay">
@@ -170,22 +172,22 @@ function MyPage() {
 
 ### 3가지 에러 타입
 
-| 타입 | 용도 | 예시 |
-|------|------|------|
-| `toast` | 짧고 간단한 알림 | 네트워크 오류, 저장 실패 |
-| `modal` | 사용자 확인이 필요한 경우 | 인증 만료, 권한 부족 |
-| `page` | 전체 화면 에러 상태 | 404, 점검 중, 치명적 오류 |
+| 타입    | 용도                      | 예시                      |
+| ------- | ------------------------- | ------------------------- |
+| `toast` | 짧고 간단한 알림          | 네트워크 오류, 저장 실패  |
+| `modal` | 사용자 확인이 필요한 경우 | 인증 만료, 권한 부족      |
+| `page`  | 전체 화면 에러 상태       | 404, 점검 중, 치명적 오류 |
 
 ### 자동 액션 처리
 
 시트에서 액션을 정의하면, Huh가 동작을 자동으로 처리합니다:
 
-| 액션 타입 | 동작 |
-|---|---|
-| `redirect` | 지정된 URL로 이동 |
-| `retry` | 에러 초기화 + `onRetry` 콜백 실행 |
-| `back` | `history.back()` 호출 |
-| `dismiss` | 에러 초기화 |
+| 액션 타입  | 동작                              |
+| ---------- | --------------------------------- |
+| `redirect` | 지정된 URL로 이동                 |
+| `retry`    | 에러 초기화 + `onRetry` 콜백 실행 |
+| `back`     | `history.back()` 호출             |
+| `dismiss`  | 에러 초기화                       |
 
 ### 빌드 타임 유효성 검증
 
@@ -201,38 +203,38 @@ CI/CD 파이프라인에 적합합니다. 콘텐츠 오류를 프로덕션에 �
 
 ## 패키지
 
-| 패키지 | 설명 |
-|---|---|
-| [`@huh/core`](./packages/core) | 의존성 제로. 타입, 파싱, 템플릿 엔진, 유효성 검증. **CDN 지원.** |
-| [`@huh/react`](./packages/react) | React 바인딩. `HuhProvider` + `useHuh` 훅. |
-| [`@huh/vue`](./packages/vue) | Vue 3 바인딩. `HuhProvider` + `useHuh` composable. |
-| [`@huh/svelte`](./packages/svelte) | Svelte 5 바인딩. `HuhProvider` + `useHuh`. |
-| [`@huh/cli`](./packages/cli) | `init` / `pull` / `validate` 명령어. |
+| 패키지                             | 설명                                                             |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| [`@huh/core`](./packages/core)     | 의존성 제로. 타입, 파싱, 템플릿 엔진, 유효성 검증. **CDN 지원.** |
+| [`@huh/react`](./packages/react)   | React 바인딩. `HuhProvider` + `useHuh` 훅.                       |
+| [`@huh/vue`](./packages/vue)       | Vue 3 바인딩. `HuhProvider` + `useHuh` composable.               |
+| [`@huh/svelte`](./packages/svelte) | Svelte 5 바인딩. `HuhProvider` + `useHuh`.                       |
+| [`@huh/cli`](./packages/cli)       | `init` / `pull` / `validate` 명령어.                             |
 
 `@huh/core`는 **의존성이 전혀 없으며** 모든 JavaScript 런타임에서 동작합니다. vanilla JS에서도 단독으로 사용할 수 있습니다.
 
 ## 왜 Huh인가요?
 
-| | 기존 방식 (산재) | Huh 도입 후 |
-|---|---|---|
-| **에러 문구** | 컴포넌트에 하드코딩 | 외부 데이터 소스에서 관리 |
-| **문구 수정** | 코드 변경 + 배포 필요 | 시트 수정 → `huh pull` |
-| **수정 가능 인원** | 개발자만 | 시트 접근 권한이 있는 누구나 |
-| **일관성** | 개발자마다 다른 패턴 | 하나의 패턴, 모든 곳에서 |
-| **타입 안전성** | 없음 | 완전한 TypeScript 지원 |
-| **유효성 검증** | 없음 | 빌드 타임 + CI 검증 |
+|                    | 기존 방식 (산재)      | Huh 도입 후                  |
+| ------------------ | --------------------- | ---------------------------- |
+| **에러 문구**      | 컴포넌트에 하드코딩   | 외부 데이터 소스에서 관리    |
+| **문구 수정**      | 코드 변경 + 배포 필요 | 시트 수정 → `huh pull`       |
+| **수정 가능 인원** | 개발자만              | 시트 접근 권한이 있는 누구나 |
+| **일관성**         | 개발자마다 다른 패턴  | 하나의 패턴, 모든 곳에서     |
+| **타입 안전성**    | 없음                  | 완전한 TypeScript 지원       |
+| **유효성 검증**    | 없음                  | 빌드 타임 + CI 검증          |
 
 ## 템플릿
 
 각 데이터 소스에 맞는 템플릿을 복사/다운로드하여 바로 시작할 수 있습니다:
 
-| 데이터 소스 | 템플릿 |
-|---|---|
-| Google Sheets | [템플릿 복사](https://docs.google.com/spreadsheets/d/TEMPLATE_SHEET_ID/copy) |
-| Airtable | [템플릿 복제](https://airtable.com/TEMPLATE_BASE_ID) |
-| Notion | [템플릿 복제](https://notion.so/TEMPLATE_DB_ID) |
-| XLSX | [다운로드](https://github.com/your-org/huh/releases/latest/download/huh-template.xlsx) |
-| CSV | [한국어](https://github.com/your-org/huh/releases/latest/download/huh-template-ko.csv) · [English](https://github.com/your-org/huh/releases/latest/download/huh-template-en.csv) |
+| 데이터 소스   | 템플릿                                                                                                                                                                           |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Google Sheets | [템플릿 복사](https://docs.google.com/spreadsheets/d/TEMPLATE_SHEET_ID/copy)                                                                                                     |
+| Airtable      | [템플릿 복제](https://airtable.com/TEMPLATE_BASE_ID)                                                                                                                             |
+| Notion        | [템플릿 복제](https://notion.so/TEMPLATE_DB_ID)                                                                                                                                  |
+| XLSX          | [다운로드](https://github.com/your-org/huh/releases/latest/download/huh-template.xlsx)                                                                                           |
+| CSV           | [한국어](https://github.com/your-org/huh/releases/latest/download/huh-template-ko.csv) · [English](https://github.com/your-org/huh/releases/latest/download/huh-template-en.csv) |
 
 ## 문서
 
@@ -253,7 +255,7 @@ CI/CD 파이프라인에 적합합니다. 콘텐츠 오류를 프로덕션에 �
   run: npx huh pull
   env:
     # 사용하는 데이터 소스에 맞는 키를 설정하세요
-    GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}         # Google Sheets
+    GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }} # Google Sheets
     # AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}   # Airtable
     # NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}       # Notion
 

@@ -1,0 +1,15 @@
+# Build outputs
+dist
+build
+.svelte-kit
+.next
+out
+
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Misc
+coverage
+*.log
+.DS_Store

@@ -1,7 +1,7 @@
 ---
-title: "시작하기"
-description: "Huh 3단계 설정 가이드 - 데이터 소스 준비, CLI로 JSON 생성, React 앱에서 사용"
-icon: "rocket"
+title: '시작하기'
+description: 'Huh 3단계 설정 가이드 - 데이터 소스 준비, CLI로 JSON 생성, React 앱에서 사용'
+icon: 'rocket'
 ---
 
 Huh는 3단계로 동작합니다:
@@ -76,7 +76,9 @@ yarn add -D @huh/cli
 ```html
 <script src="https://unpkg.com/@huh/core"></script>
 <script>
-  var config = { /* ErrorConfig JSON */ };
+  var config = {
+    /* ErrorConfig JSON */
+  };
   var resolved = HuhCore.resolveError(config, 'ERR_AUTH', { userName: '홍길동' });
   console.log(resolved.message);
 </script>
@@ -88,15 +90,16 @@ yarn add -D @huh/cli
 
 아래 컬럼 구조로 데이터를 작성합니다. (Google Sheets, Airtable, Notion, CSV, XLSX 모두 동일)
 
-| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
-| ERR_LOGIN_FAILED | TOAST | 로그인에 실패했습니다 | | | | | | |
-| ERR_SESSION_EXPIRED | MODAL | {`{{userName}}`}님의 세션이 만료되었습니다 | 세션 만료 | | ERROR | 다시 로그인 | REDIRECT | /login |
-| ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다 | 404 | /images/404.png | INFO | 홈으로 | REDIRECT | / |
+| trackId             | type  | message                                    | title     | image           | severity | actionLabel | actionType | actionTarget |
+| ------------------- | ----- | ------------------------------------------ | --------- | --------------- | -------- | ----------- | ---------- | ------------ |
+| ERR_LOGIN_FAILED    | TOAST | 로그인에 실패했습니다                      |           |                 |          |             |            |              |
+| ERR_SESSION_EXPIRED | MODAL | {`{{userName}}`}님의 세션이 만료되었습니다 | 세션 만료 |                 | ERROR    | 다시 로그인 | REDIRECT   | /login       |
+| ERR_NOT_FOUND       | PAGE  | 요청하신 페이지를 찾을 수 없습니다         | 404       | /images/404.png | INFO     | 홈으로      | REDIRECT   | /            |
 
 <Note>
-`type`과 `actionType`은 대문자로 관리됩니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
-기본 제공 타입(`TOAST`, `MODAL`, `PAGE`) 외에도 `BANNER`, `SNACKBAR` 등 커스텀 타입을 자유롭게 추가할 수 있습니다.
+  `type`과 `actionType`은 대문자로 관리됩니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
+  기본 제공 타입(`TOAST`, `MODAL`, `PAGE`) 외에도 `BANNER`, `SNACKBAR` 등 커스텀 타입을 자유롭게
+  추가할 수 있습니다.
 </Note>
 
 데이터 소스별 설정 가이드:
@@ -180,9 +183,7 @@ const renderers: RendererMap = {
       <div className="modal">
         <h2>{error.title}</h2>
         <p>{error.message}</p>
-        {error.action && (
-          <button onClick={onAction}>{error.action.label}</button>
-        )}
+        {error.action && <button onClick={onAction}>{error.action.label}</button>}
         <button onClick={onDismiss}>닫기</button>
       </div>
     </div>
@@ -192,9 +193,7 @@ const renderers: RendererMap = {
       {error.image && <img src={error.image} alt="" />}
       <h1>{error.title}</h1>
       <p>{error.message}</p>
-      {error.action && (
-        <button onClick={onAction}>{error.action.label}</button>
-      )}
+      {error.action && <button onClick={onAction}>{error.action.label}</button>}
     </div>
   ),
 };
@@ -296,7 +295,7 @@ try {
 <HuhProvider
   source={errorContent}
   renderers={renderers}
-  errorMap={{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }}
+  errorMap={{ API_500: 'ERR_SERVER', API_401: 'ERR_AUTH' }}
   fallbackTrackId="ERR_UNKNOWN"
 >
   <App />

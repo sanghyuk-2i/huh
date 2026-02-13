@@ -1,10 +1,7 @@
 /**
  * Replace {{variable}} placeholders in a template string with values.
  */
-export function renderTemplate(
-  template: string,
-  variables: Record<string, string>,
-): string {
+export function renderTemplate(template: string, variables: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (match, key: string) => {
     return key in variables ? variables[key] : match;
   });

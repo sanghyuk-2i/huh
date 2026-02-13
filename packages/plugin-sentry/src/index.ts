@@ -43,8 +43,7 @@ export function maskSensitiveData(
   const masked = { ...variables };
   for (const key of Object.keys(masked)) {
     for (const pattern of sensitiveKeys) {
-      const matches =
-        typeof pattern === 'string' ? key === pattern : pattern.test(key);
+      const matches = typeof pattern === 'string' ? key === pattern : pattern.test(key);
       if (matches) {
         masked[key] = '[REDACTED]';
         break;
@@ -54,10 +53,7 @@ export function maskSensitiveData(
   return masked;
 }
 
-export function normalizeUrl(
-  url: string,
-  urlPatterns: Array<[RegExp, string]>,
-): string {
+export function normalizeUrl(url: string, urlPatterns: Array<[RegExp, string]>): string {
   for (const [pattern, replacement] of urlPatterns) {
     if (pattern.test(url)) {
       return url.replace(pattern, replacement);

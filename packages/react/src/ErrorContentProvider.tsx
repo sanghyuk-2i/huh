@@ -1,6 +1,12 @@
 import React, { createContext, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin, HuhRouter } from '@huh/core';
+import type {
+  ErrorConfig,
+  LocalizedErrorConfig,
+  ResolvedError,
+  HuhPlugin,
+  HuhRouter,
+} from '@huh/core';
 import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 

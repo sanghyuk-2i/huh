@@ -8,8 +8,8 @@ export async function loadPlaywright(): Promise<PlaywrightModule> {
   } catch {
     throw new Error(
       'Playwright is required for "huh test".\n' +
-      'Install: npm install -D playwright\n' +
-      'Then: npx playwright install chromium',
+        'Install: npm install -D playwright\n' +
+        'Then: npx playwright install chromium',
     );
   }
 }
@@ -51,10 +51,9 @@ export async function runPlaywrightTests(
       });
 
       // Determine type-specific delay
-      const typeAttr = await page.$eval(
-        '[data-huh-type]',
-        (el) => el.getAttribute('data-huh-type'),
-      ).catch(() => null);
+      const typeAttr = await page
+        .$eval('[data-huh-type]', (el) => el.getAttribute('data-huh-type'))
+        .catch(() => null);
 
       const typeDelay = getTypeDelay(typeAttr, screenshotDelay);
       await page.waitForTimeout(typeDelay);

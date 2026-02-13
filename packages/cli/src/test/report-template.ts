@@ -1,15 +1,17 @@
 import type { ReportData, TestEntryResult } from './types';
 
 export function buildReportHtml(data: ReportData): string {
-  const entriesJson = JSON.stringify(data.entries.map((e) => ({
-    trackId: e.trackId,
-    type: e.type,
-    success: e.success,
-    error: e.error,
-    renderTimeMs: e.renderTimeMs,
-    issueCount: e.validationIssues.length + e.coreValidationErrors.length,
-    warningCount: e.coreValidationWarnings.length,
-  })));
+  const entriesJson = JSON.stringify(
+    data.entries.map((e) => ({
+      trackId: e.trackId,
+      type: e.type,
+      success: e.success,
+      error: e.error,
+      renderTimeMs: e.renderTimeMs,
+      issueCount: e.validationIssues.length + e.coreValidationErrors.length,
+      warningCount: e.coreValidationWarnings.length,
+    })),
+  );
 
   return /* html */ `<!DOCTYPE html>
 <html lang="ko">
@@ -87,15 +89,21 @@ function buildEntryCard(entry: TestEntryResult): string {
     : '<div class="no-screenshot">No screenshot</div>';
 
   const issues = [
-    ...entry.coreValidationErrors.map((e) => `<li class="issue-error">${escapeHtml(e.message)}</li>`),
-    ...entry.validationIssues.filter((i) => i.severity === 'error').map((i) => `<li class="issue-error">${escapeHtml(i.message)}</li>`),
-    ...entry.coreValidationWarnings.map((w) => `<li class="issue-warning">${escapeHtml(w.message)}</li>`),
-    ...entry.validationIssues.filter((i) => i.severity === 'warning').map((i) => `<li class="issue-warning">${escapeHtml(i.message)}</li>`),
+    ...entry.coreValidationErrors.map(
+      (e) => `<li class="issue-error">${escapeHtml(e.message)}</li>`,
+    ),
+    ...entry.validationIssues
+      .filter((i) => i.severity === 'error')
+      .map((i) => `<li class="issue-error">${escapeHtml(i.message)}</li>`),
+    ...entry.coreValidationWarnings.map(
+      (w) => `<li class="issue-warning">${escapeHtml(w.message)}</li>`,
+    ),
+    ...entry.validationIssues
+      .filter((i) => i.severity === 'warning')
+      .map((i) => `<li class="issue-warning">${escapeHtml(i.message)}</li>`),
   ];
 
-  const issuesHtml = issues.length > 0
-    ? `<ul class="issues">${issues.join('')}</ul>`
-    : '';
+  const issuesHtml = issues.length > 0 ? `<ul class="issues">${issues.join('')}</ul>` : '';
 
   return `
     <div class="entry-card ${statusClass}" data-track-id="${escapeHtml(entry.trackId)}" data-type="${escapeHtml(entry.type)}" data-status="${statusClass}">

@@ -1,11 +1,12 @@
 ---
-title: "Huh"
-mode: "custom"
+title: 'Huh'
+mode: 'custom'
 ---
 
 <div className="relative overflow-hidden bg-white dark:bg-gray-950">
 
 {/* Animated Background Orbs */}
+
 <div className="fixed inset-0 overflow-hidden pointer-events-none">
   <div
     className="absolute rounded-full blur-3xl opacity-20 dark:opacity-10"
@@ -15,7 +16,7 @@ mode: "custom"
       height: '600px',
       top: '-200px',
       left: '-200px',
-      animation: 'float 20s ease-in-out infinite'
+      animation: 'float 20s ease-in-out infinite',
     }}
   />
   <div
@@ -26,7 +27,7 @@ mode: "custom"
       height: '500px',
       bottom: '-150px',
       right: '-150px',
-      animation: 'float 25s ease-in-out infinite reverse'
+      animation: 'float 25s ease-in-out infinite reverse',
     }}
   />
   <div
@@ -38,12 +39,13 @@ mode: "custom"
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      animation: 'pulse 15s ease-in-out infinite'
+      animation: 'pulse 15s ease-in-out infinite',
     }}
   />
 </div>
 
 {/* Animation Keyframes */}
+
 <style>{`
   @keyframes float {
     0%, 100% { transform: translate(0, 0) scale(1); }
@@ -70,121 +72,131 @@ mode: "custom"
 `}</style>
 
 {/* Hero Section */}
+
 <section className="relative px-6 pt-32 pb-24 mx-auto max-w-6xl text-center">
 
-  {/* Version Badge */}
-  <div className="mb-8 animate-fade-in-up">
-    <span
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105"
-      style={{
-        background: 'rgba(139, 92, 246, 0.1)',
-        border: '1px solid rgba(139, 92, 246, 0.2)',
-        backdropFilter: 'blur(12px)'
-      }}
-    >
-      <span className="relative flex h-2 w-2">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
-      </span>
-      <span className="text-violet-600 dark:text-violet-400">v1.0 - Open Source</span>
-    </span>
-  </div>
+{/* Version Badge */}
 
-  {/* Logo with Glow */}
-  <div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-    <div className="relative inline-block">
-      <div
-        className="absolute inset-0 blur-2xl opacity-50"
-        style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 70%)' }}
-      />
-      <img
-        src="https://em-content.zobj.net/source/apple/391/face-with-open-mouth_1f62e.png"
-        alt="Huh"
-        className="relative w-24 h-24 mx-auto transition-transform duration-300 hover:scale-110"
-      />
-    </div>
-  </div>
-
-  {/* Gradient Title with Glow */}
-  <h1
-    className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tight mb-6 animate-fade-in-up"
+<div className="mb-8 animate-fade-in-up">
+  <span
+    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105"
     style={{
-      animationDelay: '0.2s',
-      background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)',
-      backgroundClip: 'text',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      filter: 'drop-shadow(0 0 30px rgba(139, 92, 246, 0.3))'
+      background: 'rgba(139, 92, 246, 0.1)',
+      border: '1px solid rgba(139, 92, 246, 0.2)',
+      backdropFilter: 'blur(12px)',
     }}
   >
-    Huh
-  </h1>
+    <span className="relative flex h-2 w-2">
+      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+    </span>
+    <span className="text-violet-600 dark:text-violet-400">v1.0 - Open Source</span>
+  </span>
+</div>
 
-  {/* Tagline with Enhanced Typography */}
-  <div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-    <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 leading-tight">
-      에러 메시지는 코드가 아니라
-      <br />
-      <span
-        className="inline-block mt-1"
-        style={{
-          background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}
-      >
-        스프레드시트에서 관리하세요
-      </span>
-    </p>
-    <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-      Error messages belong in a spreadsheet, not in your codebase.
-      <br />
-      <span className="text-base text-gray-500 dark:text-gray-500">
-        Manage your content in Google Sheets, Airtable, Notion — and ship without code changes.
-      </span>
-    </p>
+{/* Logo with Glow */}
+
+<div className="mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+  <div className="relative inline-block">
+    <div
+      className="absolute inset-0 blur-2xl opacity-50"
+      style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 70%)' }}
+    />
+    <img
+      src="https://em-content.zobj.net/source/apple/391/face-with-open-mouth_1f62e.png"
+      alt="Huh"
+      className="relative w-24 h-24 mx-auto transition-transform duration-300 hover:scale-110"
+    />
   </div>
+</div>
 
-  {/* CTA Buttons with Enhanced Hover Effects */}
-  <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-    <a
-      href="/ko/getting-started"
-      className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+{/* Gradient Title with Glow */}
+
+<h1
+  className="text-6xl sm:text-7xl md:text-8xl font-black tracking-tight mb-6 animate-fade-in-up"
+  style={{
+    animationDelay: '0.2s',
+    background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%)',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    filter: 'drop-shadow(0 0 30px rgba(139, 92, 246, 0.3))',
+  }}
+>
+  Huh
+</h1>
+
+{/* Tagline with Enhanced Typography */}
+
+<div className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+  <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3 leading-tight">
+    에러 메시지는 코드가 아니라
+    <br />
+    <span
+      className="inline-block mt-1"
       style={{
-        background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
-        boxShadow: '0 10px 40px -10px rgba(139, 92, 246, 0.6)'
+        background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+        backgroundClip: 'text',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
       }}
     >
-      <span className="relative z-10">시작하기 →</span>
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{
-          background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)'
-        }}
-      />
-    </a>
-    <a
-      href="/en/getting-started"
-      className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105"
-      style={{
-        background: 'rgba(139, 92, 246, 0.1)',
-        border: '2px solid rgba(139, 92, 246, 0.3)',
-        backdropFilter: 'blur(12px)',
-        color: '#8B5CF6'
-      }}
-    >
-      <span className="relative z-10 group-hover:text-violet-700 dark:group-hover:text-violet-300 transition-colors">
-        Get Started →
-      </span>
-      <div
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        style={{ background: 'rgba(139, 92, 246, 0.05)' }}
-      />
-    </a>
-  </div>
+      스프레드시트에서 관리하세요
+    </span>
+  </p>
+  <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+    Error messages belong in a spreadsheet, not in your codebase.
+    <br />
+    <span className="text-base text-gray-500 dark:text-gray-500">
+      Manage your content in Google Sheets, Airtable, Notion — and ship without code changes.
+    </span>
+  </p>
+</div>
 
-  {/* Terminal-Style Install Section */}
+{/* CTA Buttons with Enhanced Hover Effects */}
+
+<div
+  className="mt-12 flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up"
+  style={{ animationDelay: '0.4s' }}
+>
+  <a
+    href="/ko/getting-started"
+    className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white rounded-xl overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+    style={{
+      background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+      boxShadow: '0 10px 40px -10px rgba(139, 92, 246, 0.6)',
+    }}
+  >
+    <span className="relative z-10">시작하기 →</span>
+    <div
+      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      style={{
+        background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+      }}
+    />
+  </a>
+  <a
+    href="/en/getting-started"
+    className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl overflow-hidden transition-all duration-300 hover:scale-105"
+    style={{
+      background: 'rgba(139, 92, 246, 0.1)',
+      border: '2px solid rgba(139, 92, 246, 0.3)',
+      backdropFilter: 'blur(12px)',
+      color: '#8B5CF6',
+    }}
+  >
+    <span className="relative z-10 group-hover:text-violet-700 dark:group-hover:text-violet-300 transition-colors">
+      Get Started →
+    </span>
+    <div
+      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      style={{ background: 'rgba(139, 92, 246, 0.05)' }}
+    />
+  </a>
+</div>
+
+{/* Terminal-Style Install Section */}
+
   <div className="mt-16 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
     <div
       className="group relative rounded-2xl p-6 text-left transition-all duration-300 hover:scale-105"
@@ -229,10 +241,12 @@ mode: "custom"
         </span>
       </div>
     </div>
+
   </div>
 </section>
 
 {/* Features Section with Glass-morphism */}
+
 <section className="relative px-6 py-24 mx-auto max-w-6xl">
   <h2 className="text-4xl sm:text-5xl font-bold text-center mb-4 text-gray-900 dark:text-white">
     Why Huh?
@@ -346,10 +360,12 @@ mode: "custom"
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
 {/* How It Works Section - Visual Pipeline */}
+
 <section className="relative px-6 py-24 mx-auto max-w-6xl">
   <h2 className="text-4xl sm:text-5xl font-bold text-center mb-4 text-gray-900 dark:text-white">
     How It Works
@@ -358,7 +374,8 @@ mode: "custom"
     Three simple steps from spreadsheet to production
   </p>
 
-  {/* Visual Pipeline */}
+{/* Visual Pipeline */}
+
   <div className="relative max-w-5xl mx-auto">
     {/* Connection Lines */}
     <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 -translate-y-1/2">
@@ -467,9 +484,11 @@ mode: "custom"
         </p>
       </div>
     </div>
+
   </div>
 
-  {/* Code Example */}
+{/* Code Example */}
+
   <div className="mt-16 max-w-3xl mx-auto">
     <div
       className="rounded-2xl p-8"
@@ -521,10 +540,12 @@ mode: "custom"
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
 {/* Side-by-Side: Spreadsheet vs Code */}
+
 <section className="relative px-6 py-24 mx-auto max-w-6xl">
   <h2 className="text-4xl sm:text-5xl font-bold text-center mb-4 text-gray-900 dark:text-white">
     From Spreadsheet to Code
@@ -651,10 +672,12 @@ mode: "custom"
         </p>
       </div>
     </div>
+
   </div>
 </section>
 
 {/* Packages Section */}
+
 <section className="relative px-6 py-24 mx-auto max-w-6xl">
   <h2 className="text-4xl sm:text-5xl font-bold text-center mb-4 text-gray-900 dark:text-white">
     Packages
@@ -871,10 +894,12 @@ mode: "custom"
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
 {/* Final CTA Section */}
+
 <section
   className="relative px-6 py-32 mx-auto max-w-6xl text-center overflow-hidden"
   style={{
@@ -959,10 +984,12 @@ mode: "custom"
         GitHub
       </a>
     </div>
+
   </div>
 </section>
 
 {/* Bottom Spacing */}
+
 <div className="h-24" />
 
 </div>

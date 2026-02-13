@@ -72,17 +72,12 @@ describe('fetchXlsxData', () => {
 
   it('uses specified sheet name', async () => {
     const xlsxPath = path.join(tmpDir, 'multi.xlsx');
-    createXlsx(
-      xlsxPath,
-      [['col1'], ['val1'], ['val2']],
-      'First',
-      {
-        Errors: [
-          ['trackId', 'type', 'message'],
-          ['ERR_001', 'toast', 'Target sheet'],
-        ],
-      },
-    );
+    createXlsx(xlsxPath, [['col1'], ['val1'], ['val2']], 'First', {
+      Errors: [
+        ['trackId', 'type', 'message'],
+        ['ERR_001', 'toast', 'Target sheet'],
+      ],
+    });
 
     const rows = await fetchXlsxData({ type: 'xlsx', filePath: xlsxPath, sheet: 'Errors' });
 

@@ -114,10 +114,7 @@ async function findDatabaseByTitle(
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const params = startCursor ? `?start_cursor=${startCursor}` : '';
-    const res = (await notionFetch(
-      `/blocks/${parentPageId}/children${params}`,
-      token,
-    )) as {
+    const res = (await notionFetch(`/blocks/${parentPageId}/children${params}`, token)) as {
       results: { id: string; type: string; child_database?: { title: string } }[];
       has_more: boolean;
       next_cursor: string | null;
@@ -136,10 +133,7 @@ async function findDatabaseByTitle(
   return null;
 }
 
-async function ensureDatabaseProperties(
-  token: string,
-  databaseId: string,
-): Promise<void> {
+async function ensureDatabaseProperties(token: string, databaseId: string): Promise<void> {
   // Fetch current database schema
   const db = (await notionFetch(`/databases/${databaseId}`, token)) as {
     properties: Record<string, { id: string; type: string }>;
@@ -196,11 +190,7 @@ async function createDatabase(
   return res.id;
 }
 
-async function addPages(
-  token: string,
-  databaseId: string,
-  samples: SampleRow[],
-): Promise<void> {
+async function addPages(token: string, databaseId: string, samples: SampleRow[]): Promise<void> {
   for (const row of samples) {
     await notionFetch('/pages', token, {
       method: 'POST',
@@ -212,10 +202,7 @@ async function addPages(
   }
 }
 
-async function clearDatabase(
-  token: string,
-  databaseId: string,
-): Promise<void> {
+async function clearDatabase(token: string, databaseId: string): Promise<void> {
   // Query all pages in the database
   let hasMore = true;
   let startCursor: string | undefined;
@@ -271,9 +258,7 @@ export async function generateNotion(): Promise<NotionResult | null> {
   }
 
   if (!parentPageId) {
-    console.warn(
-      '  NOTION_PARENT_PAGE_ID is required to create new databases. Skipping.',
-    );
+    console.warn('  NOTION_PARENT_PAGE_ID is required to create new databases. Skipping.');
     return null;
   }
 
@@ -291,9 +276,7 @@ export async function generateNotion(): Promise<NotionResult | null> {
     enDatabaseUrl: `https://notion.so/${enDbId.replace(/-/g, '')}`,
   };
 
-  console.warn(
-    '\n  Note: Notion databases must be shared publicly via the Notion UI.',
-  );
+  console.warn('\n  Note: Notion databases must be shared publicly via the Notion UI.');
   console.warn(
     '  Open each database URL and use Share > "Publish to web" to make them accessible.',
   );

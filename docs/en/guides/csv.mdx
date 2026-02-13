@@ -1,7 +1,7 @@
 ---
-title: "CSV File Guide"
-description: "How to import error content from local CSV files"
-icon: "file"
+title: 'CSV File Guide'
+description: 'How to import error content from local CSV files'
+icon: 'file'
 ---
 
 Explains how to import error content from a local CSV file. Simple to use without any external API or authentication.
@@ -13,9 +13,7 @@ Download the pre-made CSV template to get started right away.
 - [Download Korean CSV Template](https://github.com/your-org/huh/releases/latest/download/huh-template-ko.csv)
 - [Download English CSV Template](https://github.com/your-org/huh/releases/latest/download/huh-template-en.csv)
 
-<Note>
-After downloading, edit the data and run `huh pull`.
-</Note>
+<Note>After downloading, edit the data and run `huh pull`.</Note>
 
 ---
 
@@ -33,22 +31,23 @@ ERR_NOT_FOUND,PAGE,Page not found,404,/img/404.png,INFO,Go Home,REDIRECT,/
 ```
 
 <Note>
-Even if entered in lowercase, the CLI will automatically convert to uppercase. Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely.
+  Even if entered in lowercase, the CLI will automatically convert to uppercase. Custom types
+  (`BANNER`, `SNACKBAR`, etc.) can also be used freely.
 </Note>
 
 ### Column Rules
 
-| Column Name | Required | Description |
-|-------------|----------|-------------|
-| `trackId` | Yes | Unique error ID (e.g., `ERR_LOGIN_FAILED`) |
-| `type` | Yes | `TOAST`, `MODAL`, `PAGE`, or custom type |
-| `message` | Yes | Error message. Supports `{{variable}}` template variables |
-| `title` | | Error title (for modal, page) |
-| `image` | | Image URL (for page) |
-| `severity` | | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
-| `actionLabel` | | Action button text |
-| `actionType` | | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
-| `actionTarget` | | URL to navigate to for REDIRECT |
+| Column Name    | Required | Description                                                |
+| -------------- | -------- | ---------------------------------------------------------- |
+| `trackId`      | Yes      | Unique error ID (e.g., `ERR_LOGIN_FAILED`)                 |
+| `type`         | Yes      | `TOAST`, `MODAL`, `PAGE`, or custom type                   |
+| `message`      | Yes      | Error message. Supports `{{variable}}` template variables  |
+| `title`        |          | Error title (for modal, page)                              |
+| `image`        |          | Image URL (for page)                                       |
+| `severity`     |          | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
+| `actionLabel`  |          | Action button text                                         |
+| `actionType`   |          | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action   |
+| `actionTarget` |          | URL to navigate to for REDIRECT                            |
 
 ### CSV Format Support
 

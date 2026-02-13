@@ -59,7 +59,11 @@ export function runInit() {
 
   fs.writeFileSync(configPath, CONFIG_TEMPLATE, 'utf-8');
   console.log(pc.green('Created .huh.config.ts'));
-  console.log(pc.dim('Edit the config file to set your data source (Google Sheets, Airtable, Notion, CSV, or XLSX) and output path.'));
+  console.log(
+    pc.dim(
+      'Edit the config file to set your data source (Google Sheets, Airtable, Notion, CSV, or XLSX) and output path.',
+    ),
+  );
 }
 
 // Source type definitions

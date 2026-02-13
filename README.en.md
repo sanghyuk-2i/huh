@@ -48,11 +48,11 @@ Data Source (PM edits here) → huh pull → huh.json → Runtime UI
 
 **Your data source looks like this:**
 
-| trackId | type | message | title | action |
-|---|---|---|---|---|
-| ERR_NETWORK | toast | Network connection is unstable. | | |
-| ERR_AUTH | modal | {{userName}}'s session has expired. | Session Expired | Login → redirect:/login |
-| ERR_NOT_FOUND | page | The page you requested does not exist. | 404 | Go Back → back |
+| trackId       | type  | message                                | title           | action                  |
+| ------------- | ----- | -------------------------------------- | --------------- | ----------------------- |
+| ERR_NETWORK   | toast | Network connection is unstable.        |                 |                         |
+| ERR_AUTH      | modal | {{userName}}'s session has expired.    | Session Expired | Login → redirect:/login |
+| ERR_NOT_FOUND | page  | The page you requested does not exist. | 404             | Go Back → back          |
 
 **Your code stays clean:**
 
@@ -63,7 +63,7 @@ const { huh } = useHuh();
 huh('ERR_AUTH', { userName: 'Jane' });
 
 // Or map API error codes via errorMap
-huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
+huh(e.code); // 'API_500' → errorMap → 'ERR_SERVER'
 ```
 
 ## Quick Start
@@ -103,7 +103,9 @@ import { HuhProvider, useHuh } from '@huh/react';
 
 const renderers = {
   toast: ({ error, onDismiss }) => (
-    <div className="toast" onClick={onDismiss}>{error.message}</div>
+    <div className="toast" onClick={onDismiss}>
+      {error.message}
+    </div>
   ),
   modal: ({ error, onAction, onDismiss }) => (
     <div className="modal-overlay">
@@ -170,22 +172,22 @@ Result: "Hello Jane, 3 errors occurred."
 
 ### Three Error Types
 
-| Type | Use Case | Example |
-|------|----------|---------|
-| `toast` | Brief, non-blocking notifications | Network error, save failed |
-| `modal` | Requires user acknowledgement | Auth expired, permission denied |
-| `page` | Full-screen error states | 404, maintenance, fatal error |
+| Type    | Use Case                          | Example                         |
+| ------- | --------------------------------- | ------------------------------- |
+| `toast` | Brief, non-blocking notifications | Network error, save failed      |
+| `modal` | Requires user acknowledgement     | Auth expired, permission denied |
+| `page`  | Full-screen error states          | 404, maintenance, fatal error   |
 
 ### Automatic Action Handling
 
 Define actions in the sheet. Huh handles the behavior automatically:
 
-| Action Type | Behavior |
-|---|---|
-| `redirect` | Navigates to the specified URL |
-| `retry` | Clears error and triggers `onRetry` callback |
-| `back` | Calls `history.back()` |
-| `dismiss` | Clears error |
+| Action Type | Behavior                                     |
+| ----------- | -------------------------------------------- |
+| `redirect`  | Navigates to the specified URL               |
+| `retry`     | Clears error and triggers `onRetry` callback |
+| `back`      | Calls `history.back()`                       |
+| `dismiss`   | Clears error                                 |
 
 ### Build-Time Validation
 
@@ -201,38 +203,38 @@ Perfect for CI/CD pipelines. Catches content errors before they reach production
 
 ## Packages
 
-| Package | Description |
-|---|---|
-| [`@huh/core`](./packages/core) | Zero-dependency. Types, parsing, template engine, validation. **CDN ready.** |
-| [`@huh/react`](./packages/react) | React bindings. `HuhProvider` + `useHuh` hook. |
-| [`@huh/vue`](./packages/vue) | Vue 3 bindings. `HuhProvider` + `useHuh` composable. |
-| [`@huh/svelte`](./packages/svelte) | Svelte 5 bindings. `HuhProvider` + `useHuh`. |
-| [`@huh/cli`](./packages/cli) | `init` / `pull` / `validate` commands. |
+| Package                            | Description                                                                  |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| [`@huh/core`](./packages/core)     | Zero-dependency. Types, parsing, template engine, validation. **CDN ready.** |
+| [`@huh/react`](./packages/react)   | React bindings. `HuhProvider` + `useHuh` hook.                               |
+| [`@huh/vue`](./packages/vue)       | Vue 3 bindings. `HuhProvider` + `useHuh` composable.                         |
+| [`@huh/svelte`](./packages/svelte) | Svelte 5 bindings. `HuhProvider` + `useHuh`.                                 |
+| [`@huh/cli`](./packages/cli)       | `init` / `pull` / `validate` commands.                                       |
 
 `@huh/core` has **zero dependencies** and works in any JavaScript runtime. Use it standalone with vanilla JS or anything else.
 
 ## Why Huh?
 
-| | Before (scattered) | After (Huh) |
-|---|---|---|
-| **Error copy** | Hardcoded in components | Managed in external data source |
-| **Copy changes** | Requires code change + deploy | Sheet edit → `huh pull` |
-| **Who can edit** | Only developers | Anyone with sheet access |
-| **Consistency** | Different patterns per developer | One pattern, everywhere |
-| **Type safety** | None | Full TypeScript support |
-| **Validation** | None | Build-time + CI validation |
+|                  | Before (scattered)               | After (Huh)                     |
+| ---------------- | -------------------------------- | ------------------------------- |
+| **Error copy**   | Hardcoded in components          | Managed in external data source |
+| **Copy changes** | Requires code change + deploy    | Sheet edit → `huh pull`         |
+| **Who can edit** | Only developers                  | Anyone with sheet access        |
+| **Consistency**  | Different patterns per developer | One pattern, everywhere         |
+| **Type safety**  | None                             | Full TypeScript support         |
+| **Validation**   | None                             | Build-time + CI validation      |
 
 ## Templates
 
 Copy or download a template for your data source to get started quickly:
 
-| Data Source | Template |
-|---|---|
-| Google Sheets | [Copy Template](https://docs.google.com/spreadsheets/d/TEMPLATE_SHEET_ID/copy) |
-| Airtable | [Clone Template](https://airtable.com/TEMPLATE_BASE_ID) |
-| Notion | [Duplicate Template](https://notion.so/TEMPLATE_DB_ID) |
-| XLSX | [Download](https://github.com/your-org/huh/releases/latest/download/huh-template.xlsx) |
-| CSV | [Korean](https://github.com/your-org/huh/releases/latest/download/huh-template-ko.csv) · [English](https://github.com/your-org/huh/releases/latest/download/huh-template-en.csv) |
+| Data Source   | Template                                                                                                                                                                         |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Google Sheets | [Copy Template](https://docs.google.com/spreadsheets/d/TEMPLATE_SHEET_ID/copy)                                                                                                   |
+| Airtable      | [Clone Template](https://airtable.com/TEMPLATE_BASE_ID)                                                                                                                          |
+| Notion        | [Duplicate Template](https://notion.so/TEMPLATE_DB_ID)                                                                                                                           |
+| XLSX          | [Download](https://github.com/your-org/huh/releases/latest/download/huh-template.xlsx)                                                                                           |
+| CSV           | [Korean](https://github.com/your-org/huh/releases/latest/download/huh-template-ko.csv) · [English](https://github.com/your-org/huh/releases/latest/download/huh-template-en.csv) |
 
 ## Documentation
 
@@ -253,7 +255,7 @@ Copy or download a template for your data source to get started quickly:
   run: npx huh pull
   env:
     # Set the key for your data source
-    GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}         # Google Sheets
+    GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }} # Google Sheets
     # AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}   # Airtable
     # NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}       # Notion
 

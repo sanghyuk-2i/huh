@@ -1,14 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { parseSheetData } from '../parser';
 
-const HEADERS = ['trackId', 'type', 'message', 'title', 'image', 'actionLabel', 'actionType', 'actionTarget'];
+const HEADERS = [
+  'trackId',
+  'type',
+  'message',
+  'title',
+  'image',
+  'actionLabel',
+  'actionType',
+  'actionTarget',
+];
 
 describe('parseSheetData', () => {
   it('parses a basic toast entry and normalizes type to uppercase', () => {
-    const rows = [
-      HEADERS,
-      ['ERR_001', 'toast', 'Something went wrong', '', '', '', '', ''],
-    ];
+    const rows = [HEADERS, ['ERR_001', 'toast', 'Something went wrong', '', '', '', '', '']];
     const config = parseSheetData(rows);
     expect(config).toEqual({
       ERR_001: {
@@ -41,7 +47,16 @@ describe('parseSheetData', () => {
   it('parses a page entry with image', () => {
     const rows = [
       HEADERS,
-      ['ERR_003', 'page', 'Page not found', '404', 'https://img.com/404.png', 'Go home', 'redirect', '/'],
+      [
+        'ERR_003',
+        'page',
+        'Page not found',
+        '404',
+        'https://img.com/404.png',
+        'Go home',
+        'redirect',
+        '/',
+      ],
     ];
     const config = parseSheetData(rows);
     expect(config.ERR_003.image).toBe('https://img.com/404.png');
@@ -74,24 +89,21 @@ describe('parseSheetData', () => {
   });
 
   it('throws on missing required columns', () => {
-    expect(() => parseSheetData([['id', 'msg'], ['ERR_001', 'test']])).toThrow(
-      'Missing required column: trackId',
-    );
+    expect(() =>
+      parseSheetData([
+        ['id', 'msg'],
+        ['ERR_001', 'test'],
+      ]),
+    ).toThrow('Missing required column: trackId');
   });
 
   it('throws on empty type', () => {
-    const rows = [
-      HEADERS,
-      ['ERR_001', '', 'Oops', '', '', '', '', ''],
-    ];
+    const rows = [HEADERS, ['ERR_001', '', 'Oops', '', '', '', '', '']];
     expect(() => parseSheetData(rows)).toThrow('Missing type for trackId "ERR_001"');
   });
 
   it('preserves template variables in message', () => {
-    const rows = [
-      HEADERS,
-      ['ERR_001', 'toast', 'Hello, {{userName}}!', '', '', '', '', ''],
-    ];
+    const rows = [HEADERS, ['ERR_001', 'toast', 'Hello, {{userName}}!', '', '', '', '', '']];
     const config = parseSheetData(rows);
     expect(config.ERR_001.message).toBe('Hello, {{userName}}!');
   });
@@ -109,20 +121,14 @@ describe('parseSheetData', () => {
   });
 
   it('normalizes action types to uppercase', () => {
-    const rows = [
-      HEADERS,
-      ['ERR_001', 'modal', 'Test', '', '', 'Go', 'Redirect', '/home'],
-    ];
+    const rows = [HEADERS, ['ERR_001', 'modal', 'Test', '', '', 'Go', 'Redirect', '/home']];
     const config = parseSheetData(rows);
     expect(config.ERR_001.action?.type).toBe('REDIRECT');
   });
 
   it('parses severity and normalizes to uppercase', () => {
     const headersWithSeverity = [...HEADERS, 'severity'];
-    const rows = [
-      headersWithSeverity,
-      ['ERR_001', 'toast', 'Oops', '', '', '', '', '', 'error'],
-    ];
+    const rows = [headersWithSeverity, ['ERR_001', 'toast', 'Oops', '', '', '', '', '', 'error']];
     const config = parseSheetData(rows);
     expect(config.ERR_001.severity).toBe('ERROR');
   });
@@ -138,20 +144,14 @@ describe('parseSheetData', () => {
   });
 
   it('leaves severity undefined when column is missing', () => {
-    const rows = [
-      HEADERS,
-      ['ERR_001', 'toast', 'Oops', '', '', '', '', ''],
-    ];
+    const rows = [HEADERS, ['ERR_001', 'toast', 'Oops', '', '', '', '', '']];
     const config = parseSheetData(rows);
     expect(config.ERR_001.severity).toBeUndefined();
   });
 
   it('leaves severity undefined when value is empty', () => {
     const headersWithSeverity = [...HEADERS, 'severity'];
-    const rows = [
-      headersWithSeverity,
-      ['ERR_001', 'toast', 'Oops', '', '', '', '', '', ''],
-    ];
+    const rows = [headersWithSeverity, ['ERR_001', 'toast', 'Oops', '', '', '', '', '', '']];
     const config = parseSheetData(rows);
     expect(config.ERR_001.severity).toBeUndefined();
   });

@@ -45,7 +45,11 @@ export async function runTest(options: TestCommandOptions) {
   const device = DEVICE_CONFIGS[options.device];
   const entryCount = Object.keys(errorConfig).length;
 
-  console.log(pc.blue(`\nhuh test — ${entryCount} entries, ${device.name} (${device.width}x${device.height})`));
+  console.log(
+    pc.blue(
+      `\nhuh test — ${entryCount} entries, ${device.name} (${device.width}x${device.height})`,
+    ),
+  );
   console.log(pc.dim(`Mode: ${options.mode} | Config: ${configPath}\n`));
 
   // Filter trackIds
@@ -131,12 +135,7 @@ export async function runTest(options: TestCommandOptions) {
 
 function openInBrowser(filePath: string) {
   const platform = process.platform;
-  const cmd =
-    platform === 'darwin'
-      ? 'open'
-      : platform === 'win32'
-        ? 'start'
-        : 'xdg-open';
+  const cmd = platform === 'darwin' ? 'open' : platform === 'win32' ? 'start' : 'xdg-open';
 
   exec(`${cmd} "${filePath}"`);
 }

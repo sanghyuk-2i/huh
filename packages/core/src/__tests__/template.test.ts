@@ -3,9 +3,7 @@ import { renderTemplate } from '../template';
 
 describe('renderTemplate', () => {
   it('replaces single variable', () => {
-    expect(renderTemplate('Hello, {{userName}}!', { userName: '이재민' })).toBe(
-      'Hello, 이재민!',
-    );
+    expect(renderTemplate('Hello, {{userName}}!', { userName: '이재민' })).toBe('Hello, 이재민!');
   });
 
   it('replaces multiple variables', () => {

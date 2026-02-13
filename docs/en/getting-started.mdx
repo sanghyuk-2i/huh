@@ -1,7 +1,7 @@
 ---
-title: "Getting Started"
-description: "Huh 3-step setup guide - prepare data source, generate JSON with CLI, use in React app"
-icon: "rocket"
+title: 'Getting Started'
+description: 'Huh 3-step setup guide - prepare data source, generate JSON with CLI, use in React app'
+icon: 'rocket'
 ---
 
 Huh works in 3 steps:
@@ -76,7 +76,9 @@ After loading, all APIs are available via the `window.HuhCore` global variable:
 ```html
 <script src="https://unpkg.com/@huh/core"></script>
 <script>
-  var config = { /* ErrorConfig JSON */ };
+  var config = {
+    /* ErrorConfig JSON */
+  };
   var resolved = HuhCore.resolveError(config, 'ERR_AUTH', { userName: 'Jane' });
   console.log(resolved.message);
 </script>
@@ -88,15 +90,16 @@ After loading, all APIs are available via the `window.HuhCore` global variable:
 
 Create your data using the following column structure. (Same for Google Sheets, Airtable, Notion, CSV, and XLSX)
 
-| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
-| ERR_LOGIN_FAILED | TOAST | Login failed | | | | | | |
-| ERR_SESSION_EXPIRED | MODAL | \{\{userName\}\}'s session has expired | Session Expired | | ERROR | Login Again | REDIRECT | /login |
-| ERR_NOT_FOUND | PAGE | The page you requested could not be found | 404 | /images/404.png | INFO | Go Home | REDIRECT | / |
+| trackId             | type  | message                                   | title           | image           | severity | actionLabel | actionType | actionTarget |
+| ------------------- | ----- | ----------------------------------------- | --------------- | --------------- | -------- | ----------- | ---------- | ------------ |
+| ERR_LOGIN_FAILED    | TOAST | Login failed                              |                 |                 |          |             |            |              |
+| ERR_SESSION_EXPIRED | MODAL | \{\{userName\}\}'s session has expired    | Session Expired |                 | ERROR    | Login Again | REDIRECT   | /login       |
+| ERR_NOT_FOUND       | PAGE  | The page you requested could not be found | 404             | /images/404.png | INFO     | Go Home     | REDIRECT   | /            |
 
 <Note>
-`type` and `actionType` are managed in uppercase. Even if you enter lowercase, the CLI will automatically convert them to uppercase.
-In addition to the built-in types (`TOAST`, `MODAL`, `PAGE`), you can freely add custom types such as `BANNER`, `SNACKBAR`, etc.
+  `type` and `actionType` are managed in uppercase. Even if you enter lowercase, the CLI will
+  automatically convert them to uppercase. In addition to the built-in types (`TOAST`, `MODAL`,
+  `PAGE`), you can freely add custom types such as `BANNER`, `SNACKBAR`, etc.
 </Note>
 
 Setup guides for each data source:
@@ -180,9 +183,7 @@ const renderers: RendererMap = {
       <div className="modal">
         <h2>{error.title}</h2>
         <p>{error.message}</p>
-        {error.action && (
-          <button onClick={onAction}>{error.action.label}</button>
-        )}
+        {error.action && <button onClick={onAction}>{error.action.label}</button>}
         <button onClick={onDismiss}>Close</button>
       </div>
     </div>
@@ -192,9 +193,7 @@ const renderers: RendererMap = {
       {error.image && <img src={error.image} alt="" />}
       <h1>{error.title}</h1>
       <p>{error.message}</p>
-      {error.action && (
-        <button onClick={onAction}>{error.action.label}</button>
-      )}
+      {error.action && <button onClick={onAction}>{error.action.label}</button>}
     </div>
   ),
 };
@@ -296,7 +295,7 @@ Configure the mapping in `HuhProvider`:
 <HuhProvider
   source={errorContent}
   renderers={renderers}
-  errorMap={{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }}
+  errorMap={{ API_500: 'ERR_SERVER', API_401: 'ERR_AUTH' }}
   fallbackTrackId="ERR_UNKNOWN"
 >
   <App />

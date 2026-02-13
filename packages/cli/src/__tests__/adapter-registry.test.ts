@@ -37,27 +37,40 @@ describe('adapter registry', () => {
 
     registerAdapter(adapter);
 
-    expect(() => registerAdapter(adapter)).toThrow(
-      'Adapter already registered for type: airtable',
-    );
+    expect(() => registerAdapter(adapter)).toThrow('Adapter already registered for type: airtable');
   });
 
   it('throws when getting unregistered adapter', () => {
-    expect(() =>
-      getAdapter({ type: 'google-sheets', sheetId: 'test' } as HuhSource),
-    ).toThrow('No adapter registered for source type: google-sheets');
+    expect(() => getAdapter({ type: 'google-sheets', sheetId: 'test' } as HuhSource)).toThrow(
+      'No adapter registered for source type: google-sheets',
+    );
   });
 
   it('returns registered types', () => {
-    registerAdapter({ type: 'google-sheets', async fetch() { return []; } });
-    registerAdapter({ type: 'airtable', async fetch() { return []; } });
+    registerAdapter({
+      type: 'google-sheets',
+      async fetch() {
+        return [];
+      },
+    });
+    registerAdapter({
+      type: 'airtable',
+      async fetch() {
+        return [];
+      },
+    });
 
     const types = getRegisteredTypes();
     expect(types).toEqual(['google-sheets', 'airtable']);
   });
 
   it('clearAdapters removes all adapters', () => {
-    registerAdapter({ type: 'notion', async fetch() { return []; } });
+    registerAdapter({
+      type: 'notion',
+      async fetch() {
+        return [];
+      },
+    });
     expect(getRegisteredTypes()).toHaveLength(1);
 
     clearAdapters();

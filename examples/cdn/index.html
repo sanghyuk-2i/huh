@@ -1,278 +1,334 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Huh CDN Example</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Huh CDN Example</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f5f5f5;
-      color: #333;
-      min-height: 100vh;
-    }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+        min-height: 100vh;
+      }
 
-    #app {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
+      #app {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
 
-    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
-    p { color: #666; margin-bottom: 1.5rem; }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      p {
+        color: #666;
+        margin-bottom: 1.5rem;
+      }
 
-    .buttons { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+      .buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
 
-    button {
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 6px;
-      background: #333;
-      color: #fff;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    button:hover { background: #555; }
+      button {
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 6px;
+        background: #333;
+        color: #fff;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      button:hover {
+        background: #555;
+      }
 
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: #e53e3e;
-      color: #fff;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      animation: slide-in 0.3s ease-out;
-    }
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        background: #e53e3e;
+        color: #fff;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        animation: slide-in 0.3s ease-out;
+      }
 
-    @keyframes slide-in {
-      from { opacity: 0; transform: translateY(1rem); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+      @keyframes slide-in {
+        from {
+          opacity: 0;
+          transform: translateY(1rem);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fade-in 0.2s ease-out;
-    }
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fade-in 0.2s ease-out;
+      }
 
-    @keyframes fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
 
-    .modal {
-      background: #fff;
-      border-radius: 12px;
-      padding: 2rem;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    }
-    .modal h2 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-    .modal p { color: #555; margin-bottom: 1.25rem; }
+      .modal {
+        background: #fff;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      }
+      .modal h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+      .modal p {
+        color: #555;
+        margin-bottom: 1.25rem;
+      }
 
-    .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
-    .modal-actions button { font-size: 0.8125rem; }
-    .modal-actions .btn-secondary { background: #e2e8f0; color: #333; }
-    .modal-actions .btn-secondary:hover { background: #cbd5e0; }
+      .modal-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+      .modal-actions button {
+        font-size: 0.8125rem;
+      }
+      .modal-actions .btn-secondary {
+        background: #e2e8f0;
+        color: #333;
+      }
+      .modal-actions .btn-secondary:hover {
+        background: #cbd5e0;
+      }
 
-    /* Page */
-    .error-page {
-      position: fixed;
-      inset: 0;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 2rem;
-      animation: fade-in 0.3s ease-out;
-    }
-    .error-page img { width: 200px; margin-bottom: 1.5rem; }
-    .error-page h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
-    .error-page p { color: #666; margin-bottom: 1.5rem; }
-  </style>
-</head>
-<body>
-  <div id="app">
-    <h1>Huh CDN Example</h1>
-    <p>번들러 없이 &lt;script&gt; 태그만으로 @huh/core를 사용하는 예제입니다.</p>
+      /* Page */
+      .error-page {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        animation: fade-in 0.3s ease-out;
+      }
+      .error-page img {
+        width: 200px;
+        margin-bottom: 1.5rem;
+      }
+      .error-page h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .error-page p {
+        color: #666;
+        margin-bottom: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Huh CDN Example</h1>
+      <p>번들러 없이 &lt;script&gt; 태그만으로 @huh/core를 사용하는 예제입니다.</p>
 
-    <div class="buttons">
-      <button id="btn-toast">Toast 에러</button>
-      <button id="btn-modal">Modal 에러</button>
-      <button id="btn-page">Page 에러</button>
+      <div class="buttons">
+        <button id="btn-toast">Toast 에러</button>
+        <button id="btn-modal">Modal 에러</button>
+        <button id="btn-page">Page 에러</button>
+      </div>
     </div>
-  </div>
 
-  <div id="error-container"></div>
+    <div id="error-container"></div>
 
-  <!--
+    <!--
     로컬 개발: 빌드된 IIFE 번들을 직접 참조
     발행 후 CDN 사용 시: <script src="https://unpkg.com/@huh/core"></script>
   -->
-  <script src="../../packages/core/dist/index.global.js"></script>
+    <script src="../../packages/core/dist/index.global.js"></script>
 
-  <script>
-    // HuhCore 글로벌 변수로 모든 API에 접근 가능
-    var resolveError = HuhCore.resolveError;
+    <script>
+      // HuhCore 글로벌 변수로 모든 API에 접근 가능
+      var resolveError = HuhCore.resolveError;
 
-    var config = {
-      ERR_NETWORK: {
-        type: 'TOAST',
-        severity: 'WARNING',
-        message: '네트워크 연결이 불안정합니다. 잠시 후 다시 시도해주세요.'
-      },
-      ERR_AUTH: {
-        type: 'MODAL',
-        severity: 'ERROR',
-        title: '인증 만료',
-        message: '{{userName}}님의 인증이 만료되었습니다. 다시 로그인해주세요.',
-        action: {
-          label: '로그인 페이지로 이동',
-          type: 'REDIRECT',
-          target: '/login'
-        }
-      },
-      ERR_NOT_FOUND: {
-        type: 'PAGE',
-        severity: 'INFO',
-        title: '페이지를 찾을 수 없습니다',
-        message: '요청하신 페이지가 존재하지 않거나 삭제되었습니다.',
-        image: 'https://illustrations.popsy.co/gray/falling.svg',
-        action: {
-          label: '돌아가기',
-          type: 'DISMISS'
-        }
+      var config = {
+        ERR_NETWORK: {
+          type: 'TOAST',
+          severity: 'WARNING',
+          message: '네트워크 연결이 불안정합니다. 잠시 후 다시 시도해주세요.',
+        },
+        ERR_AUTH: {
+          type: 'MODAL',
+          severity: 'ERROR',
+          title: '인증 만료',
+          message: '{{userName}}님의 인증이 만료되었습니다. 다시 로그인해주세요.',
+          action: {
+            label: '로그인 페이지로 이동',
+            type: 'REDIRECT',
+            target: '/login',
+          },
+        },
+        ERR_NOT_FOUND: {
+          type: 'PAGE',
+          severity: 'INFO',
+          title: '페이지를 찾을 수 없습니다',
+          message: '요청하신 페이지가 존재하지 않거나 삭제되었습니다.',
+          image: 'https://illustrations.popsy.co/gray/falling.svg',
+          action: {
+            label: '돌아가기',
+            type: 'DISMISS',
+          },
+        },
+      };
+
+      var container = document.getElementById('error-container');
+
+      function clearError() {
+        container.innerHTML = '';
       }
-    };
 
-    var container = document.getElementById('error-container');
+      function renderToast(error) {
+        clearError();
+        var toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = error.message;
+        container.appendChild(toast);
+        setTimeout(function () {
+          toast.remove();
+        }, 3000);
+      }
 
-    function clearError() {
-      container.innerHTML = '';
-    }
+      function renderModal(error) {
+        clearError();
+        var overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
 
-    function renderToast(error) {
-      clearError();
-      var toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.textContent = error.message;
-      container.appendChild(toast);
-      setTimeout(function() { toast.remove(); }, 3000);
-    }
+        var modal = document.createElement('div');
+        modal.className = 'modal';
 
-    function renderModal(error) {
-      clearError();
-      var overlay = document.createElement('div');
-      overlay.className = 'modal-overlay';
+        var title = document.createElement('h2');
+        title.textContent = error.title || '';
 
-      var modal = document.createElement('div');
-      modal.className = 'modal';
+        var message = document.createElement('p');
+        message.textContent = error.message;
 
-      var title = document.createElement('h2');
-      title.textContent = error.title || '';
+        var actions = document.createElement('div');
+        actions.className = 'modal-actions';
 
-      var message = document.createElement('p');
-      message.textContent = error.message;
+        var dismissBtn = document.createElement('button');
+        dismissBtn.className = 'btn-secondary';
+        dismissBtn.textContent = '닫기';
+        dismissBtn.addEventListener('click', clearError);
+        actions.appendChild(dismissBtn);
 
-      var actions = document.createElement('div');
-      actions.className = 'modal-actions';
+        if (error.action) {
+          var actionBtn = document.createElement('button');
+          actionBtn.textContent = error.action.label;
+          actionBtn.addEventListener('click', function () {
+            if (error.action.type === 'REDIRECT' && error.action.target) {
+              alert('Redirect → ' + error.action.target);
+            }
+            clearError();
+          });
+          actions.appendChild(actionBtn);
+        }
 
-      var dismissBtn = document.createElement('button');
-      dismissBtn.className = 'btn-secondary';
-      dismissBtn.textContent = '닫기';
-      dismissBtn.addEventListener('click', clearError);
-      actions.appendChild(dismissBtn);
-
-      if (error.action) {
-        var actionBtn = document.createElement('button');
-        actionBtn.textContent = error.action.label;
-        actionBtn.addEventListener('click', function() {
-          if (error.action.type === 'REDIRECT' && error.action.target) {
-            alert('Redirect → ' + error.action.target);
-          }
-          clearError();
+        modal.appendChild(title);
+        modal.appendChild(message);
+        modal.appendChild(actions);
+        overlay.appendChild(modal);
+        overlay.addEventListener('click', function (e) {
+          if (e.target === overlay) clearError();
         });
-        actions.appendChild(actionBtn);
+        container.appendChild(overlay);
       }
 
-      modal.appendChild(title);
-      modal.appendChild(message);
-      modal.appendChild(actions);
-      overlay.appendChild(modal);
-      overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) clearError();
+      function renderPage(error) {
+        clearError();
+        var page = document.createElement('div');
+        page.className = 'error-page';
+
+        if (error.image) {
+          var img = document.createElement('img');
+          img.src = error.image;
+          img.alt = '';
+          page.appendChild(img);
+        }
+
+        var title = document.createElement('h1');
+        title.textContent = error.title || '';
+        page.appendChild(title);
+
+        var message = document.createElement('p');
+        message.textContent = error.message;
+        page.appendChild(message);
+
+        if (error.action) {
+          var actionBtn = document.createElement('button');
+          actionBtn.textContent = error.action.label;
+          actionBtn.addEventListener('click', clearError);
+          page.appendChild(actionBtn);
+        }
+
+        container.appendChild(page);
+      }
+
+      var renderers = {
+        TOAST: renderToast,
+        MODAL: renderModal,
+        PAGE: renderPage,
+      };
+
+      function huh(trackId, variables) {
+        var resolved = resolveError(config, trackId, variables);
+        var render = renderers[resolved.type];
+        if (render) render(resolved);
+      }
+
+      document.getElementById('btn-toast').addEventListener('click', function () {
+        huh('ERR_NETWORK');
       });
-      container.appendChild(overlay);
-    }
 
-    function renderPage(error) {
-      clearError();
-      var page = document.createElement('div');
-      page.className = 'error-page';
+      document.getElementById('btn-modal').addEventListener('click', function () {
+        huh('ERR_AUTH', { userName: '홍길동' });
+      });
 
-      if (error.image) {
-        var img = document.createElement('img');
-        img.src = error.image;
-        img.alt = '';
-        page.appendChild(img);
-      }
-
-      var title = document.createElement('h1');
-      title.textContent = error.title || '';
-      page.appendChild(title);
-
-      var message = document.createElement('p');
-      message.textContent = error.message;
-      page.appendChild(message);
-
-      if (error.action) {
-        var actionBtn = document.createElement('button');
-        actionBtn.textContent = error.action.label;
-        actionBtn.addEventListener('click', clearError);
-        page.appendChild(actionBtn);
-      }
-
-      container.appendChild(page);
-    }
-
-    var renderers = {
-      TOAST: renderToast,
-      MODAL: renderModal,
-      PAGE: renderPage
-    };
-
-    function huh(trackId, variables) {
-      var resolved = resolveError(config, trackId, variables);
-      var render = renderers[resolved.type];
-      if (render) render(resolved);
-    }
-
-    document.getElementById('btn-toast').addEventListener('click', function() {
-      huh('ERR_NETWORK');
-    });
-
-    document.getElementById('btn-modal').addEventListener('click', function() {
-      huh('ERR_AUTH', { userName: '홍길동' });
-    });
-
-    document.getElementById('btn-page').addEventListener('click', function() {
-      huh('ERR_NOT_FOUND');
-    });
-  </script>
-</body>
+      document.getElementById('btn-page').addEventListener('click', function () {
+        huh('ERR_NOT_FOUND');
+      });
+    </script>
+  </body>
 </html>

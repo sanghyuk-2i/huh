@@ -3,7 +3,10 @@ import type { ErrorConfig } from '@huh/core';
 import type { ScreenshotResult } from '../test/types';
 import { runExtendedValidation } from '../test/extended-validator';
 
-function makeScreenshot(trackId: string, overrides: Partial<ScreenshotResult> = {}): ScreenshotResult {
+function makeScreenshot(
+  trackId: string,
+  overrides: Partial<ScreenshotResult> = {},
+): ScreenshotResult {
   return {
     trackId,
     type: 'TOAST',

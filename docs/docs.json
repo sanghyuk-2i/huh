@@ -23,7 +23,14 @@
           },
           {
             "group": "API 레퍼런스",
-            "pages": ["ko/api/core", "ko/api/react", "ko/api/vue", "ko/api/svelte", "ko/api/cli", "ko/api/test"]
+            "pages": [
+              "ko/api/core",
+              "ko/api/react",
+              "ko/api/vue",
+              "ko/api/svelte",
+              "ko/api/cli",
+              "ko/api/test"
+            ]
           },
           {
             "group": "데이터 소스 가이드",
@@ -37,10 +44,7 @@
           },
           {
             "group": "가이드",
-            "pages": [
-              "ko/guides/i18n",
-              "ko/guides/plugins"
-            ]
+            "pages": ["ko/guides/i18n", "ko/guides/plugins"]
           }
         ]
       },
@@ -53,7 +57,14 @@
           },
           {
             "group": "API Reference",
-            "pages": ["en/api/core", "en/api/react", "en/api/vue", "en/api/svelte", "en/api/cli", "en/api/test"]
+            "pages": [
+              "en/api/core",
+              "en/api/react",
+              "en/api/vue",
+              "en/api/svelte",
+              "en/api/cli",
+              "en/api/test"
+            ]
           },
           {
             "group": "Data Source Guides",
@@ -67,10 +78,7 @@
           },
           {
             "group": "Guides",
-            "pages": [
-              "en/guides/i18n",
-              "en/guides/plugins"
-            ]
+            "pages": ["en/guides/i18n", "en/guides/plugins"]
           }
         ]
       }

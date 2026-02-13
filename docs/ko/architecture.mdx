@@ -1,7 +1,7 @@
 ---
-title: "아키텍처"
-description: "Huh의 전체 아키텍처, 패키지 의존 관계, JSON DSL 스키마, 빌드 설정"
-icon: "building"
+title: '아키텍처'
+description: 'Huh의 전체 아키텍처, 패키지 의존 관계, JSON DSL 스키마, 빌드 설정'
+icon: 'building'
 ---
 
 ## 전체 흐름
@@ -64,60 +64,60 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 
 ### @huh/core
 
-| 모듈 | 역할 |
-|------|------|
-| `schema.ts` | 모든 타입 정의 (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, HuhPlugin 등) |
-| `plugin.ts` | 플러그인 실행 유틸리티 (`runPluginHook`) |
-| `parser.ts` | 시트 raw 데이터(2D 문자열 배열) → ErrorConfig 변환 |
-| `template.ts` | `{{변수}}` 플레이스홀더 치환 유틸리티 |
-| `resolver.ts` | trackId로 에러 조회 + 변수 치환 적용 |
-| `validator.ts` | ErrorConfig 유효성 검증 (errors + warnings) |
-| `locale-validator.ts` | 다국어 cross-locale 검증 (trackId 일관성, type/actionType 불일치) |
+| 모듈                  | 역할                                                                              |
+| --------------------- | --------------------------------------------------------------------------------- |
+| `schema.ts`           | 모든 타입 정의 (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, HuhPlugin 등) |
+| `plugin.ts`           | 플러그인 실행 유틸리티 (`runPluginHook`)                                          |
+| `parser.ts`           | 시트 raw 데이터(2D 문자열 배열) → ErrorConfig 변환                                |
+| `template.ts`         | `{{변수}}` 플레이스홀더 치환 유틸리티                                             |
+| `resolver.ts`         | trackId로 에러 조회 + 변수 치환 적용                                              |
+| `validator.ts`        | ErrorConfig 유효성 검증 (errors + warnings)                                       |
+| `locale-validator.ts` | 다국어 cross-locale 검증 (trackId 일관성, type/actionType 불일치)                 |
 
 ### @huh/react
 
-| 모듈 | 역할 |
-|------|------|
+| 모듈                       | 역할                                          |
+| -------------------------- | --------------------------------------------- |
 | `ErrorContentProvider.tsx` | Context Provider, 에러 상태 관리, 렌더러 호출 |
-| `useErrorContent.ts` | huh/clearError 훅 |
-| `types.ts` | ErrorRenderProps, RendererMap 타입 정의 |
+| `useErrorContent.ts`       | huh/clearError 훅                             |
+| `types.ts`                 | ErrorRenderProps, RendererMap 타입 정의       |
 
 ### @huh/vue
 
-| 모듈 | 역할 |
-|------|------|
+| 모듈                      | 역할                                                                          |
+| ------------------------- | ----------------------------------------------------------------------------- |
 | `ErrorContentProvider.ts` | provide/inject 기반 Provider, 에러 상태 관리, render function으로 렌더러 호출 |
-| `useErrorContent.ts` | inject 기반 useHuh composable |
-| `types.ts` | ErrorRenderProps, RendererMap (Vue Component) 타입 정의 |
+| `useErrorContent.ts`      | inject 기반 useHuh composable                                                 |
+| `types.ts`                | ErrorRenderProps, RendererMap (Vue Component) 타입 정의                       |
 
 ### @huh/svelte
 
-| 모듈 | 역할 |
-|------|------|
+| 모듈                 | 역할                                                                    |
+| -------------------- | ----------------------------------------------------------------------- |
 | `HuhProvider.svelte` | setContext 기반 Provider, $state로 에러 상태 관리, 동적 컴포넌트 렌더링 |
-| `useErrorContent.ts` | getContext 기반 useHuh |
-| `context.ts` | Symbol injection key 분리 |
-| `types.ts` | ErrorRenderProps, RendererMap (Svelte Component) 타입 정의 |
+| `useErrorContent.ts` | getContext 기반 useHuh                                                  |
+| `context.ts`         | Symbol injection key 분리                                               |
+| `types.ts`           | ErrorRenderProps, RendererMap (Svelte Component) 타입 정의              |
 
 ### @huh/cli
 
-| 모듈 | 역할 |
-|------|------|
-| `commands/init.ts` | 설정 파일 템플릿 생성, 소스 타입 정의 |
-| `commands/pull.ts` | Adapter를 통해 데이터 fetch → parse → validate → JSON 파일 생성 |
-| `commands/validate.ts` | JSON 파일 유효성 검증 |
-| `adapters/types.ts` | `SourceAdapter` 인터페이스 정의 |
-| `adapters/registry.ts` | Adapter 등록/조회 레지스트리 |
-| `adapters/google-sheets.ts` | Google Sheets API v4 adapter |
-| `adapters/airtable.ts` | Airtable REST API adapter |
-| `adapters/notion.ts` | Notion API adapter |
-| `adapters/csv.ts` | 로컬 CSV 파일 adapter (RFC 4180 호환 파서) |
-| `adapters/xlsx.ts` | 로컬 XLSX 파일 adapter (SheetJS) |
-| `adapters/index.ts` | Barrel — import 시 모든 adapter 자동 등록 |
-| `fetch-sheet.ts` | Google Sheets API v4 데이터 fetch (adapter에서 사용) |
-| `fetch-airtable.ts` | Re-export shim → `adapters/airtable` |
-| `fetch-notion.ts` | Re-export shim → `adapters/notion` |
-| `generate.ts` | ErrorConfig → JSON 파일 쓰기, i18n 모드에서 로케일별 파일 + index.ts barrel 생성 |
+| 모듈                        | 역할                                                                             |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| `commands/init.ts`          | 설정 파일 템플릿 생성, 소스 타입 정의                                            |
+| `commands/pull.ts`          | Adapter를 통해 데이터 fetch → parse → validate → JSON 파일 생성                  |
+| `commands/validate.ts`      | JSON 파일 유효성 검증                                                            |
+| `adapters/types.ts`         | `SourceAdapter` 인터페이스 정의                                                  |
+| `adapters/registry.ts`      | Adapter 등록/조회 레지스트리                                                     |
+| `adapters/google-sheets.ts` | Google Sheets API v4 adapter                                                     |
+| `adapters/airtable.ts`      | Airtable REST API adapter                                                        |
+| `adapters/notion.ts`        | Notion API adapter                                                               |
+| `adapters/csv.ts`           | 로컬 CSV 파일 adapter (RFC 4180 호환 파서)                                       |
+| `adapters/xlsx.ts`          | 로컬 XLSX 파일 adapter (SheetJS)                                                 |
+| `adapters/index.ts`         | Barrel — import 시 모든 adapter 자동 등록                                        |
+| `fetch-sheet.ts`            | Google Sheets API v4 데이터 fetch (adapter에서 사용)                             |
+| `fetch-airtable.ts`         | Re-export shim → `adapters/airtable`                                             |
+| `fetch-notion.ts`           | Re-export shim → `adapters/notion`                                               |
+| `generate.ts`               | ErrorConfig → JSON 파일 쓰기, i18n 모드에서 로케일별 파일 + index.ts barrel 생성 |
 
 ## JSON DSL 스키마
 
@@ -141,6 +141,7 @@ ErrorConfig (Record<trackId, ErrorEntry>)
 ### 타입 확장성
 
 `ErrorType`과 `ActionType`은 열린(open-ended) 문자열 타입입니다:
+
 - 기본 제공 타입: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`), `SEVERITY_LEVELS` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`)
 - 데이터 소스에서 커스텀 타입(예: `BANNER`, `SNACKBAR`, `OPEN_CHAT`)을 자유롭게 추가 가능
 - 파서가 자동으로 대문자로 변환 (소문자 입력 허용)
@@ -192,30 +193,30 @@ huh(code, variables)
 
 ### 공식 플러그인
 
-| 패키지 | 설명 |
-|--------|------|
-| `@huh/plugin-sentry` | Sentry 연동 — 에러 시 `captureMessage`, 액션 시 `addBreadcrumb` |
+| 패키지                | 설명                                                                |
+| --------------------- | ------------------------------------------------------------------- |
+| `@huh/plugin-sentry`  | Sentry 연동 — 에러 시 `captureMessage`, 액션 시 `addBreadcrumb`     |
 | `@huh/plugin-datadog` | Datadog 연동 — 에러 시 `datadogLogs.logger`, 액션 시 info 레벨 로깅 |
 
 ## 빌드 설정
 
 모노레포는 다음 도구로 관리됩니다:
 
-| 도구 | 역할 |
-|------|------|
-| pnpm workspace | 패키지 매니저 + 워크스페이스 |
-| turborepo | 빌드/테스트 파이프라인 (캐싱, 의존 순서) |
-| tsup | TypeScript 번들링 (CJS + ESM + IIFE + d.ts) |
-| vitest | 테스트 러너 |
+| 도구           | 역할                                        |
+| -------------- | ------------------------------------------- |
+| pnpm workspace | 패키지 매니저 + 워크스페이스                |
+| turborepo      | 빌드/테스트 파이프라인 (캐싱, 의존 순서)    |
+| tsup           | TypeScript 번들링 (CJS + ESM + IIFE + d.ts) |
+| vitest         | 테스트 러너                                 |
 
 ### 빌드 출력물
 
-| 파일 | 포맷 | 용도 |
-|------|------|------|
-| `dist/index.js` | CJS | `require()` |
-| `dist/index.mjs` | ESM | `import` |
+| 파일                   | 포맷            | 용도            |
+| ---------------------- | --------------- | --------------- |
+| `dist/index.js`        | CJS             | `require()`     |
+| `dist/index.mjs`       | ESM             | `import`        |
 | `dist/index.global.js` | IIFE (minified) | CDN, `<script>` |
-| `dist/index.d.ts` | TypeScript 선언 | 타입 지원 |
+| `dist/index.d.ts`      | TypeScript 선언 | 타입 지원       |
 
 ### 빌드 순서
 

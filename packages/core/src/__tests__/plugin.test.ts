@@ -51,10 +51,7 @@ describe('runPluginHook', () => {
 
   it('skips plugins without the hook', () => {
     const onError = vi.fn();
-    const plugins: HuhPlugin[] = [
-      { name: 'no-hooks' },
-      { name: 'has-hook', onError },
-    ];
+    const plugins: HuhPlugin[] = [{ name: 'no-hooks' }, { name: 'has-hook', onError }];
 
     runPluginHook(plugins, 'onError', mockError, mockContext);
 

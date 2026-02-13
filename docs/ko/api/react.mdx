@@ -1,7 +1,7 @@
 ---
-title: "@huh/react API"
-description: "React Context 기반 에러 UI 렌더링 - HuhProvider, useHuh, RendererMap"
-icon: "react"
+title: '@huh/react API'
+description: 'React Context 기반 에러 UI 렌더링 - HuhProvider, useHuh, RendererMap'
+icon: 'react'
 ---
 
 React Context 기반의 에러 UI 렌더링 라이브러리입니다. Provider가 에러 상태를 관리하고, 사용자가 제공한 커스텀 렌더러로 에러 UI를 표시합니다.
@@ -36,23 +36,24 @@ yarn add @huh/core @huh/react
 
 ```ts
 interface HuhProviderProps {
-  source?: ErrorConfig;       // JSON DSL 데이터 (단일 언어 모드)
-  locales?: LocalizedErrorConfig;  // 다국어 에러 설정 (i18n 모드)
-  defaultLocale?: string;     // 기본 로케일
-  locale?: string;            // 현재 로케일 (외부 제어)
-  renderers: RendererMap;     // 커스텀 렌더러 (필수)
+  source?: ErrorConfig; // JSON DSL 데이터 (단일 언어 모드)
+  locales?: LocalizedErrorConfig; // 다국어 에러 설정 (i18n 모드)
+  defaultLocale?: string; // 기본 로케일
+  locale?: string; // 현재 로케일 (외부 제어)
+  renderers: RendererMap; // 커스텀 렌더러 (필수)
   children: ReactNode;
-  onRetry?: () => void;       // RETRY 액션 시 호출되는 콜백
-  onCustomAction?: (action: { type: string; target?: string }) => void;  // 커스텀 액션 콜백
-  plugins?: HuhPlugin[];    // 모니터링/분석용 플러그인 배열
-  errorMap?: Record<string, string>;  // 에러 코드→trackId 매핑 테이블
-  fallbackTrackId?: string;           // 매핑이 없을 때 사용할 기본 trackId
-  router?: HuhRouter;       // 클라이언트 사이드 라우팅용 커스텀 라우터 (예: Next.js useRouter)
+  onRetry?: () => void; // RETRY 액션 시 호출되는 콜백
+  onCustomAction?: (action: { type: string; target?: string }) => void; // 커스텀 액션 콜백
+  plugins?: HuhPlugin[]; // 모니터링/분석용 플러그인 배열
+  errorMap?: Record<string, string>; // 에러 코드→trackId 매핑 테이블
+  fallbackTrackId?: string; // 매핑이 없을 때 사용할 기본 trackId
+  router?: HuhRouter; // 클라이언트 사이드 라우팅용 커스텀 라우터 (예: Next.js useRouter)
 }
 ```
 
 <Note>
-`source`와 `locales` 중 하나를 제공해야 합니다. `source`는 기존 단일 언어 모드, `locales`는 다국어 모드입니다.
+  `source`와 `locales` 중 하나를 제공해야 합니다. `source`는 기존 단일 언어 모드, `locales`는 다국어
+  모드입니다.
 </Note>
 
 ### 기본 사용법
@@ -131,9 +132,9 @@ const renderers: RendererMap = {
 
 ```ts
 interface ErrorRenderProps {
-  error: ResolvedError;    // 변수 치환이 완료된 에러 정보
-  onAction: () => void;    // 액션 버튼 클릭 핸들러
-  onDismiss: () => void;   // 닫기 핸들러
+  error: ResolvedError; // 변수 치환이 완료된 에러 정보
+  onAction: () => void; // 액션 버튼 클릭 핸들러
+  onDismiss: () => void; // 닫기 핸들러
 }
 ```
 
@@ -147,14 +148,14 @@ interface ErrorRenderProps {
 
 `onAction`은 에러의 `action.type`에 따라 자동으로 동작합니다:
 
-| actionType | 동작 |
-|------------|------|
-| `REDIRECT` | `router` 제공 시 `router.push(target)`, 미제공 시 `window.location.href = target` |
-| `BACK` | `router` 제공 시 `router.back()`, 미제공 시 `window.history.back()` |
-| `RETRY` | 에러 클리어 + `onRetry` 콜백 호출 |
-| `DISMISS` | 에러 클리어 |
-| 커스텀 타입 | 에러 클리어 + `onCustomAction` 콜백 호출 |
-| 액션 없음 | 에러 클리어 |
+| actionType  | 동작                                                                              |
+| ----------- | --------------------------------------------------------------------------------- |
+| `REDIRECT`  | `router` 제공 시 `router.push(target)`, 미제공 시 `window.location.href = target` |
+| `BACK`      | `router` 제공 시 `router.back()`, 미제공 시 `window.history.back()`               |
+| `RETRY`     | 에러 클리어 + `onRetry` 콜백 호출                                                 |
+| `DISMISS`   | 에러 클리어                                                                       |
+| 커스텀 타입 | 에러 클리어 + `onCustomAction` 콜백 호출                                          |
+| 액션 없음   | 에러 클리어                                                                       |
 
 커스텀 액션 타입(예: `OPEN_CHAT`, `SHARE`)은 `onCustomAction` 콜백에 `{ type, target }` 객체가 전달됩니다.
 
@@ -166,18 +167,14 @@ import { Toast } from '@/components/Toast';
 import { Modal } from '@/components/Modal';
 
 const renderers: RendererMap = {
-  TOAST: ({ error, onDismiss }) => (
-    <Toast message={error.message} onClose={onDismiss} />
-  ),
+  TOAST: ({ error, onDismiss }) => <Toast message={error.message} onClose={onDismiss} />,
 
   MODAL: ({ error, onAction, onDismiss }) => (
     <Modal open onClose={onDismiss}>
       <Modal.Title>{error.title}</Modal.Title>
       <Modal.Body>{error.message}</Modal.Body>
       <Modal.Footer>
-        {error.action && (
-          <button onClick={onAction}>{error.action.label}</button>
-        )}
+        {error.action && <button onClick={onAction}>{error.action.label}</button>}
         <button onClick={onDismiss}>닫기</button>
       </Modal.Footer>
     </Modal>
@@ -219,20 +216,19 @@ function useHuh(): HuhContextValue;
 interface HuhContextValue {
   huh: (code: string, variables?: Record<string, string>) => void;
   clearError: () => void;
-  locale: string | undefined;                // 현재 로케일 (i18n 모드)
-  setLocale: (locale: string) => void;       // 로케일 변경 (i18n 모드)
+  locale: string | undefined; // 현재 로케일 (i18n 모드)
+  setLocale: (locale: string) => void; // 로케일 변경 (i18n 모드)
 }
 ```
 
-<Warning>
-Provider 밖에서 호출하면 에러가 발생합니다.
-</Warning>
+<Warning>Provider 밖에서 호출하면 에러가 발생합니다.</Warning>
 
 ### huh(code, variables?)
 
 에러를 트리거하는 단일 함수입니다. trackId 직접 지정, errorMap 매핑, fallback을 모두 처리합니다.
 
 **조회 순서:**
+
 1. `errorMap`에서 코드 매핑 확인
 2. 코드가 직접 trackId와 일치하는지 확인
 3. `fallbackTrackId` 사용
@@ -251,7 +247,7 @@ huh('ERR_SESSION_EXPIRED', { userName: '홍길동' });
 try {
   await api.call();
 } catch (e) {
-  huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
+  huh(e.code); // 'API_500' → errorMap → 'ERR_SERVER'
 }
 ```
 
@@ -261,7 +257,7 @@ try {
 <HuhProvider
   source={config}
   renderers={renderers}
-  errorMap={{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }}
+  errorMap={{ API_500: 'ERR_SERVER', API_401: 'ERR_AUTH' }}
   fallbackTrackId="ERR_UNKNOWN"
 >
   <App />
@@ -292,7 +288,9 @@ const renderers: RendererMap = {
   TOAST: ({ error, onDismiss }) => (
     <div className="fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded">
       {error.message}
-      <button onClick={onDismiss} className="ml-2">X</button>
+      <button onClick={onDismiss} className="ml-2">
+        X
+      </button>
     </div>
   ),
   MODAL: ({ error, onAction, onDismiss }) => (

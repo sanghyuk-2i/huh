@@ -71,10 +71,7 @@ function buildDataValidation(
   };
 }
 
-function buildSheetRequests(
-  sheetId: number,
-  rows: string[][],
-): sheets_v4.Schema$Request[] {
+function buildSheetRequests(sheetId: number, rows: string[][]): sheets_v4.Schema$Request[] {
   const headerRow = rows[0];
   const typeColIndex = headerRow.indexOf('type');
   const severityColIndex = headerRow.indexOf('severity');
@@ -123,16 +120,12 @@ function buildSheetRequests(
 
   // Data validation for type column
   if (typeColIndex !== -1) {
-    requests.push(
-      buildDataValidation(sheetId, typeColIndex, TYPE_OPTIONS, dataRowCount),
-    );
+    requests.push(buildDataValidation(sheetId, typeColIndex, TYPE_OPTIONS, dataRowCount));
   }
 
   // Data validation for severity column
   if (severityColIndex !== -1) {
-    requests.push(
-      buildDataValidation(sheetId, severityColIndex, SEVERITY_OPTIONS, dataRowCount),
-    );
+    requests.push(buildDataValidation(sheetId, severityColIndex, SEVERITY_OPTIONS, dataRowCount));
   }
 
   // Data validation for actionType column
@@ -177,9 +170,7 @@ export async function generateGoogleSheets(): Promise<GoogleSheetsResult | null>
     ];
 
     for (const config of sheetConfigs) {
-      const existing = existingSheets.find(
-        (s) => s.properties?.title === config.title,
-      );
+      const existing = existingSheets.find((s) => s.properties?.title === config.title);
 
       if (existing) {
         // Clear existing data
@@ -203,8 +194,7 @@ export async function generateGoogleSheets(): Promise<GoogleSheetsResult | null>
             requests: [{ addSheet: { properties: { title: config.title } } }],
           },
         });
-        const newSheetId =
-          addRes.data.replies?.[0]?.addSheet?.properties?.sheetId ?? 0;
+        const newSheetId = addRes.data.replies?.[0]?.addSheet?.properties?.sheetId ?? 0;
 
         await sheets.spreadsheets.values.update({
           spreadsheetId,
@@ -228,13 +218,9 @@ export async function generateGoogleSheets(): Promise<GoogleSheetsResult | null>
     const allRequests: sheets_v4.Schema$Request[] = [];
 
     for (const config of sheetConfigs) {
-      const sheet = updatedInfo.data.sheets?.find(
-        (s) => s.properties?.title === config.title,
-      );
+      const sheet = updatedInfo.data.sheets?.find((s) => s.properties?.title === config.title);
       if (sheet?.properties?.sheetId != null) {
-        allRequests.push(
-          ...buildSheetRequests(sheet.properties.sheetId, config.rows),
-        );
+        allRequests.push(...buildSheetRequests(sheet.properties.sheetId, config.rows));
       }
     }
 
@@ -271,10 +257,7 @@ export async function generateGoogleSheets(): Promise<GoogleSheetsResult | null>
     });
 
     // Apply formatting
-    const allRequests = [
-      ...buildSheetRequests(0, koRows),
-      ...buildSheetRequests(1, enRows),
-    ];
+    const allRequests = [...buildSheetRequests(0, koRows), ...buildSheetRequests(1, enRows)];
 
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,

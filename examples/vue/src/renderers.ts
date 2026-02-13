@@ -8,8 +8,7 @@ const Toast = defineComponent({
     onDismiss: { type: Function, required: true },
   },
   setup(props) {
-    return () =>
-      h('div', { class: 'toast', onClick: props.onDismiss }, props.error.message);
+    return () => h('div', { class: 'toast', onClick: props.onDismiss }, props.error.message);
   },
 });
 
@@ -47,8 +46,7 @@ const Page = defineComponent({
         props.error.image && h('img', { src: props.error.image, alt: '' }),
         h('h1', props.error.title),
         h('p', props.error.message),
-        props.error.action &&
-          h('button', { onClick: props.onAction }, props.error.action.label),
+        props.error.action && h('button', { onClick: props.onAction }, props.error.action.label),
       ]);
   },
 });

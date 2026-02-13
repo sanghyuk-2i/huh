@@ -1,7 +1,7 @@
 ---
-title: "Google Sheets Setup Guide"
-description: "Sheet structure and access configuration for managing error content in Google Sheets"
-icon: "table"
+title: 'Google Sheets Setup Guide'
+description: 'Sheet structure and access configuration for managing error content in Google Sheets'
+icon: 'table'
 ---
 
 This document explains the formatting rules for a Google Sheet that manages error content.
@@ -12,9 +12,7 @@ Copy the pre-configured template to get a sheet with the correct column structur
 
 **[Copy Google Sheets Template](https://docs.google.com/spreadsheets/d/1HNCxgmi_kNaVWz-63A3EQ4u6Rx8vPRJgIcdXgd8MMAY/copy)**
 
-<Note>
-After copying, edit the data and run `huh pull`.
-</Note>
+<Note>After copying, edit the data and run `huh pull`.</Note>
 
 ---
 
@@ -22,45 +20,47 @@ After copying, edit the data and run `huh pull`.
 
 The first row must be a header row, using the following column names:
 
-| Column Name | Required | Description |
-|-------------|----------|-------------|
-| `trackId` | Yes | Unique ID identifying the error (e.g., `ERR_LOGIN_FAILED`) |
-| `type` | Yes | Error display type: `TOAST`, `MODAL`, `PAGE`, or custom type |
-| `message` | Yes | Error message shown to the user |
-| `title` | | Error title (used for modal, page) |
-| `image` | | Image URL (used for page) |
-| `severity` | | Severity level: `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
-| `actionLabel` | | Action button text |
-| `actionType` | | Action kind: `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
-| `actionTarget` | | Action target URL (required for `REDIRECT`) |
+| Column Name    | Required | Description                                                                |
+| -------------- | -------- | -------------------------------------------------------------------------- |
+| `trackId`      | Yes      | Unique ID identifying the error (e.g., `ERR_LOGIN_FAILED`)                 |
+| `type`         | Yes      | Error display type: `TOAST`, `MODAL`, `PAGE`, or custom type               |
+| `message`      | Yes      | Error message shown to the user                                            |
+| `title`        |          | Error title (used for modal, page)                                         |
+| `image`        |          | Image URL (used for page)                                                  |
+| `severity`     |          | Severity level: `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
+| `actionLabel`  |          | Action button text                                                         |
+| `actionType`   |          | Action kind: `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action      |
+| `actionTarget` |          | Action target URL (required for `REDIRECT`)                                |
 
 ## Error Types (`type`)
 
 Built-in types:
 
-| Type | Use Case | Recommended Fields |
-|------|----------|-------------------|
-| `TOAST` | Simple notification message | Use message only. Warning if title/image are used |
-| `MODAL` | Popup-style error notice | message + title + action |
-| `PAGE` | Full-screen error page | message + title + image + action (warning if no action) |
+| Type    | Use Case                    | Recommended Fields                                      |
+| ------- | --------------------------- | ------------------------------------------------------- |
+| `TOAST` | Simple notification message | Use message only. Warning if title/image are used       |
+| `MODAL` | Popup-style error notice    | message + title + action                                |
+| `PAGE`  | Full-screen error page      | message + title + image + action (warning if no action) |
 
 <Note>
-Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely. Even if entered in lowercase, they are automatically converted to uppercase.
+  Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely. Even if entered in lowercase,
+  they are automatically converted to uppercase.
 </Note>
 
 ## Action Types (`actionType`)
 
 Built-in action types:
 
-| Type | Behavior | Requires target |
-|------|----------|----------------|
-| `REDIRECT` | Navigate to specified URL | Yes (`actionTarget` with URL) |
-| `RETRY` | Close error + execute retry callback | No |
-| `BACK` | Browser back (`history.back()`) | No |
-| `DISMISS` | Close error UI | No |
+| Type       | Behavior                             | Requires target               |
+| ---------- | ------------------------------------ | ----------------------------- |
+| `REDIRECT` | Navigate to specified URL            | Yes (`actionTarget` with URL) |
+| `RETRY`    | Close error + execute retry callback | No                            |
+| `BACK`     | Browser back (`history.back()`)      | No                            |
+| `DISMISS`  | Close error UI                       | No                            |
 
 <Note>
-Custom action types (`OPEN_CHAT`, `SHARE`, etc.) can also be used. Handle them via the `HuhProvider`'s `onCustomAction` callback.
+  Custom action types (`OPEN_CHAT`, `SHARE`, etc.) can also be used. Handle them via the
+  `HuhProvider`'s `onCustomAction` callback.
 </Note>
 
 ## Template Variables
@@ -74,13 +74,13 @@ Target example: /user/{{userId}}/settings
 
 ## Examples
 
-| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
-| ERR_NETWORK | TOAST | Please check your network connection | | | WARNING | | | |
-| ERR_AUTH | MODAL | Authentication is required | Login Required | | ERROR | Login | REDIRECT | /login |
-| ERR_TIMEOUT | MODAL | The request has timed out | Timeout | | ERROR | Try Again | RETRY | |
-| ERR_FORBIDDEN | PAGE | \{\{userName\}\} does not have access permission | Access Denied | /img/403.png | CRITICAL | Go Back | BACK | |
-| ERR_NOT_FOUND | PAGE | Page not found | 404 | /img/404.png | INFO | Go Home | REDIRECT | / |
+| trackId       | type  | message                                          | title          | image        | severity | actionLabel | actionType | actionTarget |
+| ------------- | ----- | ------------------------------------------------ | -------------- | ------------ | -------- | ----------- | ---------- | ------------ |
+| ERR_NETWORK   | TOAST | Please check your network connection             |                |              | WARNING  |             |            |              |
+| ERR_AUTH      | MODAL | Authentication is required                       | Login Required |              | ERROR    | Login       | REDIRECT   | /login       |
+| ERR_TIMEOUT   | MODAL | The request has timed out                        | Timeout        |              | ERROR    | Try Again   | RETRY      |              |
+| ERR_FORBIDDEN | PAGE  | \{\{userName\}\} does not have access permission | Access Denied  | /img/403.png | CRITICAL | Go Back     | BACK       |              |
+| ERR_NOT_FOUND | PAGE  | Page not found                                   | 404            | /img/404.png | INFO     | Go Home     | REDIRECT   | /            |
 
 ## Rules Summary
 

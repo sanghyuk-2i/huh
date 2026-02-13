@@ -10,10 +10,7 @@ function createSheet(rows: string[][]): XLSX.WorkSheet {
 
   // Column widths: auto-fit based on max content length
   ws['!cols'] = HEADERS.map((header, i) => {
-    const maxLen = Math.max(
-      header.length,
-      ...rows.slice(1).map((row) => (row[i] ?? '').length),
-    );
+    const maxLen = Math.max(header.length, ...rows.slice(1).map((row) => (row[i] ?? '').length));
     return { wch: Math.min(Math.max(maxLen + 2, 12), 40) };
   });
 

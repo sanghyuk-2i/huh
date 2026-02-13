@@ -1,7 +1,7 @@
 ---
-title: "Architecture"
-description: "Overall architecture, package dependency graph, JSON DSL schema, build configuration"
-icon: "building"
+title: 'Architecture'
+description: 'Overall architecture, package dependency graph, JSON DSL schema, build configuration'
+icon: 'building'
 ---
 
 ## Overall Flow
@@ -64,60 +64,60 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 
 ### @huh/core
 
-| Module | Responsibility |
-|--------|---------------|
-| `schema.ts` | All type definitions (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, HuhPlugin, etc.) |
-| `plugin.ts` | Plugin runner utility (`runPluginHook`) |
-| `parser.ts` | Converts sheet raw data (2D string array) to ErrorConfig |
-| `template.ts` | `{{variable}}` placeholder substitution utility |
-| `resolver.ts` | Looks up error by trackId + applies variable substitution |
-| `validator.ts` | ErrorConfig validation (errors + warnings) |
-| `locale-validator.ts` | Multi-language cross-locale validation (trackId consistency, type/actionType mismatch) |
+| Module                | Responsibility                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| `schema.ts`           | All type definitions (ErrorConfig, ErrorEntry, ERROR_TYPES, ACTION_TYPES, HuhPlugin, etc.) |
+| `plugin.ts`           | Plugin runner utility (`runPluginHook`)                                                    |
+| `parser.ts`           | Converts sheet raw data (2D string array) to ErrorConfig                                   |
+| `template.ts`         | `{{variable}}` placeholder substitution utility                                            |
+| `resolver.ts`         | Looks up error by trackId + applies variable substitution                                  |
+| `validator.ts`        | ErrorConfig validation (errors + warnings)                                                 |
+| `locale-validator.ts` | Multi-language cross-locale validation (trackId consistency, type/actionType mismatch)     |
 
 ### @huh/react
 
-| Module | Responsibility |
-|--------|---------------|
+| Module                     | Responsibility                                                |
+| -------------------------- | ------------------------------------------------------------- |
 | `ErrorContentProvider.tsx` | Context Provider, error state management, renderer invocation |
-| `useErrorContent.ts` | huh/clearError hook |
-| `types.ts` | ErrorRenderProps, RendererMap type definitions |
+| `useErrorContent.ts`       | huh/clearError hook                                           |
+| `types.ts`                 | ErrorRenderProps, RendererMap type definitions                |
 
 ### @huh/vue
 
-| Module | Responsibility |
-|--------|---------------|
+| Module                    | Responsibility                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
 | `ErrorContentProvider.ts` | provide/inject-based Provider, error state management, render function renderer invocation |
-| `useErrorContent.ts` | inject-based useHuh composable |
-| `types.ts` | ErrorRenderProps, RendererMap (Vue Component) type definitions |
+| `useErrorContent.ts`      | inject-based useHuh composable                                                             |
+| `types.ts`                | ErrorRenderProps, RendererMap (Vue Component) type definitions                             |
 
 ### @huh/svelte
 
-| Module | Responsibility |
-|--------|---------------|
+| Module               | Responsibility                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------- |
 | `HuhProvider.svelte` | setContext-based Provider, $state error state management, dynamic component rendering |
-| `useErrorContent.ts` | getContext-based useHuh |
-| `context.ts` | Separated Symbol injection key |
-| `types.ts` | ErrorRenderProps, RendererMap (Svelte Component) type definitions |
+| `useErrorContent.ts` | getContext-based useHuh                                                               |
+| `context.ts`         | Separated Symbol injection key                                                        |
+| `types.ts`           | ErrorRenderProps, RendererMap (Svelte Component) type definitions                     |
 
 ### @huh/cli
 
-| Module | Responsibility |
-|--------|---------------|
-| `commands/init.ts` | Config file template generation, source type definitions |
-| `commands/pull.ts` | Fetch data via Adapter, parse, validate, generate JSON file |
-| `commands/validate.ts` | JSON file validation |
-| `adapters/types.ts` | `SourceAdapter` interface definition |
-| `adapters/registry.ts` | Adapter register/get/clear registry |
-| `adapters/google-sheets.ts` | Google Sheets API v4 adapter |
-| `adapters/airtable.ts` | Airtable REST API adapter |
-| `adapters/notion.ts` | Notion API adapter |
-| `adapters/csv.ts` | Local CSV file adapter (RFC 4180 compatible parser) |
-| `adapters/xlsx.ts` | Local XLSX file adapter (SheetJS) |
-| `adapters/index.ts` | Barrel -- auto-registers all adapters on import |
-| `fetch-sheet.ts` | Google Sheets API v4 data fetch (used by adapter) |
-| `fetch-airtable.ts` | Re-export shim -> `adapters/airtable` |
-| `fetch-notion.ts` | Re-export shim -> `adapters/notion` |
-| `generate.ts` | ErrorConfig -> JSON file write; in i18n mode, generates per-locale files + index.ts barrel |
+| Module                      | Responsibility                                                                             |
+| --------------------------- | ------------------------------------------------------------------------------------------ |
+| `commands/init.ts`          | Config file template generation, source type definitions                                   |
+| `commands/pull.ts`          | Fetch data via Adapter, parse, validate, generate JSON file                                |
+| `commands/validate.ts`      | JSON file validation                                                                       |
+| `adapters/types.ts`         | `SourceAdapter` interface definition                                                       |
+| `adapters/registry.ts`      | Adapter register/get/clear registry                                                        |
+| `adapters/google-sheets.ts` | Google Sheets API v4 adapter                                                               |
+| `adapters/airtable.ts`      | Airtable REST API adapter                                                                  |
+| `adapters/notion.ts`        | Notion API adapter                                                                         |
+| `adapters/csv.ts`           | Local CSV file adapter (RFC 4180 compatible parser)                                        |
+| `adapters/xlsx.ts`          | Local XLSX file adapter (SheetJS)                                                          |
+| `adapters/index.ts`         | Barrel -- auto-registers all adapters on import                                            |
+| `fetch-sheet.ts`            | Google Sheets API v4 data fetch (used by adapter)                                          |
+| `fetch-airtable.ts`         | Re-export shim -> `adapters/airtable`                                                      |
+| `fetch-notion.ts`           | Re-export shim -> `adapters/notion`                                                        |
+| `generate.ts`               | ErrorConfig -> JSON file write; in i18n mode, generates per-locale files + index.ts barrel |
 
 ## JSON DSL Schema
 
@@ -141,6 +141,7 @@ ErrorConfig (Record<trackId, ErrorEntry>)
 ### Type Extensibility
 
 `ErrorType` and `ActionType` are open-ended string types:
+
 - Built-in types: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`), `SEVERITY_LEVELS` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`)
 - Custom types (e.g., `BANNER`, `SNACKBAR`, `OPEN_CHAT`) can be freely added from data sources
 - The parser automatically converts to uppercase (lowercase input is accepted)
@@ -192,30 +193,30 @@ Plugin errors are caught and logged as warnings. A failing plugin never breaks t
 
 ### Official Plugins
 
-| Package | Description |
-|---------|-------------|
-| `@huh/plugin-sentry` | Sentry integration — `captureMessage` on error, `addBreadcrumb` on action |
+| Package               | Description                                                                    |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `@huh/plugin-sentry`  | Sentry integration — `captureMessage` on error, `addBreadcrumb` on action      |
 | `@huh/plugin-datadog` | Datadog integration — `datadogLogs.logger` on error, info-level action logging |
 
 ## Build Configuration
 
 The monorepo is managed with the following tools:
 
-| Tool | Role |
-|------|------|
-| pnpm workspace | Package manager + workspaces |
-| turborepo | Build/test pipeline (caching, dependency ordering) |
-| tsup | TypeScript bundling (CJS + ESM + IIFE + d.ts) |
-| vitest | Test runner |
+| Tool           | Role                                               |
+| -------------- | -------------------------------------------------- |
+| pnpm workspace | Package manager + workspaces                       |
+| turborepo      | Build/test pipeline (caching, dependency ordering) |
+| tsup           | TypeScript bundling (CJS + ESM + IIFE + d.ts)      |
+| vitest         | Test runner                                        |
 
 ### Build Outputs
 
-| File | Format | Purpose |
-|------|--------|---------|
-| `dist/index.js` | CJS | `require()` |
-| `dist/index.mjs` | ESM | `import` |
-| `dist/index.global.js` | IIFE (minified) | CDN, `<script>` |
-| `dist/index.d.ts` | TypeScript declarations | Type support |
+| File                   | Format                  | Purpose         |
+| ---------------------- | ----------------------- | --------------- |
+| `dist/index.js`        | CJS                     | `require()`     |
+| `dist/index.mjs`       | ESM                     | `import`        |
+| `dist/index.global.js` | IIFE (minified)         | CDN, `<script>` |
+| `dist/index.d.ts`      | TypeScript declarations | Type support    |
 
 ### Build Order
 

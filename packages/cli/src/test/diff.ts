@@ -15,10 +15,7 @@ export function loadPreviousReport(outputDir: string): ReportData | null {
   }
 }
 
-export function diffReports(
-  previous: ReportData,
-  current: ReportData,
-): DiffResult {
+export function diffReports(previous: ReportData, current: ReportData): DiffResult {
   const prevMap = new Map(previous.entries.map((e) => [e.trackId, e]));
   const currMap = new Map(current.entries.map((e) => [e.trackId, e]));
 

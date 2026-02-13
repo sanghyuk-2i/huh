@@ -127,7 +127,17 @@ describe('notionPagesToRows', () => {
       'actionType',
       'actionTarget',
     ]);
-    expect(rows[1]).toEqual(['ERR_001', 'toast', 'Error occurred', '', '', '', 'Retry', 'retry', '']);
+    expect(rows[1]).toEqual([
+      'ERR_001',
+      'toast',
+      'Error occurred',
+      '',
+      '',
+      '',
+      'Retry',
+      'retry',
+      '',
+    ]);
     expect(rows[2]).toEqual([
       'ERR_002',
       'page',
@@ -167,9 +177,9 @@ describe('fetchNotionData', () => {
   });
 
   it('throws when no token is provided', async () => {
-    await expect(
-      fetchNotionData({ type: 'notion', databaseId: 'db_xxx' }),
-    ).rejects.toThrow('Notion token is required');
+    await expect(fetchNotionData({ type: 'notion', databaseId: 'db_xxx' })).rejects.toThrow(
+      'Notion token is required',
+    );
   });
 
   it('uses env variable token as fallback', async () => {

@@ -117,10 +117,9 @@ export async function generateAirtable(): Promise<AirtableResult | null> {
 
   if (existingBaseId) {
     // Read existing table schema via Meta API
-    const metaRes = (await airtableFetch(
-      `/meta/bases/${existingBaseId}/tables`,
-      token,
-    )) as { tables: { id: string; name: string; fields: { name: string; type: string }[] }[] };
+    const metaRes = (await airtableFetch(`/meta/bases/${existingBaseId}/tables`, token)) as {
+      tables: { id: string; name: string; fields: { name: string; type: string }[] }[];
+    };
 
     const expectedFields = buildFields();
 
@@ -134,7 +133,7 @@ export async function generateAirtable(): Promise<AirtableResult | null> {
       if (!tableMeta) {
         throw new Error(
           `Table "${table.name}" not found in base ${existingBaseId}. ` +
-          `Please create tables named "한국어" and "English" in the Airtable base.`,
+            `Please create tables named "한국어" and "English" in the Airtable base.`,
         );
       }
 
@@ -155,8 +154,8 @@ export async function generateAirtable(): Promise<AirtableResult | null> {
       if (addedFields.length > 0) {
         console.warn(
           `\n  ⚠ Table "${table.name}": Added fields [${addedFields.join(', ')}] at the end of the table.` +
-          `\n    The Airtable API does not support field reordering.` +
-          `\n    To fix the column order, drag the fields manually in the Airtable UI.`,
+            `\n    The Airtable API does not support field reordering.` +
+            `\n    To fix the column order, drag the fields manually in the Airtable UI.`,
         );
       }
 

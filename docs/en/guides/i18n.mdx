@@ -1,7 +1,7 @@
 ---
-title: "i18n Multi-Language Support"
-description: "Spreadsheet tab-based multi-language error message management - configuration, output, framework integration"
-icon: "globe"
+title: 'i18n Multi-Language Support'
+description: 'Spreadsheet tab-based multi-language error message management - configuration, output, framework integration'
+icon: 'globe'
 ---
 
 You can manage multi-language error messages by separating languages per data source. Depending on your data source, languages are separated by spreadsheet tabs, separate files, Airtable tables, or Notion databases. Non-developers (planners, content managers) can directly manage translations in each source.
@@ -84,7 +84,8 @@ errors.ko.csv    errors.en.csv    errors.ja.csv    <- File = Language
 </Tabs>
 
 <Note>
-`type` and `actionType` must be the same across all languages (since the rendering structure is identical). Only `message`, `title`, and `actionLabel` should be translated.
+  `type` and `actionType` must be the same across all languages (since the rendering structure is
+  identical). Only `message`, `title`, and `actionLabel` should be translated.
 </Note>
 
 ## Configuration
@@ -241,11 +242,11 @@ interface I18nConfig {
 }
 
 interface LocaleSourceOverride {
-  sheet?: string;       // XLSX sheet name
-  range?: string;       // Google Sheets tab name
-  filePath?: string;    // CSV file path
-  tableId?: string;     // Airtable table ID
-  databaseId?: string;  // Notion database ID
+  sheet?: string; // XLSX sheet name
+  range?: string; // Google Sheets tab name
+  filePath?: string; // CSV file path
+  tableId?: string; // Airtable table ID
+  databaseId?: string; // Notion database ID
 }
 ```
 
@@ -286,10 +287,9 @@ export const locales: Record<HuhLocale, ErrorConfig> = { ko, en };
 ```
 
 <Note>
-Benefits of file separation:
-- **Tree-shaking**: Unused languages are excluded from the bundle
-- **Lazy loading**: Dynamically load at the point of need with `import('./huh/en.json')`
-- **Backward compatible**: The `validate` command works on individual files as-is
+  Benefits of file separation: - **Tree-shaking**: Unused languages are excluded from the bundle -
+  **Lazy loading**: Dynamically load at the point of need with `import('./huh/en.json')` -
+  **Backward compatible**: The `validate` command works on individual files as-is
 </Note>
 
 ## Framework Integration
@@ -304,12 +304,7 @@ function App() {
   const [lang, setLang] = useState('ko');
 
   return (
-    <HuhProvider
-      locales={locales}
-      defaultLocale="ko"
-      locale={lang}
-      renderers={renderers}
-    >
+    <HuhProvider locales={locales} defaultLocale="ko" locale={lang} renderers={renderers}>
       <YourApp />
     </HuhProvider>
   );
@@ -340,12 +335,7 @@ const lang = ref('ko');
 </script>
 
 <template>
-  <HuhProvider
-    :locales="locales"
-    default-locale="ko"
-    :locale="lang"
-    :renderers="renderers"
-  >
+  <HuhProvider :locales="locales" default-locale="ko" :locale="lang" :renderers="renderers">
     <YourApp />
   </HuhProvider>
 </template>
@@ -402,19 +392,20 @@ const { locale, setLocale } = useHuh();
 ```
 
 <Note>
-When you pass the `locale` prop, the language is controlled externally. If not passed, it's managed by the Provider's internal state and can be changed via `useHuh()`'s `setLocale()`.
+  When you pass the `locale` prop, the language is controlled externally. If not passed, it's
+  managed by the Provider's internal state and can be changed via `useHuh()`'s `setLocale()`.
 </Note>
 
 ## Cross-Locale Validation
 
 When running `huh pull`, cross-locale consistency is automatically validated:
 
-| Check | Level | Description |
-|-------|-------|-------------|
-| Missing trackId | error | A trackId exists in one locale but not another |
-| type mismatch | warning | Same trackId has different types across locales |
-| actionType mismatch | warning | Same trackId has different action types across locales |
-| Per-locale validation | as-is | Existing `validateConfig` applied per locale |
+| Check                 | Level   | Description                                            |
+| --------------------- | ------- | ------------------------------------------------------ |
+| Missing trackId       | error   | A trackId exists in one locale but not another         |
+| type mismatch         | warning | Same trackId has different types across locales        |
+| actionType mismatch   | warning | Same trackId has different action types across locales |
+| Per-locale validation | as-is   | Existing `validateConfig` applied per locale           |
 
 ```
 Cross-locale validation:

@@ -1,7 +1,7 @@
 ---
-title: "huh test"
-description: "Playwright로 에러 UI를 스크린샷 캡처하고, 확장 검증을 거쳐 HTML 리포트를 자동 생성하는 테스트 명령어"
-icon: "camera"
+title: 'huh test'
+description: 'Playwright로 에러 UI를 스크린샷 캡처하고, 확장 검증을 거쳐 HTML 리포트를 자동 생성하는 테스트 명령어'
+icon: 'camera'
 ---
 
 `huh test`는 ErrorConfig JSON을 기반으로 Playwright 브라우저를 실행하여 각 에러 항목의 UI를 스크린샷으로 캡처하고, 확장 검증(Extended Validation)을 수행한 뒤 HTML 리포트를 자동 생성합니다.
@@ -15,7 +15,8 @@ npx playwright install chromium
 ```
 
 <Note>
-`huh test`는 내부적으로 headless Chromium을 사용합니다. CI 환경에서는 반드시 Playwright 브라우저가 설치된 이미지를 사용하세요.
+  `huh test`는 내부적으로 headless Chromium을 사용합니다. CI 환경에서는 반드시 Playwright 브라우저가
+  설치된 이미지를 사용하세요.
 </Note>
 
 ---
@@ -46,18 +47,18 @@ npx huh test --ci
 
 ## CLI 옵션
 
-| 옵션 | 타입 | 기본값 | 설명 |
-|------|------|--------|------|
-| `--mode <mode>` | `standalone` \| `app` | `standalone` | 미리보기 모드 |
-| `--url <url>` | `string` | — | 앱 URL (`app` 모드에서 필수) |
-| `--config <path>` | `string` | `src/huh.json` | ErrorConfig JSON 파일 경로 |
-| `--output <dir>` | `string` | `.huh-report` | 리포트 출력 디렉토리 |
-| `--filter <ids>` | `string` | — | 테스트할 trackId (쉼표 구분) |
-| `--type <types>` | `string` | — | 필터할 에러 타입 (쉼표 구분) |
-| `--device <preset>` | `desktop` \| `mobile` \| `tablet` | `desktop` | 디바이스 프리셋 |
-| `--open` | `boolean` | `false` | 생성 후 브라우저에서 리포트 열기 |
-| `--ci` | `boolean` | `false` | CI 모드: 실패 시 exit code 1 |
-| `--diff` | `boolean` | `false` | 이전 리포트와 비교 |
+| 옵션                | 타입                              | 기본값         | 설명                             |
+| ------------------- | --------------------------------- | -------------- | -------------------------------- |
+| `--mode <mode>`     | `standalone` \| `app`             | `standalone`   | 미리보기 모드                    |
+| `--url <url>`       | `string`                          | —              | 앱 URL (`app` 모드에서 필수)     |
+| `--config <path>`   | `string`                          | `src/huh.json` | ErrorConfig JSON 파일 경로       |
+| `--output <dir>`    | `string`                          | `.huh-report`  | 리포트 출력 디렉토리             |
+| `--filter <ids>`    | `string`                          | —              | 테스트할 trackId (쉼표 구분)     |
+| `--type <types>`    | `string`                          | —              | 필터할 에러 타입 (쉼표 구분)     |
+| `--device <preset>` | `desktop` \| `mobile` \| `tablet` | `desktop`      | 디바이스 프리셋                  |
+| `--open`            | `boolean`                         | `false`        | 생성 후 브라우저에서 리포트 열기 |
+| `--ci`              | `boolean`                         | `false`        | CI 모드: 실패 시 exit code 1     |
+| `--diff`            | `boolean`                         | `false`        | 이전 리포트와 비교               |
 
 ---
 
@@ -66,8 +67,8 @@ npx huh test --ci
 <Steps>
 
 <Step title="ErrorConfig 로드">
-  `--config` 경로에서 JSON 파일을 읽어 ErrorConfig를 파싱합니다.
-  `.huh.config.json`에 `simulate` 설정이 있으면 함께 로드합니다.
+  `--config` 경로에서 JSON 파일을 읽어 ErrorConfig를 파싱합니다. `.huh.config.json`에 `simulate`
+  설정이 있으면 함께 로드합니다.
 </Step>
 
 <Step title="trackId 필터링">
@@ -75,21 +76,17 @@ npx huh test --ci
 </Step>
 
 <Step title="프리뷰 서버 시작">
-  내부 HTTP 서버를 시작하여 각 에러 항목을 독립적인 HTML 페이지로 렌더링합니다.
-  TOAST, MODAL, PAGE 타입에 맞는 내장 렌더러가 자동으로 적용됩니다.
+  내부 HTTP 서버를 시작하여 각 에러 항목을 독립적인 HTML 페이지로 렌더링합니다. TOAST, MODAL, PAGE
+  타입에 맞는 내장 렌더러가 자동으로 적용됩니다.
 </Step>
 
 <Step title="Playwright 스크린샷 캡처">
-  Headless Chromium이 각 에러 항목 페이지를 방문하여 스크린샷을 캡처합니다.
-  타입별 대기 시간이 적용됩니다:
-  - **TOAST**: 350ms
-  - **MODAL**: 250ms
-  - **PAGE**: 400ms
+  Headless Chromium이 각 에러 항목 페이지를 방문하여 스크린샷을 캡처합니다. 타입별 대기 시간이
+  적용됩니다: - **TOAST**: 350ms - **MODAL**: 250ms - **PAGE**: 400ms
 </Step>
 
 <Step title="확장 검증 (Extended Validation)">
-  `@huh/core`의 기본 검증 + 추가 확장 검증을 실행합니다.
-  [아래 확장 검증 섹션](#확장-검증) 참고.
+  `@huh/core`의 기본 검증 + 추가 확장 검증을 실행합니다. [아래 확장 검증 섹션](#확장-검증) 참고.
 </Step>
 
 <Step title="HTML 리포트 생성">
@@ -102,11 +99,11 @@ npx huh test --ci
 
 ## 디바이스 프리셋
 
-| 프리셋 | 해상도 | Scale Factor | 모바일 |
-|--------|--------|-------------|--------|
-| `desktop` | 1280 x 720 | 1x | No |
-| `mobile` | 375 x 812 | 2x | Yes |
-| `tablet` | 768 x 1024 | 2x | Yes |
+| 프리셋    | 해상도     | Scale Factor | 모바일 |
+| --------- | ---------- | ------------ | ------ |
+| `desktop` | 1280 x 720 | 1x           | No     |
+| `mobile`  | 375 x 812  | 2x           | Yes    |
+| `tablet`  | 768 x 1024 | 2x           | Yes    |
 
 ```bash
 # 모바일 뷰포트로 테스트
@@ -142,16 +139,16 @@ npx huh test --device tablet
 }
 ```
 
-| 필드 | 타입 | 설명 |
-|------|------|------|
-| `defaultVariables` | `Record<string, string>` | 모든 trackId에 적용되는 기본 변수 |
-| `variables` | `Record<string, Record<string, string>>` | trackId별 개별 변수 (defaultVariables를 오버라이드) |
-| `waitTimeout` | `number` | 렌더 완료 대기 제한 시간 (ms) |
-| `screenshotDelay` | `number` | 렌더 완료 후 스크린샷 캡처 전 추가 대기 (ms) |
+| 필드               | 타입                                     | 설명                                                |
+| ------------------ | ---------------------------------------- | --------------------------------------------------- |
+| `defaultVariables` | `Record<string, string>`                 | 모든 trackId에 적용되는 기본 변수                   |
+| `variables`        | `Record<string, Record<string, string>>` | trackId별 개별 변수 (defaultVariables를 오버라이드) |
+| `waitTimeout`      | `number`                                 | 렌더 완료 대기 제한 시간 (ms)                       |
+| `screenshotDelay`  | `number`                                 | 렌더 완료 후 스크린샷 캡처 전 추가 대기 (ms)        |
 
 <Note>
-`variables`에 trackId별 값이 있으면 `defaultVariables`의 같은 키를 오버라이드합니다.
-예를 들어 위 설정에서 `ERR_AUTH`의 `userName`은 "관리자"가 되고, 다른 trackId에서는 "홍길동"이 됩니다.
+  `variables`에 trackId별 값이 있으면 `defaultVariables`의 같은 키를 오버라이드합니다. 예를 들어 위
+  설정에서 `ERR_AUTH`의 `userName`은 "관리자"가 되고, 다른 trackId에서는 "홍길동"이 됩니다.
 </Note>
 
 ---
@@ -160,21 +157,21 @@ npx huh test --device tablet
 
 `huh test`는 `@huh/core`의 기본 검증에 더해 다음의 확장 검증을 수행합니다:
 
-| 검사 항목 | 심각도 | 설명 |
-|-----------|--------|------|
-| `render-failure` | error | Playwright에서 에러 UI 렌더링에 실패한 경우 |
-| `image-url-broken` | warning | `image` 필드의 URL이 유효하지 않은 경우 |
-| `message-too-long` | warning | 메시지 길이가 타입별 권장 길이를 초과한 경우 |
-| `slow-render` | warning | 렌더링 시간이 3000ms를 초과한 경우 |
+| 검사 항목                   | 심각도  | 설명                                                  |
+| --------------------------- | ------- | ----------------------------------------------------- |
+| `render-failure`            | error   | Playwright에서 에러 UI 렌더링에 실패한 경우           |
+| `image-url-broken`          | warning | `image` 필드의 URL이 유효하지 않은 경우               |
+| `message-too-long`          | warning | 메시지 길이가 타입별 권장 길이를 초과한 경우          |
+| `slow-render`               | warning | 렌더링 시간이 3000ms를 초과한 경우                    |
 | `missing-template-variable` | warning | 치환되지 않은 `\{\{variable\}\}` 패턴이 남아있는 경우 |
 
 **메시지 길이 제한 (권장):**
 
-| 타입 | 최대 글자 수 |
-|------|-------------|
-| TOAST | 120자 |
-| MODAL | 500자 |
-| PAGE | 300자 |
+| 타입  | 최대 글자 수 |
+| ----- | ------------ |
+| TOAST | 120자        |
+| MODAL | 500자        |
+| PAGE  | 300자        |
 
 ---
 
@@ -182,9 +179,9 @@ npx huh test --device tablet
 
 `--output` 디렉토리(기본값: `.huh-report`)에 다음 파일이 생성됩니다:
 
-| 파일 | 설명 |
-|------|------|
-| `report.html` | 스크린샷과 검증 결과가 포함된 시각적 리포트 (base64 이미지 임베딩) |
+| 파일               | 설명                                                                     |
+| ------------------ | ------------------------------------------------------------------------ |
+| `report.html`      | 스크린샷과 검증 결과가 포함된 시각적 리포트 (base64 이미지 임베딩)       |
 | `report-data.json` | 프로그래밍 방식으로 활용 가능한 구조화된 리포트 데이터 (스크린샷 미포함) |
 
 **report-data.json 구조:**
@@ -224,12 +221,12 @@ npx huh test --diff
 
 **감지 항목:**
 
-| 상태 | 설명 |
-|------|------|
-| `added` | 새로 추가된 trackId |
-| `removed` | 삭제된 trackId |
-| `changed` | 타입, 성공/실패 상태, 이슈 수가 변경된 항목 |
-| `unchanged` | 변경 없는 항목 |
+| 상태        | 설명                                        |
+| ----------- | ------------------------------------------- |
+| `added`     | 새로 추가된 trackId                         |
+| `removed`   | 삭제된 trackId                              |
+| `changed`   | 타입, 성공/실패 상태, 이슈 수가 변경된 항목 |
+| `unchanged` | 변경 없는 항목                              |
 
 **출력 예시:**
 
@@ -284,7 +281,8 @@ jobs:
 </Accordion>
 
 <Warning>
-`--ci` 모드에서는 1개 이상의 에러(render-failure 등)가 있으면 exit code 1로 종료됩니다. 경고(warning)만 있는 경우에는 통과합니다.
+  `--ci` 모드에서는 1개 이상의 에러(render-failure 등)가 있으면 exit code 1로 종료됩니다.
+  경고(warning)만 있는 경우에는 통과합니다.
 </Warning>
 
 ---

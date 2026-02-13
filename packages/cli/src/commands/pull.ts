@@ -15,7 +15,16 @@ const SOURCE_LABELS: Record<string, string> = {
   xlsx: 'XLSX file',
 };
 
-function getLocaleSource(base: HuhSource, override: { sheet?: string; range?: string; filePath?: string; tableId?: string; databaseId?: string }): HuhSource {
+function getLocaleSource(
+  base: HuhSource,
+  override: {
+    sheet?: string;
+    range?: string;
+    filePath?: string;
+    tableId?: string;
+    databaseId?: string;
+  },
+): HuhSource {
   if (override.filePath && (base.type === 'csv' || base.type === 'xlsx')) {
     return { ...base, filePath: override.filePath } as HuhSource;
   }

@@ -1,7 +1,7 @@
 ---
-title: "Airtable Integration Guide"
-description: "Base setup and token configuration for managing error content in Airtable"
-icon: "database"
+title: 'Airtable Integration Guide'
+description: 'Base setup and token configuration for managing error content in Airtable'
+icon: 'database'
 ---
 
 ## Quick Start with Template
@@ -10,9 +10,7 @@ Clone the pre-configured Airtable template to get a base with the correct field 
 
 **[Clone Airtable Template](https://airtable.com/appo3UhuMSVi9br6f/shrjYOIeEDWkm8W3Y)**
 
-<Note>
-After cloning, edit the data and run `huh pull`.
-</Note>
+<Note>After cloning, edit the data and run `huh pull`.</Note>
 
 ---
 
@@ -30,30 +28,33 @@ After cloning, edit the data and run `huh pull`.
 
 Create the following fields in your table:
 
-| Field Name | Field Type | Required | Description |
-|-----------|-----------|----------|-------------|
-| `trackId` | Single line text | **Yes** | Unique error identifier (e.g., `ERR_LOGIN_001`) |
-| `type` | Single select | **Yes** | `TOAST`, `MODAL`, `PAGE`, or custom type |
-| `message` | Long text | **Yes** | Error message. Supports `{{variable}}` template variables |
-| `title` | Single line text | Optional | Error title (used for modal, page) |
-| `image` | URL or Single line text | Optional | Error image URL |
-| `severity` | Single select | Optional | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
-| `actionLabel` | Single line text | Optional | Action button text |
-| `actionType` | Single select | Optional | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
-| `actionTarget` | URL or Single line text | Optional | URL to navigate to for REDIRECT |
+| Field Name     | Field Type              | Required | Description                                                |
+| -------------- | ----------------------- | -------- | ---------------------------------------------------------- |
+| `trackId`      | Single line text        | **Yes**  | Unique error identifier (e.g., `ERR_LOGIN_001`)            |
+| `type`         | Single select           | **Yes**  | `TOAST`, `MODAL`, `PAGE`, or custom type                   |
+| `message`      | Long text               | **Yes**  | Error message. Supports `{{variable}}` template variables  |
+| `title`        | Single line text        | Optional | Error title (used for modal, page)                         |
+| `image`        | URL or Single line text | Optional | Error image URL                                            |
+| `severity`     | Single select           | Optional | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
+| `actionLabel`  | Single line text        | Optional | Action button text                                         |
+| `actionType`   | Single select           | Optional | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action   |
+| `actionTarget` | URL or Single line text | Optional | URL to navigate to for REDIRECT                            |
 
 <Note>
-Adding `TOAST`, `MODAL`, `PAGE`, etc. as Single select options for the `type` field helps prevent input mistakes. The same applies to `severity` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`) and `actionType`. Custom types can also be added as options. Even if entered in lowercase, the CLI will automatically convert them to uppercase.
+  Adding `TOAST`, `MODAL`, `PAGE`, etc. as Single select options for the `type` field helps prevent
+  input mistakes. The same applies to `severity` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`) and
+  `actionType`. Custom types can also be added as options. Even if entered in lowercase, the CLI
+  will automatically convert them to uppercase.
 </Note>
 
 ### Example Data
 
-| trackId | type | message | title | severity | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|----------|-------------|------------|--------------|
-| ERR_LOGIN_001 | TOAST | Login failed. Please try again. | | WARNING | Retry | RETRY | |
-| ERR_PAYMENT_001 | MODAL | An error occurred during payment processing. | Payment Error | ERROR | Contact Support | REDIRECT | /support |
-| ERR_NOT_FOUND | PAGE | The page you requested could not be found. | Page Not Found | INFO | Go Home | REDIRECT | / |
-| ERR_NETWORK | TOAST | Please check your network connection. | | WARNING | Try Again | RETRY | |
+| trackId         | type  | message                                      | title          | severity | actionLabel     | actionType | actionTarget |
+| --------------- | ----- | -------------------------------------------- | -------------- | -------- | --------------- | ---------- | ------------ |
+| ERR_LOGIN_001   | TOAST | Login failed. Please try again.              |                | WARNING  | Retry           | RETRY      |              |
+| ERR_PAYMENT_001 | MODAL | An error occurred during payment processing. | Payment Error  | ERROR    | Contact Support | REDIRECT   | /support     |
+| ERR_NOT_FOUND   | PAGE  | The page you requested could not be found.   | Page Not Found | INFO     | Go Home         | REDIRECT   | /            |
+| ERR_NETWORK     | TOAST | Please check your network connection.        |                | WARNING  | Try Again       | RETRY      |              |
 
 </Step>
 
@@ -66,9 +67,7 @@ Adding `TOAST`, `MODAL`, `PAGE`, etc. as Single select options for the `type` fi
 5. Under **Access**, select the relevant base.
 6. Click **Create token** and copy the token.
 
-<Warning>
-The token is shown only once. Store it in a safe place.
-</Warning>
+<Warning>The token is shown only once. Store it in a safe place.</Warning>
 
 </Step>
 
@@ -120,7 +119,7 @@ To specify the token directly in the config:
 ```
 
 <Warning>
-If you include the token directly in the config file, add `.huh.config.json` to your `.gitignore`.
+  If you include the token directly in the config file, add `.huh.config.json` to your `.gitignore`.
 </Warning>
 
 </Step>

@@ -26,26 +26,20 @@ export function datadogPlugin(options: DatadogPluginOptions = {}): HuhPlugin {
         ...(service && { service }),
       };
 
-      datadogLogs.logger[level](
-        `[huh] ${context.trackId}`,
-        logContext,
-      );
+      datadogLogs.logger[level](`[huh] ${context.trackId}`, logContext);
     },
     onAction(error, action) {
       if (!actionTracking) return;
 
-      datadogLogs.logger.info(
-        `[huh] Action "${action.type}" on "${error.trackId}"`,
-        {
-          huh: {
-            trackId: error.trackId,
-            errorType: error.type,
-            actionType: action.type,
-            ...(action.target && { target: action.target }),
-          },
-          ...(service && { service }),
+      datadogLogs.logger.info(`[huh] Action "${action.type}" on "${error.trackId}"`, {
+        huh: {
+          trackId: error.trackId,
+          errorType: error.type,
+          actionType: action.type,
+          ...(action.target && { target: action.target }),
         },
-      );
+        ...(service && { service }),
+      });
     },
   };
 }

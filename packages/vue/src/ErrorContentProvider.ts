@@ -1,6 +1,12 @@
 import { defineComponent, ref, provide, h, toRaw, computed } from 'vue';
 import type { PropType, InjectionKey } from 'vue';
-import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin, HuhRouter } from '@huh/core';
+import type {
+  ErrorConfig,
+  LocalizedErrorConfig,
+  ResolvedError,
+  HuhPlugin,
+  HuhRouter,
+} from '@huh/core';
 import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
