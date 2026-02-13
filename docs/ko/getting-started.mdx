@@ -250,14 +250,14 @@ const config = errorContent as ErrorConfig;
 import { useHuh } from '@huh/react';
 
 function LoginForm() {
-  const { handleError } = useHuh();
+  const { huh } = useHuh();
 
   const onSubmit = async (formData: FormData) => {
     try {
       await login(formData);
     } catch (error) {
       // trackId로 에러 UI 트리거
-      handleError('ERR_LOGIN_FAILED');
+      huh('ERR_LOGIN_FAILED');
     }
   };
 
@@ -271,8 +271,36 @@ function LoginForm() {
 
 ```tsx
 // Sheet: "{{userName}}님의 세션이 만료되었습니다"
-handleError('ERR_SESSION_EXPIRED', { userName: '홍길동' });
+huh('ERR_SESSION_EXPIRED', { userName: '홍길동' });
 // 결과: "홍길동님의 세션이 만료되었습니다"
+```
+
+### huh()로 에러 코드 매핑
+
+`huh()`를 사용하면 외부 에러 코드(예: API 응답 코드)를 trackId로 매핑할 수 있습니다:
+
+```tsx
+const { huh } = useHuh();
+
+try {
+  await api.call();
+} catch (e) {
+  // errorMap을 통해 'API_500' → 'ERR_SERVER'로 매핑
+  huh(e.code);
+}
+```
+
+`HuhProvider`에서 매핑을 설정합니다:
+
+```tsx
+<HuhProvider
+  source={errorContent}
+  renderers={renderers}
+  errorMap={{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }}
+  fallbackTrackId="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
 ```
 
 </Step>

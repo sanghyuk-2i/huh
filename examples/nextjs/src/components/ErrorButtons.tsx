@@ -3,17 +3,17 @@
 import { useHuh } from '@huh/react';
 
 export function ErrorButtons() {
-  const { handleError } = useHuh();
+  const { huh } = useHuh();
 
   return (
     <div className="buttons">
-      <button onClick={() => handleError('ERR_NETWORK')}>
+      <button onClick={() => huh('ERR_NETWORK')}>
         Toast (ERR_NETWORK)
       </button>
-      <button onClick={() => handleError('ERR_AUTH', { userName: '홍길동' })}>
+      <button onClick={() => huh('ERR_AUTH', { userName: '홍길동' })}>
         Modal (ERR_AUTH)
       </button>
-      <button onClick={() => handleError('ERR_NOT_FOUND')}>
+      <button onClick={() => huh('ERR_NOT_FOUND')}>
         Page (ERR_NOT_FOUND)
       </button>
     </div>

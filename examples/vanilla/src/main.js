@@ -79,18 +79,18 @@ const renderers = {
     MODAL: renderModal,
     PAGE: renderPage,
 };
-function handleError(trackId, variables) {
+function huh(trackId, variables) {
     const resolved = resolveError(config, trackId, variables);
     const render = renderers[resolved.type];
     if (render)
         render(resolved);
 }
 document.getElementById('btn-toast').addEventListener('click', () => {
-    handleError('ERR_NETWORK');
+    huh('ERR_NETWORK');
 });
 document.getElementById('btn-modal').addEventListener('click', () => {
-    handleError('ERR_AUTH', { userName: '홍길동' });
+    huh('ERR_AUTH', { userName: '홍길동' });
 });
 document.getElementById('btn-page').addEventListener('click', () => {
-    handleError('ERR_NOT_FOUND');
+    huh('ERR_NOT_FOUND');
 });

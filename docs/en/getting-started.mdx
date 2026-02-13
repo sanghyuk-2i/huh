@@ -250,14 +250,14 @@ const config = errorContent as ErrorConfig;
 import { useHuh } from '@huh/react';
 
 function LoginForm() {
-  const { handleError } = useHuh();
+  const { huh } = useHuh();
 
   const onSubmit = async (formData: FormData) => {
     try {
       await login(formData);
     } catch (error) {
       // Trigger error UI by trackId
-      handleError('ERR_LOGIN_FAILED');
+      huh('ERR_LOGIN_FAILED');
     }
   };
 
@@ -271,8 +271,36 @@ You can use template variables in the format `{{variableName}}` in your messages
 
 ```tsx
 // Sheet: "{{userName}}'s session has expired"
-handleError('ERR_SESSION_EXPIRED', { userName: 'Jane' });
+huh('ERR_SESSION_EXPIRED', { userName: 'Jane' });
 // Result: "Jane's session has expired"
+```
+
+### Error Code Mapping with huh()
+
+Use `huh()` to map external error codes (e.g., API response codes) to trackIds:
+
+```tsx
+const { huh } = useHuh();
+
+try {
+  await api.call();
+} catch (e) {
+  // Maps 'API_500' → 'ERR_SERVER' via errorMap
+  huh(e.code);
+}
+```
+
+Configure the mapping in `HuhProvider`:
+
+```tsx
+<HuhProvider
+  source={errorContent}
+  renderers={renderers}
+  errorMap={{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }}
+  fallbackTrackId="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
 ```
 
 </Step>

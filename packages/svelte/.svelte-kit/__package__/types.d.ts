@@ -7,8 +7,7 @@ export interface ErrorRenderProps {
 }
 export type RendererMap = Record<string, Component<ErrorRenderProps>>;
 export interface HuhContextValue {
-    handleError: (trackId: string, variables?: Record<string, string>) => void;
-    handleErrorByCode: (code: string, variables?: Record<string, string>) => void;
+    huh: (code: string, variables?: Record<string, string>) => void;
     clearError: () => void;
     locale: string | undefined;
     setLocale: (locale: string) => void;

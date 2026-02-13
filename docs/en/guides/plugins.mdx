@@ -10,7 +10,7 @@ Plugins let you hook into huh's error and action lifecycle. Use them to send err
 
 Pass an array of plugins to your framework's `HuhProvider` via the `plugins` prop. Each plugin can implement two hooks:
 
-- **`onError`** — Called when `handleError` resolves an error
+- **`onError`** — Called when `huh` resolves an error
 - **`onAction`** — Called when a user triggers an action (before the action is executed)
 
 ```tsx

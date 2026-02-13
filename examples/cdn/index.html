@@ -256,22 +256,22 @@
       PAGE: renderPage
     };
 
-    function handleError(trackId, variables) {
+    function huh(trackId, variables) {
       var resolved = resolveError(config, trackId, variables);
       var render = renderers[resolved.type];
       if (render) render(resolved);
     }
 
     document.getElementById('btn-toast').addEventListener('click', function() {
-      handleError('ERR_NETWORK');
+      huh('ERR_NETWORK');
     });
 
     document.getElementById('btn-modal').addEventListener('click', function() {
-      handleError('ERR_AUTH', { userName: '홍길동' });
+      huh('ERR_AUTH', { userName: '홍길동' });
     });
 
     document.getElementById('btn-page').addEventListener('click', function() {
-      handleError('ERR_NOT_FOUND');
+      huh('ERR_NOT_FOUND');
     });
   </script>
 </body>

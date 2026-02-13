@@ -57,10 +57,13 @@
 **코드는 이것만 작성하면 됩니다:**
 
 ```tsx
-const { handleError } = useHuh();
+const { huh } = useHuh();
 
-// 이게 전부입니다. 한 줄로 완성된 에러 UI가 렌더링됩니다.
-handleError('ERR_AUTH', { userName: '홍길동' });
+// trackId로 직접 에러 트리거
+huh('ERR_AUTH', { userName: '홍길동' });
+
+// API 에러 코드를 trackId로 매핑하여 트리거
+huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
 ```
 
 ## 빠른 시작
@@ -135,13 +138,17 @@ function App() {
 
 ```tsx
 function MyPage() {
-  const { handleError } = useHuh();
+  const { huh } = useHuh();
 
   const fetchData = async () => {
     try {
       await api.getData();
     } catch (e) {
-      handleError('ERR_FETCH_FAILED', { userName: '홍길동' });
+      // trackId로 직접 트리거
+      huh('ERR_FETCH_FAILED', { userName: '홍길동' });
+
+      // 또는 API 에러 코드로 트리거 (errorMap 경유)
+      huh(e.code);
     }
   };
 
@@ -157,7 +164,7 @@ function MyPage() {
 
 ```
 시트:   "{{userName}}님, {{count}}건의 오류가 발생했습니다."
-코드:   handleError('ERR_BATCH', { userName: '홍길동', count: '3' })
+코드:   huh('ERR_BATCH', { userName: '홍길동', count: '3' })
 결과:   "홍길동님, 3건의 오류가 발생했습니다."
 ```
 

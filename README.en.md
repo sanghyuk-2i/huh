@@ -57,10 +57,13 @@ Data Source (PM edits here) → huh pull → huh.json → Runtime UI
 **Your code stays clean:**
 
 ```tsx
-const { handleError } = useHuh();
+const { huh } = useHuh();
 
-// That's it. One line to show a fully-rendered error UI.
-handleError('ERR_AUTH', { userName: 'Jane' });
+// Trigger by trackId — one line to show a fully-rendered error UI.
+huh('ERR_AUTH', { userName: 'Jane' });
+
+// Or map API error codes via errorMap
+huh(e.code);  // 'API_500' → errorMap → 'ERR_SERVER'
 ```
 
 ## Quick Start
@@ -135,13 +138,17 @@ function App() {
 
 ```tsx
 function MyPage() {
-  const { handleError } = useHuh();
+  const { huh } = useHuh();
 
   const fetchData = async () => {
     try {
       await api.getData();
     } catch (e) {
-      handleError('ERR_FETCH_FAILED', { userName: 'Jane' });
+      // Trigger by trackId
+      huh('ERR_FETCH_FAILED', { userName: 'Jane' });
+
+      // Or map API error codes (via errorMap)
+      huh(e.code);
     }
   };
 
@@ -157,7 +164,7 @@ Use `{{variable}}` syntax in your sheet. Variables are resolved at runtime:
 
 ```
 Sheet:  "Hello {{userName}}, {{count}} errors occurred."
-Code:   handleError('ERR_BATCH', { userName: 'Jane', count: '3' })
+Code:   huh('ERR_BATCH', { userName: 'Jane', count: '3' })
 Result: "Hello Jane, 3 errors occurred."
 ```
 
