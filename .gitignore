@@ -7,3 +7,4 @@ dist
 .env
 esbuild-why.html
 .claude/settings.local.json
+_site

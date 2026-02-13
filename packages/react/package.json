@@ -15,6 +15,18 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanghyuk-2i/huh.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/sanghyuk-2i/huh#readme",
+  "bugs": {
+    "url": "https://github.com/sanghyuk-2i/huh/issues"
+  },
+  "license": "MIT",
+  "author": "sanghyuk-2i",
+  "keywords": ["error", "error-handling", "react", "hooks", "i18n"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
