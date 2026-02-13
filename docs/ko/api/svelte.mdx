@@ -1,5 +1,5 @@
 ---
-title: '@huh/svelte API'
+title: '@sanghyuk-2i/huh-svelte API'
 description: 'Svelte 5 context 기반 에러 UI 렌더링 - HuhProvider, useHuh, RendererMap'
 icon: 'svelte'
 ---
@@ -11,15 +11,15 @@ Svelte 5의 setContext/getContext 기반 에러 UI 렌더링 라이브러리입�
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/core @huh/svelte
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 ```bash npm
-npm install @huh/core @huh/svelte
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 ```bash yarn
-yarn add @huh/core @huh/svelte
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 </CodeGroup>
@@ -60,8 +60,8 @@ interface Props {
 
 ```svelte
 <script lang="ts">
-  import { HuhProvider } from '@huh/svelte';
-  import type { ErrorConfig } from '@huh/core';
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
   import errorContent from './huh.json';
   import { renderers } from './renderers';
 
@@ -88,7 +88,7 @@ interface Props {
 <script lang="ts">
   // SvelteKit
   import { goto } from '$app/navigation';
-  import { HuhProvider } from '@huh/svelte';
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
 </script>
 
 <HuhProvider
@@ -145,7 +145,7 @@ Svelte 컴포넌트로 렌더러를 구현합니다:
 ```svelte
 <!-- Toast.svelte -->
 <script lang="ts">
-  import type { ResolvedError } from '@huh/core';
+  import type { ResolvedError } from '@sanghyuk-2i/huh-core';
 
   interface Props {
     error: ResolvedError;
@@ -164,7 +164,7 @@ Svelte 컴포넌트로 렌더러를 구현합니다:
 ```svelte
 <!-- Modal.svelte -->
 <script lang="ts">
-  import type { ResolvedError } from '@huh/core';
+  import type { ResolvedError } from '@sanghyuk-2i/huh-core';
 
   interface Props {
     error: ResolvedError;
@@ -192,7 +192,7 @@ Svelte 컴포넌트로 렌더러를 구현합니다:
 렌더러를 `RendererMap`으로 조합합니다:
 
 ```ts
-import type { RendererMap } from '@huh/svelte';
+import type { RendererMap } from '@sanghyuk-2i/huh-svelte';
 import Toast from './renderers/Toast.svelte';
 import Modal from './renderers/Modal.svelte';
 import Page from './renderers/Page.svelte';
@@ -238,7 +238,7 @@ Provider 밖에서 호출하면 에러가 발생합니다. 반드시 컴포넌�
 
 ```svelte
 <script lang="ts">
-  import { useHuh } from '@huh/svelte';
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
 
   const { huh } = useHuh();
 </script>
@@ -280,7 +280,7 @@ Provider 밖에서 호출하면 에러가 발생합니다. 반드시 컴포넌�
 
 ```svelte
 <script lang="ts">
-  import { useHuh } from '@huh/svelte';
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
 
   const { clearError } = useHuh();
 </script>
@@ -292,7 +292,7 @@ Provider 밖에서 호출하면 에러가 발생합니다. 반드시 컴포넌�
 
 ## 빌드 설정
 
-`@huh/svelte`는 `svelte-package`로 빌드됩니다. tsup이 아닌 Svelte 라이브러리 표준 빌드 도구를 사용합니다.
+`@sanghyuk-2i/huh-svelte`는 `svelte-package`로 빌드됩니다. tsup이 아닌 Svelte 라이브러리 표준 빌드 도구를 사용합니다.
 
 - **출력**: ESM only (`"type": "module"`)
 - **exports**: `"svelte"` 조건 포함
@@ -302,7 +302,7 @@ Provider 밖에서 호출하면 에러가 발생합니다. 반드시 컴포넌�
 
 ## React 패키지와의 차이점
 
-|                 | @huh/react                   | @huh/svelte                                     |
+|                 | @sanghyuk-2i/huh-react                   | @sanghyuk-2i/huh-svelte                                     |
 | --------------- | ---------------------------- | ----------------------------------------------- |
 | **상태 관리**   | `useState`                   | `$state()`                                      |
 | **컨텍스트**    | `createContext`/`useContext` | `setContext()`/`getContext()` + Symbol          |

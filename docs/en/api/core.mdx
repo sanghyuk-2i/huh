@@ -1,5 +1,5 @@
 ---
-title: '@huh/core API'
+title: '@sanghyuk-2i/huh-core API'
 description: 'Core package for type definitions, sheet data parsing, variable substitution, and validation'
 icon: 'cube'
 ---
@@ -11,15 +11,15 @@ The core package responsible for type definitions, sheet data parsing, variable 
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/core
+pnpm add @sanghyuk-2i/huh-core
 ```
 
 ```bash npm
-npm install @huh/core
+npm install @sanghyuk-2i/huh-core
 ```
 
 ```bash yarn
-yarn add @huh/core
+yarn add @sanghyuk-2i/huh-core
 ```
 
 </CodeGroup>
@@ -28,13 +28,13 @@ yarn add @huh/core
 
 ```html
 <!-- unpkg -->
-<script src="https://unpkg.com/@huh/core"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
 
 <!-- jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/@huh/core"></script>
+<script src="https://cdn.jsdelivr.net/npm/@sanghyuk-2i/huh-core"></script>
 
 <!-- Pin version -->
-<script src="https://unpkg.com/@huh/core@0.1.0"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core@0.1.0"></script>
 ```
 
 When loaded via CDN, all APIs are available through the `window.HuhCore` global variable:
@@ -284,7 +284,7 @@ Converts raw data from a data source (header + data row array) into an `ErrorCon
 **Example**
 
 ```ts
-import { parseSheetData } from '@huh/core';
+import { parseSheetData } from '@sanghyuk-2i/huh-core';
 
 const rows = [
   [
@@ -336,7 +336,7 @@ Looks up an error by `trackId` and substitutes template variables in the message
 **Example**
 
 ```ts
-import { resolveError } from '@huh/core';
+import { resolveError } from '@sanghyuk-2i/huh-core';
 
 const config = {
   ERR_SESSION: {
@@ -370,7 +370,7 @@ Substitutes `{{variableName}}` placeholders in a string. Unmatched variables are
 **Example**
 
 ```ts
-import { renderTemplate } from '@huh/core';
+import { renderTemplate } from '@sanghyuk-2i/huh-core';
 
 renderTemplate('Hello {{name}}!', { name: 'Jane' });
 // -> "Hello Jane!"
@@ -414,7 +414,7 @@ Warnings are only generated for built-in types. Custom types do not trigger warn
 **Example**
 
 ```ts
-import { validateConfig } from '@huh/core';
+import { validateConfig } from '@sanghyuk-2i/huh-core';
 
 const result = validateConfig({
   ERR_001: { type: 'TOAST', message: '' },
@@ -457,7 +457,7 @@ Validates cross-locale consistency of multi-language error configurations.
 **Example**
 
 ```ts
-import { validateLocales } from '@huh/core';
+import { validateLocales } from '@sanghyuk-2i/huh-core';
 
 const result = validateLocales({
   ko: {
@@ -495,8 +495,8 @@ Executes a specific hook on all plugins, catching and warning on any errors thro
 **Example**
 
 ```ts
-import { runPluginHook } from '@huh/core';
-import type { HuhPlugin } from '@huh/core';
+import { runPluginHook } from '@sanghyuk-2i/huh-core';
+import type { HuhPlugin } from '@sanghyuk-2i/huh-core';
 
 const plugins: HuhPlugin[] = [myPlugin(), anotherPlugin()];
 

@@ -16,24 +16,24 @@ icon: 'building'
     └─ XLSX (로컬 파일, 시트 = 언어별 분리 가능)
     │
     ▼
-@huh/cli  ─── pull 명령어
+@sanghyuk-2i/huh-cli  ─── pull 명령어
     │
     ├─ Adapter 패턴으로 데이터 소스별 fetch
-    ├─ @huh/core의 parseSheetData로 파싱
-    ├─ @huh/core의 validateConfig로 검증
-    ├─ (i18n) @huh/core의 validateLocales로 cross-locale 검증
+    ├─ @sanghyuk-2i/huh-core의 parseSheetData로 파싱
+    ├─ @sanghyuk-2i/huh-core의 validateConfig로 검증
+    ├─ (i18n) @sanghyuk-2i/huh-core의 validateLocales로 cross-locale 검증
     │
     ▼
 huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
     │              ├─ ko.json, en.json (로케일별)
     │              └─ index.ts (자동 생성 barrel)
     ▼
-@huh/react, @huh/vue, @huh/svelte  ─── HuhProvider
+@sanghyuk-2i/huh-react, @sanghyuk-2i/huh-vue, @sanghyuk-2i/huh-svelte  ─── HuhProvider
     │
     ├─ source prop으로 JSON 데이터 주입 (단일 언어)
     ├─ locales prop으로 다국어 데이터 주입 (i18n)
     ├─ huh(code, variables)로 에러 트리거 (trackId 직접 또는 errorMap 경유)
-    ├─ @huh/core의 resolveError로 조회 + 변수 치환
+    ├─ @sanghyuk-2i/huh-core의 resolveError로 조회 + 변수 치환
     │
     ▼
 사용자 제공 커스텀 렌더러  ─── TOAST / MODAL / PAGE / 커스텀 타입
@@ -42,14 +42,14 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 ## 패키지 의존 관계
 
 ```
-@huh/react          ──depends──▶  @huh/core
-@huh/vue            ──depends──▶  @huh/core
-@huh/svelte         ──depends──▶  @huh/core
-@huh/cli            ──depends──▶  @huh/core
-@huh/plugin-sentry   ──depends──▶  @huh/core  (+ @sentry/browser peer dep)
-@huh/plugin-datadog  ──depends──▶  @huh/core  (+ @datadog/browser-logs peer dep)
+@sanghyuk-2i/huh-react          ──depends──▶  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-vue            ──depends──▶  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-svelte         ──depends──▶  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-cli            ──depends──▶  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-plugin-sentry   ──depends──▶  @sanghyuk-2i/huh-core  (+ @sentry/browser peer dep)
+@sanghyuk-2i/huh-plugin-datadog  ──depends──▶  @sanghyuk-2i/huh-core  (+ @datadog/browser-logs peer dep)
 
-@huh/core    ──  (zero dependencies)
+@sanghyuk-2i/huh-core    ──  (zero dependencies)
 ```
 
 - **core**는 외부 의존성이 없어 어디서든 사용 가능합니다.
@@ -62,7 +62,7 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 
 ## 패키지별 역할
 
-### @huh/core
+### @sanghyuk-2i/huh-core
 
 | 모듈                  | 역할                                                                              |
 | --------------------- | --------------------------------------------------------------------------------- |
@@ -74,7 +74,7 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 | `validator.ts`        | ErrorConfig 유효성 검증 (errors + warnings)                                       |
 | `locale-validator.ts` | 다국어 cross-locale 검증 (trackId 일관성, type/actionType 불일치)                 |
 
-### @huh/react
+### @sanghyuk-2i/huh-react
 
 | 모듈                       | 역할                                          |
 | -------------------------- | --------------------------------------------- |
@@ -82,7 +82,7 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 | `useErrorContent.ts`       | huh/clearError 훅                             |
 | `types.ts`                 | ErrorRenderProps, RendererMap 타입 정의       |
 
-### @huh/vue
+### @sanghyuk-2i/huh-vue
 
 | 모듈                      | 역할                                                                          |
 | ------------------------- | ----------------------------------------------------------------------------- |
@@ -90,7 +90,7 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 | `useErrorContent.ts`      | inject 기반 useHuh composable                                                 |
 | `types.ts`                | ErrorRenderProps, RendererMap (Vue Component) 타입 정의                       |
 
-### @huh/svelte
+### @sanghyuk-2i/huh-svelte
 
 | 모듈                 | 역할                                                                    |
 | -------------------- | ----------------------------------------------------------------------- |
@@ -99,7 +99,7 @@ huh.json  또는  huh/ 디렉토리 (빌드 타임 산출물)
 | `context.ts`         | Symbol injection key 분리                                               |
 | `types.ts`           | ErrorRenderProps, RendererMap (Svelte Component) 타입 정의              |
 
-### @huh/cli
+### @sanghyuk-2i/huh-cli
 
 | 모듈                        | 역할                                                                             |
 | --------------------------- | -------------------------------------------------------------------------------- |
@@ -195,8 +195,8 @@ huh(code, variables)
 
 | 패키지                | 설명                                                                |
 | --------------------- | ------------------------------------------------------------------- |
-| `@huh/plugin-sentry`  | Sentry 연동 — 에러 시 `captureMessage`, 액션 시 `addBreadcrumb`     |
-| `@huh/plugin-datadog` | Datadog 연동 — 에러 시 `datadogLogs.logger`, 액션 시 info 레벨 로깅 |
+| `@sanghyuk-2i/huh-plugin-sentry`  | Sentry 연동 — 에러 시 `captureMessage`, 액션 시 `addBreadcrumb`     |
+| `@sanghyuk-2i/huh-plugin-datadog` | Datadog 연동 — 에러 시 `datadogLogs.logger`, 액션 시 info 레벨 로깅 |
 
 ## 빌드 설정
 
@@ -223,8 +223,8 @@ huh(code, variables)
 Turborepo가 의존 관계를 분석하여 자동으로 순서를 결정합니다:
 
 ```
-1. @huh/core (의존성 없음, 먼저 빌드)
-2. @huh/react + @huh/vue + @huh/svelte + @huh/cli (core 빌드 후 병렬 빌드)
+1. @sanghyuk-2i/huh-core (의존성 없음, 먼저 빌드)
+2. @sanghyuk-2i/huh-react + @sanghyuk-2i/huh-vue + @sanghyuk-2i/huh-svelte + @sanghyuk-2i/huh-cli (core 빌드 후 병렬 빌드)
 ```
 
 ## 디렉토리 구조

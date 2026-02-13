@@ -72,19 +72,19 @@ huh(e.code); // 'API_500' → errorMap → 'ERR_SERVER'
 
 ```bash
 # React
-npm install @huh/core @huh/react
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 
 # Vue
-npm install @huh/core @huh/vue
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 
 # Svelte
-npm install @huh/core @huh/svelte
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 #### CDN (번들러 없이 사용)
 
 ```html
-<script src="https://unpkg.com/@huh/core"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
 <!-- window.HuhCore 로 모든 API 사용 가능 -->
 ```
 
@@ -99,7 +99,7 @@ npx huh pull          # 데이터 소스 → huh.json 변환
 
 ```tsx
 import errorContent from './huh.json';
-import { HuhProvider, useHuh } from '@huh/react';
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-react';
 
 const renderers = {
   toast: ({ error, onDismiss }) => (
@@ -205,13 +205,13 @@ CI/CD 파이프라인에 적합합니다. 콘텐츠 오류를 프로덕션에 �
 
 | 패키지                             | 설명                                                             |
 | ---------------------------------- | ---------------------------------------------------------------- |
-| [`@huh/core`](./packages/core)     | 의존성 제로. 타입, 파싱, 템플릿 엔진, 유효성 검증. **CDN 지원.** |
-| [`@huh/react`](./packages/react)   | React 바인딩. `HuhProvider` + `useHuh` 훅.                       |
-| [`@huh/vue`](./packages/vue)       | Vue 3 바인딩. `HuhProvider` + `useHuh` composable.               |
-| [`@huh/svelte`](./packages/svelte) | Svelte 5 바인딩. `HuhProvider` + `useHuh`.                       |
-| [`@huh/cli`](./packages/cli)       | `init` / `pull` / `validate` 명령어.                             |
+| [`@sanghyuk-2i/huh-core`](./packages/core)     | 의존성 제로. 타입, 파싱, 템플릿 엔진, 유효성 검증. **CDN 지원.** |
+| [`@sanghyuk-2i/huh-react`](./packages/react)   | React 바인딩. `HuhProvider` + `useHuh` 훅.                       |
+| [`@sanghyuk-2i/huh-vue`](./packages/vue)       | Vue 3 바인딩. `HuhProvider` + `useHuh` composable.               |
+| [`@sanghyuk-2i/huh-svelte`](./packages/svelte) | Svelte 5 바인딩. `HuhProvider` + `useHuh`.                       |
+| [`@sanghyuk-2i/huh-cli`](./packages/cli)       | `init` / `pull` / `validate` 명령어.                             |
 
-`@huh/core`는 **의존성이 전혀 없으며** 모든 JavaScript 런타임에서 동작합니다. vanilla JS에서도 단독으로 사용할 수 있습니다.
+`@sanghyuk-2i/huh-core`는 **의존성이 전혀 없으며** 모든 JavaScript 런타임에서 동작합니다. vanilla JS에서도 단독으로 사용할 수 있습니다.
 
 ## 왜 Huh인가요?
 
@@ -240,11 +240,11 @@ CI/CD 파이프라인에 적합합니다. 콘텐츠 오류를 프로덕션에 �
 
 - [시작하기](./docs/ko/getting-started.mdx) - 전체 설정 가이드
 - [Google Sheet 설정](./docs/ko/guides/google-sheets.mdx) · [Airtable](./docs/ko/guides/airtable.mdx) · [Notion](./docs/ko/guides/notion.mdx) · [CSV](./docs/ko/guides/csv.mdx) · [XLSX](./docs/ko/guides/xlsx.mdx)
-- [@huh/core API](./docs/ko/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
-- [@huh/react API](./docs/ko/api/react.mdx) - `HuhProvider`, `useHuh`, 렌더러 타입
-- [@huh/vue API](./docs/ko/api/vue.mdx) - Vue 3 바인딩
-- [@huh/svelte API](./docs/ko/api/svelte.mdx) - Svelte 5 바인딩
-- [@huh/cli API](./docs/ko/api/cli.mdx) - CLI 명령어 및 설정 옵션
+- [@sanghyuk-2i/huh-core API](./docs/ko/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
+- [@sanghyuk-2i/huh-react API](./docs/ko/api/react.mdx) - `HuhProvider`, `useHuh`, 렌더러 타입
+- [@sanghyuk-2i/huh-vue API](./docs/ko/api/vue.mdx) - Vue 3 바인딩
+- [@sanghyuk-2i/huh-svelte API](./docs/ko/api/svelte.mdx) - Svelte 5 바인딩
+- [@sanghyuk-2i/huh-cli API](./docs/ko/api/cli.mdx) - CLI 명령어 및 설정 옵션
 - [아키텍처](./docs/ko/architecture.mdx) - 설계 결정 및 데이터 흐름
 
 ## CI/CD 연동

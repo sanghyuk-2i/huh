@@ -1,5 +1,5 @@
 ---
-title: '@huh/vue API'
+title: '@sanghyuk-2i/huh-vue API'
 description: 'Vue 3 provide/inject 기반 에러 UI 렌더링 - HuhProvider, useHuh, RendererMap'
 icon: 'vuejs'
 ---
@@ -11,15 +11,15 @@ Vue 3의 provide/inject 기반 에러 UI 렌더링 라이브러리입니다. Pro
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/core @huh/vue
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 ```
 
 ```bash npm
-npm install @huh/core @huh/vue
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 ```
 
 ```bash yarn
-yarn add @huh/core @huh/vue
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 ```
 
 </CodeGroup>
@@ -59,8 +59,8 @@ interface HuhProviderProps {
 
 ```vue
 <script setup lang="ts">
-import { HuhProvider } from '@huh/vue';
-import type { ErrorConfig } from '@huh/core';
+import { HuhProvider } from '@sanghyuk-2i/huh-vue';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import errorContent from './huh.json';
 import { renderers } from './renderers';
 
@@ -150,7 +150,7 @@ React 패키지와 동일한 액션 처리 로직을 사용합니다:
 
 ```ts
 import { defineComponent, h } from 'vue';
-import type { RendererMap } from '@huh/vue';
+import type { RendererMap } from '@sanghyuk-2i/huh-vue';
 
 const Toast = defineComponent({
   props: {
@@ -223,7 +223,7 @@ interface HuhContextValue {
 
 ```vue
 <script setup lang="ts">
-import { useHuh } from '@huh/vue';
+import { useHuh } from '@sanghyuk-2i/huh-vue';
 
 const { huh } = useHuh();
 
@@ -263,7 +263,7 @@ async function callApi() {
 
 ```vue
 <script setup lang="ts">
-import { useHuh } from '@huh/vue';
+import { useHuh } from '@sanghyuk-2i/huh-vue';
 
 const { clearError } = useHuh();
 </script>
@@ -277,7 +277,7 @@ const { clearError } = useHuh();
 
 ## React 패키지와의 차이점
 
-|                  | @huh/react                   | @huh/vue                                |
+|                  | @sanghyuk-2i/huh-react                   | @sanghyuk-2i/huh-vue                                |
 | ---------------- | ---------------------------- | --------------------------------------- |
 | **상태 관리**    | `useState`                   | `ref()`                                 |
 | **컨텍스트**     | `createContext`/`useContext` | `provide()`/`inject()` + `InjectionKey` |

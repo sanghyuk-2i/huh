@@ -16,24 +16,24 @@ Data Source (non-developers write error messages)
     +-- XLSX (local file, sheets = per-language separation)
     |
     v
-@huh/cli  --- pull command
+@sanghyuk-2i/huh-cli  --- pull command
     |
     +-- Fetch per data source via Adapter pattern
-    +-- Parse with @huh/core's parseSheetData
-    +-- Validate with @huh/core's validateConfig
-    +-- (i18n) Cross-locale validate with @huh/core's validateLocales
+    +-- Parse with @sanghyuk-2i/huh-core's parseSheetData
+    +-- Validate with @sanghyuk-2i/huh-core's validateConfig
+    +-- (i18n) Cross-locale validate with @sanghyuk-2i/huh-core's validateLocales
     |
     v
 huh.json  or  huh/ directory (build-time artifact)
     |              +-- ko.json, en.json (per-locale)
     |              +-- index.ts (auto-generated barrel)
     v
-@huh/react, @huh/vue, @huh/svelte  --- HuhProvider
+@sanghyuk-2i/huh-react, @sanghyuk-2i/huh-vue, @sanghyuk-2i/huh-svelte  --- HuhProvider
     |
     +-- Inject JSON data via source prop (single language)
     +-- Inject multi-language data via locales prop (i18n)
     +-- Trigger errors with huh(code, variables) (direct trackId or via errorMap)
-    +-- Look up + substitute variables via @huh/core's resolveError
+    +-- Look up + substitute variables via @sanghyuk-2i/huh-core's resolveError
     |
     v
 User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
@@ -42,14 +42,14 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 ## Package Dependency Graph
 
 ```
-@huh/react          --depends-->  @huh/core
-@huh/vue            --depends-->  @huh/core
-@huh/svelte         --depends-->  @huh/core
-@huh/cli            --depends-->  @huh/core
-@huh/plugin-sentry   --depends-->  @huh/core  (+ @sentry/browser peer dep)
-@huh/plugin-datadog  --depends-->  @huh/core  (+ @datadog/browser-logs peer dep)
+@sanghyuk-2i/huh-react          --depends-->  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-vue            --depends-->  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-svelte         --depends-->  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-cli            --depends-->  @sanghyuk-2i/huh-core
+@sanghyuk-2i/huh-plugin-sentry   --depends-->  @sanghyuk-2i/huh-core  (+ @sentry/browser peer dep)
+@sanghyuk-2i/huh-plugin-datadog  --depends-->  @sanghyuk-2i/huh-core  (+ @datadog/browser-logs peer dep)
 
-@huh/core    --  (zero dependencies)
+@sanghyuk-2i/huh-core    --  (zero dependencies)
 ```
 
 - **core** has no external dependencies and can be used anywhere.
@@ -62,7 +62,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 
 ## Package Responsibilities
 
-### @huh/core
+### @sanghyuk-2i/huh-core
 
 | Module                | Responsibility                                                                             |
 | --------------------- | ------------------------------------------------------------------------------------------ |
@@ -74,7 +74,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | `validator.ts`        | ErrorConfig validation (errors + warnings)                                                 |
 | `locale-validator.ts` | Multi-language cross-locale validation (trackId consistency, type/actionType mismatch)     |
 
-### @huh/react
+### @sanghyuk-2i/huh-react
 
 | Module                     | Responsibility                                                |
 | -------------------------- | ------------------------------------------------------------- |
@@ -82,7 +82,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | `useErrorContent.ts`       | huh/clearError hook                                           |
 | `types.ts`                 | ErrorRenderProps, RendererMap type definitions                |
 
-### @huh/vue
+### @sanghyuk-2i/huh-vue
 
 | Module                    | Responsibility                                                                             |
 | ------------------------- | ------------------------------------------------------------------------------------------ |
@@ -90,7 +90,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | `useErrorContent.ts`      | inject-based useHuh composable                                                             |
 | `types.ts`                | ErrorRenderProps, RendererMap (Vue Component) type definitions                             |
 
-### @huh/svelte
+### @sanghyuk-2i/huh-svelte
 
 | Module               | Responsibility                                                                        |
 | -------------------- | ------------------------------------------------------------------------------------- |
@@ -99,7 +99,7 @@ User-provided custom renderers  --- TOAST / MODAL / PAGE / custom types
 | `context.ts`         | Separated Symbol injection key                                                        |
 | `types.ts`           | ErrorRenderProps, RendererMap (Svelte Component) type definitions                     |
 
-### @huh/cli
+### @sanghyuk-2i/huh-cli
 
 | Module                      | Responsibility                                                                             |
 | --------------------------- | ------------------------------------------------------------------------------------------ |
@@ -195,8 +195,8 @@ Plugin errors are caught and logged as warnings. A failing plugin never breaks t
 
 | Package               | Description                                                                    |
 | --------------------- | ------------------------------------------------------------------------------ |
-| `@huh/plugin-sentry`  | Sentry integration — `captureMessage` on error, `addBreadcrumb` on action      |
-| `@huh/plugin-datadog` | Datadog integration — `datadogLogs.logger` on error, info-level action logging |
+| `@sanghyuk-2i/huh-plugin-sentry`  | Sentry integration — `captureMessage` on error, `addBreadcrumb` on action      |
+| `@sanghyuk-2i/huh-plugin-datadog` | Datadog integration — `datadogLogs.logger` on error, info-level action logging |
 
 ## Build Configuration
 
@@ -223,8 +223,8 @@ The monorepo is managed with the following tools:
 Turborepo analyzes dependency relationships and determines the order automatically:
 
 ```
-1. @huh/core (no dependencies, built first)
-2. @huh/react + @huh/vue + @huh/svelte + @huh/cli (built in parallel after core)
+1. @sanghyuk-2i/huh-core (no dependencies, built first)
+2. @sanghyuk-2i/huh-react + @sanghyuk-2i/huh-vue + @sanghyuk-2i/huh-svelte + @sanghyuk-2i/huh-cli (built in parallel after core)
 ```
 
 ## Directory Structure

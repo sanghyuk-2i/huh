@@ -43,7 +43,7 @@ Both hooks are optional. If a plugin throws, the error is caught and logged as a
 A plugin is a factory function that returns a `HuhPlugin` object:
 
 ```ts
-import type { HuhPlugin } from '@huh/core';
+import type { HuhPlugin } from '@sanghyuk-2i/huh-core';
 
 export function analyticsPlugin(): HuhPlugin {
   return {
@@ -65,7 +65,7 @@ export function analyticsPlugin(): HuhPlugin {
 }
 ```
 
-## Using @huh/plugin-sentry
+## Using @sanghyuk-2i/huh-plugin-sentry
 
 The official Sentry plugin automatically reports errors and records action breadcrumbs.
 
@@ -74,15 +74,15 @@ The official Sentry plugin automatically reports errors and records action bread
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/plugin-sentry @sentry/browser
+pnpm add @sanghyuk-2i/huh-plugin-sentry @sentry/browser
 ```
 
 ```bash npm
-npm install @huh/plugin-sentry @sentry/browser
+npm install @sanghyuk-2i/huh-plugin-sentry @sentry/browser
 ```
 
 ```bash yarn
-yarn add @huh/plugin-sentry @sentry/browser
+yarn add @sanghyuk-2i/huh-plugin-sentry @sentry/browser
 ```
 
 </CodeGroup>
@@ -90,7 +90,7 @@ yarn add @huh/plugin-sentry @sentry/browser
 ### Setup
 
 ```tsx
-import { sentryPlugin } from '@huh/plugin-sentry';
+import { sentryPlugin } from '@sanghyuk-2i/huh-plugin-sentry';
 
 <HuhProvider source={errorConfig} renderers={renderers} plugins={[sentryPlugin()]}>
   <App />
@@ -187,7 +187,7 @@ sentryPlugin({
 });
 ```
 
-## Using @huh/plugin-datadog
+## Using @sanghyuk-2i/huh-plugin-datadog
 
 The official Datadog plugin sends error logs via `@datadog/browser-logs` and tracks actions as info-level log entries.
 
@@ -196,15 +196,15 @@ The official Datadog plugin sends error logs via `@datadog/browser-logs` and tra
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/plugin-datadog @datadog/browser-logs
+pnpm add @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
 ```
 
 ```bash npm
-npm install @huh/plugin-datadog @datadog/browser-logs
+npm install @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
 ```
 
 ```bash yarn
-yarn add @huh/plugin-datadog @datadog/browser-logs
+yarn add @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
 ```
 
 </CodeGroup>
@@ -213,7 +213,7 @@ yarn add @huh/plugin-datadog @datadog/browser-logs
 
 ```tsx
 import { datadogLogs } from '@datadog/browser-logs';
-import { datadogPlugin } from '@huh/plugin-datadog';
+import { datadogPlugin } from '@sanghyuk-2i/huh-plugin-datadog';
 
 // Initialize Datadog Logs first
 datadogLogs.init({

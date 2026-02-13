@@ -43,7 +43,7 @@ interface HuhErrorContext {
 플러그인은 `HuhPlugin` 객체를 반환하는 팩토리 함수입니다:
 
 ```ts
-import type { HuhPlugin } from '@huh/core';
+import type { HuhPlugin } from '@sanghyuk-2i/huh-core';
 
 export function analyticsPlugin(): HuhPlugin {
   return {
@@ -65,7 +65,7 @@ export function analyticsPlugin(): HuhPlugin {
 }
 ```
 
-## @huh/plugin-sentry 사용하기
+## @sanghyuk-2i/huh-plugin-sentry 사용하기
 
 공식 Sentry 플러그인은 에러를 자동으로 리포트하고 액션 breadcrumb을 기록합니다.
 
@@ -74,15 +74,15 @@ export function analyticsPlugin(): HuhPlugin {
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/plugin-sentry @sentry/browser
+pnpm add @sanghyuk-2i/huh-plugin-sentry @sentry/browser
 ```
 
 ```bash npm
-npm install @huh/plugin-sentry @sentry/browser
+npm install @sanghyuk-2i/huh-plugin-sentry @sentry/browser
 ```
 
 ```bash yarn
-yarn add @huh/plugin-sentry @sentry/browser
+yarn add @sanghyuk-2i/huh-plugin-sentry @sentry/browser
 ```
 
 </CodeGroup>
@@ -90,7 +90,7 @@ yarn add @huh/plugin-sentry @sentry/browser
 ### 설정
 
 ```tsx
-import { sentryPlugin } from '@huh/plugin-sentry';
+import { sentryPlugin } from '@sanghyuk-2i/huh-plugin-sentry';
 
 <HuhProvider source={errorConfig} renderers={renderers} plugins={[sentryPlugin()]}>
   <App />
@@ -187,7 +187,7 @@ sentryPlugin({
 });
 ```
 
-## @huh/plugin-datadog 사용하기
+## @sanghyuk-2i/huh-plugin-datadog 사용하기
 
 공식 Datadog 플러그인은 `@datadog/browser-logs`를 통해 에러 로그를 전송하고 액션을 info 레벨 로그로 기록합니다.
 
@@ -196,15 +196,15 @@ sentryPlugin({
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/plugin-datadog @datadog/browser-logs
+pnpm add @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
 ```
 
 ```bash npm
-npm install @huh/plugin-datadog @datadog/browser-logs
+npm install @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
 ```
 
 ```bash yarn
-yarn add @huh/plugin-datadog @datadog/browser-logs
+yarn add @sanghyuk-2i/huh-plugin-datadog @datadog/browser-logs
 ```
 
 </CodeGroup>
@@ -213,7 +213,7 @@ yarn add @huh/plugin-datadog @datadog/browser-logs
 
 ```tsx
 import { datadogLogs } from '@datadog/browser-logs';
-import { datadogPlugin } from '@huh/plugin-datadog';
+import { datadogPlugin } from '@sanghyuk-2i/huh-plugin-datadog';
 
 // Datadog Logs 먼저 초기화
 datadogLogs.init({

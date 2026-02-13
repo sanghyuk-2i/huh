@@ -72,19 +72,19 @@ huh(e.code); // 'API_500' → errorMap → 'ERR_SERVER'
 
 ```bash
 # React
-npm install @huh/core @huh/react
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 
 # Vue
-npm install @huh/core @huh/vue
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 
 # Svelte
-npm install @huh/core @huh/svelte
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 #### CDN (no bundler)
 
 ```html
-<script src="https://unpkg.com/@huh/core"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
 <!-- All APIs available via window.HuhCore -->
 ```
 
@@ -99,7 +99,7 @@ npx huh pull          # Fetches data source → generates huh.json
 
 ```tsx
 import errorContent from './huh.json';
-import { HuhProvider, useHuh } from '@huh/react';
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-react';
 
 const renderers = {
   toast: ({ error, onDismiss }) => (
@@ -205,13 +205,13 @@ Perfect for CI/CD pipelines. Catches content errors before they reach production
 
 | Package                            | Description                                                                  |
 | ---------------------------------- | ---------------------------------------------------------------------------- |
-| [`@huh/core`](./packages/core)     | Zero-dependency. Types, parsing, template engine, validation. **CDN ready.** |
-| [`@huh/react`](./packages/react)   | React bindings. `HuhProvider` + `useHuh` hook.                               |
-| [`@huh/vue`](./packages/vue)       | Vue 3 bindings. `HuhProvider` + `useHuh` composable.                         |
-| [`@huh/svelte`](./packages/svelte) | Svelte 5 bindings. `HuhProvider` + `useHuh`.                                 |
-| [`@huh/cli`](./packages/cli)       | `init` / `pull` / `validate` commands.                                       |
+| [`@sanghyuk-2i/huh-core`](./packages/core)     | Zero-dependency. Types, parsing, template engine, validation. **CDN ready.** |
+| [`@sanghyuk-2i/huh-react`](./packages/react)   | React bindings. `HuhProvider` + `useHuh` hook.                               |
+| [`@sanghyuk-2i/huh-vue`](./packages/vue)       | Vue 3 bindings. `HuhProvider` + `useHuh` composable.                         |
+| [`@sanghyuk-2i/huh-svelte`](./packages/svelte) | Svelte 5 bindings. `HuhProvider` + `useHuh`.                                 |
+| [`@sanghyuk-2i/huh-cli`](./packages/cli)       | `init` / `pull` / `validate` commands.                                       |
 
-`@huh/core` has **zero dependencies** and works in any JavaScript runtime. Use it standalone with vanilla JS or anything else.
+`@sanghyuk-2i/huh-core` has **zero dependencies** and works in any JavaScript runtime. Use it standalone with vanilla JS or anything else.
 
 ## Why Huh?
 
@@ -240,11 +240,11 @@ Copy or download a template for your data source to get started quickly:
 
 - [Getting Started](./docs/en/getting-started.mdx) - Full setup guide
 - [Google Sheet Setup](./docs/en/guides/google-sheets.mdx) · [Airtable](./docs/en/guides/airtable.mdx) · [Notion](./docs/en/guides/notion.mdx) · [CSV](./docs/en/guides/csv.mdx) · [XLSX](./docs/en/guides/xlsx.mdx)
-- [@huh/core API](./docs/en/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
-- [@huh/react API](./docs/en/api/react.mdx) - `HuhProvider`, `useHuh`, renderer types
-- [@huh/vue API](./docs/en/api/vue.mdx) - Vue 3 bindings
-- [@huh/svelte API](./docs/en/api/svelte.mdx) - Svelte 5 bindings
-- [@huh/cli API](./docs/en/api/cli.mdx) - CLI commands and config options
+- [@sanghyuk-2i/huh-core API](./docs/en/api/core.mdx) - `parseSheetData`, `resolveError`, `validateConfig`
+- [@sanghyuk-2i/huh-react API](./docs/en/api/react.mdx) - `HuhProvider`, `useHuh`, renderer types
+- [@sanghyuk-2i/huh-vue API](./docs/en/api/vue.mdx) - Vue 3 bindings
+- [@sanghyuk-2i/huh-svelte API](./docs/en/api/svelte.mdx) - Svelte 5 bindings
+- [@sanghyuk-2i/huh-cli API](./docs/en/api/cli.mdx) - CLI commands and config options
 - [Architecture](./docs/en/architecture.mdx) - Design decisions and data flow
 
 ## CI/CD Integration

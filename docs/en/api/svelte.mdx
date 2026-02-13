@@ -1,5 +1,5 @@
 ---
-title: '@huh/svelte API'
+title: '@sanghyuk-2i/huh-svelte API'
 description: 'Svelte 5 context-based error UI rendering - HuhProvider, useHuh, RendererMap'
 icon: 'svelte'
 ---
@@ -11,15 +11,15 @@ A Svelte 5 setContext/getContext-based error UI rendering library. The Provider 
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/core @huh/svelte
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 ```bash npm
-npm install @huh/core @huh/svelte
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 ```bash yarn
-yarn add @huh/core @huh/svelte
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 ```
 
 </CodeGroup>
@@ -60,8 +60,8 @@ interface Props {
 
 ```svelte
 <script lang="ts">
-  import { HuhProvider } from '@huh/svelte';
-  import type { ErrorConfig } from '@huh/core';
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
   import errorContent from './huh.json';
   import { renderers } from './renderers';
 
@@ -88,7 +88,7 @@ Pass a `router` prop to use framework-specific client-side navigation instead of
 <script lang="ts">
   // SvelteKit
   import { goto } from '$app/navigation';
-  import { HuhProvider } from '@huh/svelte';
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
 </script>
 
 <HuhProvider
@@ -145,7 +145,7 @@ Implement renderers as Svelte components:
 ```svelte
 <!-- Toast.svelte -->
 <script lang="ts">
-  import type { ResolvedError } from '@huh/core';
+  import type { ResolvedError } from '@sanghyuk-2i/huh-core';
 
   interface Props {
     error: ResolvedError;
@@ -164,7 +164,7 @@ Implement renderers as Svelte components:
 ```svelte
 <!-- Modal.svelte -->
 <script lang="ts">
-  import type { ResolvedError } from '@huh/core';
+  import type { ResolvedError } from '@sanghyuk-2i/huh-core';
 
   interface Props {
     error: ResolvedError;
@@ -192,7 +192,7 @@ Implement renderers as Svelte components:
 Assemble renderers into a `RendererMap`:
 
 ```ts
-import type { RendererMap } from '@huh/svelte';
+import type { RendererMap } from '@sanghyuk-2i/huh-svelte';
 import Toast from './renderers/Toast.svelte';
 import Modal from './renderers/Modal.svelte';
 import Page from './renderers/Page.svelte';
@@ -238,7 +238,7 @@ The single function for triggering errors. Handles direct trackId, errorMap mapp
 
 ```svelte
 <script lang="ts">
-  import { useHuh } from '@huh/svelte';
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
 
   const { huh } = useHuh();
 </script>
@@ -280,7 +280,7 @@ Closes the currently active error UI.
 
 ```svelte
 <script lang="ts">
-  import { useHuh } from '@huh/svelte';
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
 
   const { clearError } = useHuh();
 </script>
@@ -292,7 +292,7 @@ Closes the currently active error UI.
 
 ## Build Configuration
 
-`@huh/svelte` is built with `svelte-package`, the standard Svelte library build tool (not tsup).
+`@sanghyuk-2i/huh-svelte` is built with `svelte-package`, the standard Svelte library build tool (not tsup).
 
 - **Output**: ESM only (`"type": "module"`)
 - **Exports**: includes `"svelte"` condition
@@ -302,7 +302,7 @@ Closes the currently active error UI.
 
 ## Differences from React Package
 
-|                   | @huh/react                   | @huh/svelte                                       |
+|                   | @sanghyuk-2i/huh-react                   | @sanghyuk-2i/huh-svelte                                       |
 | ----------------- | ---------------------------- | ------------------------------------------------- |
 | **State**         | `useState`                   | `$state()`                                        |
 | **Context**       | `createContext`/`useContext` | `setContext()`/`getContext()` + Symbol            |

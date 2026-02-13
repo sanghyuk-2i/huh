@@ -17,64 +17,64 @@ Huh는 3단계로 동작합니다:
 
 ```bash pnpm
 # React
-pnpm add @huh/core @huh/react
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 
 # Vue
-pnpm add @huh/core @huh/vue
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 
 # Svelte
-pnpm add @huh/core @huh/svelte
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 
 # CLI (공통)
-pnpm add -D @huh/cli
+pnpm add -D @sanghyuk-2i/huh-cli
 ```
 
 ```bash npm
 # React
-npm install @huh/core @huh/react
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 
 # Vue
-npm install @huh/core @huh/vue
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 
 # Svelte
-npm install @huh/core @huh/svelte
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 
 # CLI (공통)
-npm install -D @huh/cli
+npm install -D @sanghyuk-2i/huh-cli
 ```
 
 ```bash yarn
 # React
-yarn add @huh/core @huh/react
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 
 # Vue
-yarn add @huh/core @huh/vue
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 
 # Svelte
-yarn add @huh/core @huh/svelte
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-svelte
 
 # CLI (공통)
-yarn add -D @huh/cli
+yarn add -D @sanghyuk-2i/huh-cli
 ```
 
 </CodeGroup>
 
 ### CDN으로 사용하기 (번들러 없이)
 
-`@huh/core`는 의존성이 없는 순수 JS 라이브러리이므로, `<script>` 태그로 바로 사용할 수 있습니다:
+`@sanghyuk-2i/huh-core`는 의존성이 없는 순수 JS 라이브러리이므로, `<script>` 태그로 바로 사용할 수 있습니다:
 
 ```html
 <!-- unpkg -->
-<script src="https://unpkg.com/@huh/core"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
 
 <!-- jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/@huh/core"></script>
+<script src="https://cdn.jsdelivr.net/npm/@sanghyuk-2i/huh-core"></script>
 ```
 
 로드 후 `window.HuhCore` 글로벌 변수로 모든 API에 접근할 수 있습니다:
 
 ```html
-<script src="https://unpkg.com/@huh/core"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
 <script>
   var config = {
     /* ErrorConfig JSON */
@@ -166,8 +166,8 @@ npx huh validate
 
 ```tsx
 import errorContent from './huh.json';
-import { HuhProvider } from '@huh/react';
-import type { RendererMap } from '@huh/react';
+import { HuhProvider } from '@sanghyuk-2i/huh-react';
+import type { RendererMap } from '@sanghyuk-2i/huh-react';
 
 // 사용하는 에러 타입에 맞는 렌더러를 제공합니다 (대문자 키)
 // 커스텀 타입도 렌더러를 추가하면 자동으로 동작합니다
@@ -211,8 +211,8 @@ function App() {
 
 ```vue
 <script setup lang="ts">
-import { HuhProvider, useHuh } from '@huh/vue';
-import type { ErrorConfig } from '@huh/core';
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-vue';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import errorContent from './huh.json';
 import { renderers } from './renderers'; // defineComponent로 구현한 렌더러
 
@@ -230,8 +230,8 @@ const config = errorContent as ErrorConfig;
 
 ```svelte
 <script lang="ts">
-  import { HuhProvider, useHuh } from '@huh/svelte';
-  import type { ErrorConfig } from '@huh/core';
+  import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-svelte';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
   import errorContent from './huh.json';
   import { renderers } from './renderers'; // Svelte 컴포넌트 렌더러
 
@@ -246,7 +246,7 @@ const config = errorContent as ErrorConfig;
 ### 에러 트리거
 
 ```tsx
-import { useHuh } from '@huh/react';
+import { useHuh } from '@sanghyuk-2i/huh-react';
 
 function LoginForm() {
   const { huh } = useHuh();
@@ -309,19 +309,19 @@ try {
 ## 다음 단계
 
 <CardGroup cols={2}>
-  <Card title="@huh/core API 레퍼런스" icon="cube" href="/ko/api/core">
+  <Card title="@sanghyuk-2i/huh-core API 레퍼런스" icon="cube" href="/ko/api/core">
     타입, 파싱, 검증 상세
   </Card>
-  <Card title="@huh/react 가이드" icon="react" href="/ko/api/react">
+  <Card title="@sanghyuk-2i/huh-react 가이드" icon="react" href="/ko/api/react">
     React Provider, 훅, 렌더러 상세
   </Card>
-  <Card title="@huh/vue 가이드" icon="vuejs" href="/ko/api/vue">
+  <Card title="@sanghyuk-2i/huh-vue 가이드" icon="vuejs" href="/ko/api/vue">
     Vue 3 Provider, composable 상세
   </Card>
-  <Card title="@huh/svelte 가이드" icon="svelte" href="/ko/api/svelte">
+  <Card title="@sanghyuk-2i/huh-svelte 가이드" icon="svelte" href="/ko/api/svelte">
     Svelte 5 Provider, context 상세
   </Card>
-  <Card title="@huh/cli 가이드" icon="terminal" href="/ko/api/cli">
+  <Card title="@sanghyuk-2i/huh-cli 가이드" icon="terminal" href="/ko/api/cli">
     CLI 명령어 상세
   </Card>
   <Card title="CSV 파일 가이드" icon="file" href="/ko/guides/csv">

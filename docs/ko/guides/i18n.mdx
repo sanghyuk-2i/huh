@@ -215,7 +215,7 @@ CSV는 탭이 없으므로 파일을 분리합니다:
 ### TypeScript 설정 (defineConfig)
 
 ```ts
-import { defineConfig } from '@huh/cli';
+import { defineConfig } from '@sanghyuk-2i/huh-cli';
 
 export default defineConfig({
   source: {
@@ -288,7 +288,7 @@ src/huh/
 `index.ts`는 자동 생성됩니다:
 
 ```ts
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import ko from './ko.json';
 import en from './en.json';
 
@@ -309,7 +309,7 @@ export const locales: Record<HuhLocale, ErrorConfig> = { ko, en };
 
 ```tsx
 import { locales } from './huh';
-import { HuhProvider, useHuh } from '@huh/react';
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-react';
 
 function App() {
   const [lang, setLang] = useState('ko');
@@ -339,7 +339,7 @@ function LanguageSwitcher() {
 ```vue
 <script setup lang="ts">
 import { locales } from './huh';
-import { HuhProvider } from '@huh/vue';
+import { HuhProvider } from '@sanghyuk-2i/huh-vue';
 import { ref } from 'vue';
 
 const lang = ref('ko');
@@ -355,7 +355,7 @@ const lang = ref('ko');
 ```vue
 <!-- LanguageSwitcher.vue -->
 <script setup lang="ts">
-import { useHuh } from '@huh/vue';
+import { useHuh } from '@sanghyuk-2i/huh-vue';
 
 const { locale, setLocale } = useHuh();
 </script>
@@ -373,7 +373,7 @@ const { locale, setLocale } = useHuh();
 ```svelte
 <script lang="ts">
   import { locales } from './huh';
-  import { HuhProvider } from '@huh/svelte';
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
 
   let lang = $state('ko');
 </script>
@@ -391,7 +391,7 @@ const { locale, setLocale } = useHuh();
 ```svelte
 <!-- LanguageSwitcher.svelte -->
 <script lang="ts">
-  import { useHuh } from '@huh/svelte';
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
 
   const { locale, setLocale } = useHuh();
 </script>
@@ -426,11 +426,11 @@ Cross-locale validation:
 
 trackId 누락은 에러(pull 실패), type/actionType 불일치는 경고(pull 계속 진행)입니다.
 
-프로그래밍 방식으로 검증하려면 `@huh/core`의 `validateLocales`를 사용할 수 있습니다:
+프로그래밍 방식으로 검증하려면 `@sanghyuk-2i/huh-core`의 `validateLocales`를 사용할 수 있습니다:
 
 ```ts
-import { validateLocales } from '@huh/core';
-import type { LocalizedErrorConfig } from '@huh/core';
+import { validateLocales } from '@sanghyuk-2i/huh-core';
+import type { LocalizedErrorConfig } from '@sanghyuk-2i/huh-core';
 
 const locales: LocalizedErrorConfig = { ko: koConfig, en: enConfig };
 const result = validateLocales(locales);

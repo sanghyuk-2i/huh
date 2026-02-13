@@ -1,5 +1,5 @@
 ---
-title: '@huh/core API'
+title: '@sanghyuk-2i/huh-core API'
 description: '에러 콘텐츠 JSON DSL의 타입 정의, 파싱, 변수 치환, 유효성 검증 핵심 패키지'
 icon: 'cube'
 ---
@@ -11,15 +11,15 @@ icon: 'cube'
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/core
+pnpm add @sanghyuk-2i/huh-core
 ```
 
 ```bash npm
-npm install @huh/core
+npm install @sanghyuk-2i/huh-core
 ```
 
 ```bash yarn
-yarn add @huh/core
+yarn add @sanghyuk-2i/huh-core
 ```
 
 </CodeGroup>
@@ -28,13 +28,13 @@ yarn add @huh/core
 
 ```html
 <!-- unpkg -->
-<script src="https://unpkg.com/@huh/core"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core"></script>
 
 <!-- jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/@huh/core"></script>
+<script src="https://cdn.jsdelivr.net/npm/@sanghyuk-2i/huh-core"></script>
 
 <!-- 버전 고정 -->
-<script src="https://unpkg.com/@huh/core@0.1.0"></script>
+<script src="https://unpkg.com/@sanghyuk-2i/huh-core@0.1.0"></script>
 ```
 
 CDN으로 로드하면 `window.HuhCore` 글로벌 변수로 모든 API에 접근할 수 있습니다:
@@ -285,7 +285,7 @@ interface HuhErrorContext {
 **예시**
 
 ```ts
-import { parseSheetData } from '@huh/core';
+import { parseSheetData } from '@sanghyuk-2i/huh-core';
 
 const rows = [
   [
@@ -339,7 +339,7 @@ const config = parseSheetData(rows);
 **예시**
 
 ```ts
-import { resolveError } from '@huh/core';
+import { resolveError } from '@sanghyuk-2i/huh-core';
 
 const config = {
   ERR_SESSION: {
@@ -375,7 +375,7 @@ const resolved = resolveError(config, 'ERR_SESSION', { userName: '홍길동' });
 **예시**
 
 ```ts
-import { renderTemplate } from '@huh/core';
+import { renderTemplate } from '@sanghyuk-2i/huh-core';
 
 renderTemplate('{{name}}님, 안녕하세요!', { name: '홍길동' });
 // → "홍길동님, 안녕하세요!"
@@ -419,7 +419,7 @@ renderTemplate('{{a}} and {{b}}', { a: 'Hello' });
 **예시**
 
 ```ts
-import { validateConfig } from '@huh/core';
+import { validateConfig } from '@sanghyuk-2i/huh-core';
 
 const result = validateConfig({
   ERR_001: { type: 'TOAST', message: '' },
@@ -464,7 +464,7 @@ const result = validateConfig({
 **예시**
 
 ```ts
-import { validateLocales } from '@huh/core';
+import { validateLocales } from '@sanghyuk-2i/huh-core';
 
 const result = validateLocales({
   ko: {
@@ -504,8 +504,8 @@ const result = validateLocales({
 **예시**
 
 ```ts
-import { runPluginHook } from '@huh/core';
-import type { HuhPlugin } from '@huh/core';
+import { runPluginHook } from '@sanghyuk-2i/huh-core';
+import type { HuhPlugin } from '@sanghyuk-2i/huh-core';
 
 const plugins: HuhPlugin[] = [myPlugin(), anotherPlugin()];
 

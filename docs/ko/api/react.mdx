@@ -1,5 +1,5 @@
 ---
-title: '@huh/react API'
+title: '@sanghyuk-2i/huh-react API'
 description: 'React Context 기반 에러 UI 렌더링 - HuhProvider, useHuh, RendererMap'
 icon: 'react'
 ---
@@ -11,15 +11,15 @@ React Context 기반의 에러 UI 렌더링 라이브러리입니다. Provider�
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/core @huh/react
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 ```
 
 ```bash npm
-npm install @huh/core @huh/react
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 ```
 
 ```bash yarn
-yarn add @huh/core @huh/react
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-react
 ```
 
 </CodeGroup>
@@ -60,7 +60,7 @@ interface HuhProviderProps {
 
 ```tsx
 import errorContent from './huh.json';
-import { HuhProvider } from '@huh/react';
+import { HuhProvider } from '@sanghyuk-2i/huh-react';
 
 function App() {
   return (
@@ -162,7 +162,7 @@ interface ErrorRenderProps {
 ### 렌더러 구현 예시
 
 ```tsx
-import type { RendererMap } from '@huh/react';
+import type { RendererMap } from '@sanghyuk-2i/huh-react';
 import { Toast } from '@/components/Toast';
 import { Modal } from '@/components/Modal';
 
@@ -281,8 +281,8 @@ clearError();
 ```tsx
 import React from 'react';
 import errorContent from './huh.json';
-import { HuhProvider, useHuh } from '@huh/react';
-import type { RendererMap } from '@huh/react';
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-react';
+import type { RendererMap } from '@sanghyuk-2i/huh-react';
 
 const renderers: RendererMap = {
   TOAST: ({ error, onDismiss }) => (

@@ -1,5 +1,5 @@
 ---
-title: '@huh/vue API'
+title: '@sanghyuk-2i/huh-vue API'
 description: 'Vue 3 provide/inject-based error UI rendering - HuhProvider, useHuh, RendererMap'
 icon: 'vuejs'
 ---
@@ -11,15 +11,15 @@ A Vue 3 provide/inject-based error UI rendering library. The Provider manages er
 <CodeGroup>
 
 ```bash pnpm
-pnpm add @huh/core @huh/vue
+pnpm add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 ```
 
 ```bash npm
-npm install @huh/core @huh/vue
+npm install @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 ```
 
 ```bash yarn
-yarn add @huh/core @huh/vue
+yarn add @sanghyuk-2i/huh-core @sanghyuk-2i/huh-vue
 ```
 
 </CodeGroup>
@@ -59,8 +59,8 @@ interface HuhProviderProps {
 
 ```vue
 <script setup lang="ts">
-import { HuhProvider } from '@huh/vue';
-import type { ErrorConfig } from '@huh/core';
+import { HuhProvider } from '@sanghyuk-2i/huh-vue';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import errorContent from './huh.json';
 import { renderers } from './renderers';
 
@@ -150,7 +150,7 @@ Implement renderers using `defineComponent` + `h` function (no SFC compiler need
 
 ```ts
 import { defineComponent, h } from 'vue';
-import type { RendererMap } from '@huh/vue';
+import type { RendererMap } from '@sanghyuk-2i/huh-vue';
 
 const Toast = defineComponent({
   props: {
@@ -223,7 +223,7 @@ The single function for triggering errors. Handles direct trackId, errorMap mapp
 
 ```vue
 <script setup lang="ts">
-import { useHuh } from '@huh/vue';
+import { useHuh } from '@sanghyuk-2i/huh-vue';
 
 const { huh } = useHuh();
 
@@ -263,7 +263,7 @@ Closes the currently active error UI.
 
 ```vue
 <script setup lang="ts">
-import { useHuh } from '@huh/vue';
+import { useHuh } from '@sanghyuk-2i/huh-vue';
 
 const { clearError } = useHuh();
 </script>
@@ -277,7 +277,7 @@ const { clearError } = useHuh();
 
 ## Differences from React Package
 
-|                   | @huh/react                   | @huh/vue                                |
+|                   | @sanghyuk-2i/huh-react                   | @sanghyuk-2i/huh-vue                                |
 | ----------------- | ---------------------------- | --------------------------------------- |
 | **State**         | `useState`                   | `ref()`                                 |
 | **Context**       | `createContext`/`useContext` | `provide()`/`inject()` + `InjectionKey` |
