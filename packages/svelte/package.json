@@ -1,5 +1,5 @@
 {
-  "name": "@huh/svelte",
+  "name": "@sanghyuk-2i/huh-svelte",
   "version": "0.1.0",
   "description": "Svelte bindings for huh — HuhProvider and useHuh",
   "type": "module",
@@ -23,7 +23,7 @@
     "size": "du -shc dist/*.js dist/*.svelte"
   },
   "dependencies": {
-    "@huh/core": "workspace:*"
+    "@sanghyuk-2i/huh-core": "workspace:*"
   },
   "peerDependencies": {
     "svelte": ">=5.0.0"

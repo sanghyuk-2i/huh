@@ -1,4 +1,4 @@
-import type { ResolvedError } from '@huh/core';
+import type { ResolvedError } from '@sanghyuk-2i/huh-core';
 interface Props {
     error: ResolvedError;
     onAction: () => void;

@@ -1,5 +1,5 @@
 import * as http from 'http';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import type { SimulateConfig } from './types';
 import { buildPreviewHtml } from './preview-app';
 

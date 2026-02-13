@@ -1,5 +1,5 @@
 import type { ScreenshotResult, DeviceConfig, SimulateConfig } from './types';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import { startPreviewServer, stopPreviewServer } from './preview-server';
 import { runPlaywrightTests } from './playwright-runner';
 import { findFreePort } from './utils';

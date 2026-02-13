@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ErrorConfig } from '@huh/core';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
   import HuhProvider from '../HuhProvider.svelte';
   import type { RendererMap } from '../types';
 

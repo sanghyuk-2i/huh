@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@huh/core": "workspace:*",
-    "@huh/vue": "workspace:*",
+    "@sanghyuk-2i/huh-core": "workspace:*",
+    "@sanghyuk-2i/huh-vue": "workspace:*",
     "vue": "^3.5.0"
   },
   "devDependencies": {

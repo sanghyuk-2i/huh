@@ -1,5 +1,5 @@
 import { defineComponent, h } from 'vue';
-import type { RendererMap } from '@huh/vue';
+import type { RendererMap } from '@sanghyuk-2i/huh-vue';
 
 const Toast = defineComponent({
   props: {

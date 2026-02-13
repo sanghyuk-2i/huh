@@ -1,6 +1,6 @@
 'use client';
 
-import { useHuh } from '@huh/react';
+import { useHuh } from '@sanghyuk-2i/huh-react';
 
 export function ErrorButtons() {
   const { huh } = useHuh();

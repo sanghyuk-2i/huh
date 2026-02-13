@@ -1,5 +1,5 @@
 import { datadogLogs } from '@datadog/browser-logs';
-import type { HuhPlugin, ResolvedError } from '@huh/core';
+import type { HuhPlugin, ResolvedError } from '@sanghyuk-2i/huh-core';
 
 export interface DatadogPluginOptions {
   level?: 'error' | 'warn' | 'info' | 'debug';

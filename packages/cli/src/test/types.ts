@@ -1,4 +1,4 @@
-import type { ValidationError } from '@huh/core';
+import type { ValidationError } from '@sanghyuk-2i/huh-core';
 
 // ── CLI Options ──
 

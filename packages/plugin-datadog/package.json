@@ -1,5 +1,5 @@
 {
-  "name": "@huh/plugin-datadog",
+  "name": "@sanghyuk-2i/huh-plugin-datadog",
   "version": "0.1.0",
   "description": "Datadog integration plugin for huh — automatic error logging and action tracking",
   "main": "./dist/index.js",
@@ -21,7 +21,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@huh/core": "workspace:*"
+    "@sanghyuk-2i/huh-core": "workspace:*"
   },
   "peerDependencies": {
     "@datadog/browser-logs": ">=5"

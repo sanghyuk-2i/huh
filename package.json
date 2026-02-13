@@ -31,5 +31,16 @@
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.55.0",
     "vitest": "^2.1.0"
-  }
+  },
+   "license": "MIT",                                                                                                                                      
+    "repository": {                                                                                                                                        
+      "type": "git",                                                                                                                                       
+      "url": "git+https://github.com/sanghyuk-2i/huh.git"                                                                                          
+    },                                                                                                                                                     
+    "keywords": ["error", "ui", "react", "error-handling"],                                                                                                
+    "author": "Lee Sang Hyuk <desummit1@gmail.com>",                                                                                                        
+    "homepage": "https://github.com/sanghyuk-2i/huh#readme",                                                                                       
+    "bugs": {                                                                                                                                              
+      "url": "https://github.com/sanghyuk-2i/huh/issues"                                                                                           
+    }              
 }

@@ -1,5 +1,5 @@
 import * as net from 'net';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 
 export function findFreePort(): Promise<number> {
   return new Promise((resolve, reject) => {

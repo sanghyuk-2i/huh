@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/svelte';
 import { afterEach } from 'vitest';
-import type { ErrorConfig, HuhPlugin } from '@huh/core';
+import type { ErrorConfig, HuhPlugin } from '@sanghyuk-2i/huh-core';
 import type { RendererMap } from '../types';
 import TestWrapper from './TestWrapper.svelte';
 import ChildOnly from './ChildOnly.svelte';

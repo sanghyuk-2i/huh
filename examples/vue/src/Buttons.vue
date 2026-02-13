@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useHuh } from '@huh/vue';
+import { useHuh } from '@sanghyuk-2i/huh-vue';
 
 const { huh } = useHuh();
 </script>

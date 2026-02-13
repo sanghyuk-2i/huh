@@ -1,4 +1,4 @@
-import type { RendererMap } from '@huh/svelte';
+import type { RendererMap } from '@sanghyuk-2i/huh-svelte';
 import Toast from './renderers/Toast.svelte';
 import Modal from './renderers/Modal.svelte';
 import Page from './renderers/Page.svelte';

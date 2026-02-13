@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import type {
   ScreenshotResult,
   DeviceConfig,

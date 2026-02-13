@@ -62,10 +62,10 @@ importers:
 
   examples/nextjs:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@huh/react':
+      '@sanghyuk-2i/huh-react':
         specifier: workspace:*
         version: link:../../packages/react
       next:
@@ -90,10 +90,10 @@ importers:
 
   examples/react:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@huh/react':
+      '@sanghyuk-2i/huh-react':
         specifier: workspace:*
         version: link:../../packages/react
       react:
@@ -121,10 +121,10 @@ importers:
 
   examples/svelte:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@huh/svelte':
+      '@sanghyuk-2i/huh-svelte':
         specifier: workspace:*
         version: link:../../packages/svelte
       svelte:
@@ -143,7 +143,7 @@ importers:
 
   examples/vanilla:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../../packages/core
     devDependencies:
@@ -156,10 +156,10 @@ importers:
 
   examples/vue:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@huh/vue':
+      '@sanghyuk-2i/huh-vue':
         specifier: workspace:*
         version: link:../../packages/vue
       vue:
@@ -178,7 +178,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../core
       commander:
@@ -222,7 +222,7 @@ importers:
 
   packages/plugin-datadog:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -241,7 +241,7 @@ importers:
 
   packages/plugin-sentry:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -260,7 +260,7 @@ importers:
 
   packages/react:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -294,7 +294,7 @@ importers:
 
   packages/svelte:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -325,7 +325,7 @@ importers:
 
   packages/vue:
     dependencies:
-      '@huh/core':
+      '@sanghyuk-2i/huh-core':
         specifier: workspace:*
         version: link:../core
     devDependencies:

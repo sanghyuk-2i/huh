@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import { defineComponent, h } from 'vue';
 import { HuhProvider } from '../ErrorContentProvider';
 import { useHuh } from '../useErrorContent';
-import type { ErrorConfig, HuhPlugin } from '@huh/core';
+import type { ErrorConfig, HuhPlugin } from '@sanghyuk-2i/huh-core';
 import type { RendererMap } from '../types';
 
 const testConfig: ErrorConfig = {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import type { ScreenshotResult } from '../test/types';
 import { runExtendedValidation } from '../test/extended-validator';
 

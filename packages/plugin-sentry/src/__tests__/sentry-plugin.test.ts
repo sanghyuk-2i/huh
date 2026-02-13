@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { sentryPlugin, resolveSentryLevel, maskSensitiveData, normalizeUrl } from '../index';
-import type { ResolvedError, ErrorAction, HuhErrorContext } from '@huh/core';
+import type { ResolvedError, ErrorAction, HuhErrorContext } from '@sanghyuk-2i/huh-core';
 
 vi.mock('@sentry/browser', () => {
   const mockScope = {

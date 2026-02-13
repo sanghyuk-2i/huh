@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { generateLocaleFiles, generateLocaleIndex } from '../generate';
-import type { LocalizedErrorConfig } from '@huh/core';
+import type { LocalizedErrorConfig } from '@sanghyuk-2i/huh-core';
 
 describe('generateLocaleFiles', () => {
   let tmpDir: string;

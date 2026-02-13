@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { exec } from 'child_process';
 import pc from 'picocolors';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import type { TestCommandOptions, SimulateConfig } from '../test/types';
 import { DEVICE_CONFIGS } from '../test/types';
 import { filterTrackIds } from '../test/utils';

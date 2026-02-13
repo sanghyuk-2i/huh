@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import { filterTrackIds } from '../test/utils';
 import { DEVICE_CONFIGS } from '../test/types';
 

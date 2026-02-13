@@ -1,5 +1,5 @@
 {
-  "name": "@huh/cli",
+  "name": "@sanghyuk-2i/huh-cli",
   "version": "0.1.0",
   "description": "CLI tool for huh — init, pull from Google Sheets, validate",
   "main": "./dist/index.js",
@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@huh/core": "workspace:*",
+    "@sanghyuk-2i/huh-core": "workspace:*",
     "commander": "^12.1.0",
     "googleapis": "^144.0.0",
     "picocolors": "^1.1.0",

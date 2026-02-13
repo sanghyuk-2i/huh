@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import type { ErrorConfig } from '@huh/core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import type { ScreenshotResult } from '../test/types';
 import { DEVICE_CONFIGS } from '../test/types';
 import { generateReport } from '../test/report-generator';

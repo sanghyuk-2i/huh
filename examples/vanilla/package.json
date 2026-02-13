@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@huh/core": "workspace:*"
+    "@sanghyuk-2i/huh-core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

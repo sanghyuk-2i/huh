@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { datadogPlugin } from '../index';
-import type { ResolvedError, ErrorAction, HuhErrorContext } from '@huh/core';
+import type { ResolvedError, ErrorAction, HuhErrorContext } from '@sanghyuk-2i/huh-core';
 
 vi.mock('@datadog/browser-logs', () => ({
   datadogLogs: {

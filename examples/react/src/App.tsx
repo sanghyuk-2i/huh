@@ -1,5 +1,5 @@
-import { HuhProvider, useHuh } from '@huh/react';
-import type { ErrorConfig } from '@huh/core';
+import { HuhProvider, useHuh } from '@sanghyuk-2i/huh-react';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import errorConfig from './huh.json';
 import { renderers } from './renderers';
 

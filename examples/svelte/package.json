@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@huh/core": "workspace:*",
-    "@huh/svelte": "workspace:*",
+    "@sanghyuk-2i/huh-core": "workspace:*",
+    "@sanghyuk-2i/huh-svelte": "workspace:*",
     "svelte": "^5.0.0"
   },
   "devDependencies": {

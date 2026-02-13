@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import pc from 'picocolors';
-import { parseSheetData, validateConfig, validateLocales } from '@huh/core';
-import type { LocalizedErrorConfig } from '@huh/core';
+import { parseSheetData, validateConfig, validateLocales } from '@sanghyuk-2i/huh-core';
+import type { LocalizedErrorConfig } from '@sanghyuk-2i/huh-core';
 import { getAdapter } from '../adapters';
 import { generateJsonFile, generateLocaleFiles } from '../generate';
 import type { HuhCliConfig, HuhSource } from './init';

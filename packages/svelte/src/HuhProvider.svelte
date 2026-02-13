@@ -1,8 +1,8 @@
 <script lang="ts">
   import { setContext } from 'svelte';
   import type { Snippet } from 'svelte';
-  import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin, HuhRouter } from '@huh/core';
-  import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
+  import type { ErrorConfig, LocalizedErrorConfig, ResolvedError, HuhPlugin, HuhRouter } from '@sanghyuk-2i/huh-core';
+  import { resolveError, ACTION_TYPES, runPluginHook } from '@sanghyuk-2i/huh-core';
   import { HUH_CONTEXT_KEY } from './context';
   import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 

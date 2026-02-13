@@ -6,8 +6,8 @@ import type {
   ResolvedError,
   HuhPlugin,
   HuhRouter,
-} from '@huh/core';
-import { resolveError, ACTION_TYPES, runPluginHook } from '@huh/core';
+} from '@sanghyuk-2i/huh-core';
+import { resolveError, ACTION_TYPES, runPluginHook } from '@sanghyuk-2i/huh-core';
 import type { RendererMap, HuhContextValue, ErrorRenderProps } from './types';
 
 export const HuhContext = createContext<HuhContextValue | null>(null);

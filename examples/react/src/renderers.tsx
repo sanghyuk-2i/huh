@@ -1,4 +1,4 @@
-import type { RendererMap } from '@huh/react';
+import type { RendererMap } from '@sanghyuk-2i/huh-react';
 
 export const renderers: RendererMap = {
   TOAST: ({ error, onDismiss }) => (

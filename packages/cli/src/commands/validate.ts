@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import pc from 'picocolors';
-import { validateConfig } from '@huh/core';
-import type { ErrorConfig } from '@huh/core';
+import { validateConfig } from '@sanghyuk-2i/huh-core';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 
 export function runValidate(filePath?: string) {
   const targetPath = filePath

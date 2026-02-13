@@ -1,5 +1,5 @@
 import type { Component } from 'svelte';
-import type { ResolvedError } from '@huh/core';
+import type { ResolvedError } from '@sanghyuk-2i/huh-core';
 export interface ErrorRenderProps {
     error: ResolvedError;
     onAction: () => void;

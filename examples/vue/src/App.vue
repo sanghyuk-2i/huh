@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { HuhProvider } from '@huh/vue';
-import type { ErrorConfig } from '@huh/core';
+import { HuhProvider } from '@sanghyuk-2i/huh-vue';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 import errorConfig from './huh.json';
 import { renderers } from './renderers';
 import Buttons from './Buttons.vue';

@@ -1,5 +1,5 @@
-import type { ErrorConfig, ValidationError } from '@huh/core';
-import { validateConfig } from '@huh/core';
+import type { ErrorConfig, ValidationError } from '@sanghyuk-2i/huh-core';
+import { validateConfig } from '@sanghyuk-2i/huh-core';
 import type { ScreenshotResult, ExtendedValidationIssue } from './types';
 
 export interface ExtendedValidationResult {

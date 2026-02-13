@@ -1,4 +1,4 @@
-import type { ErrorConfig, HuhPlugin, HuhRouter } from '@huh/core';
+import type { ErrorConfig, HuhPlugin, HuhRouter } from '@sanghyuk-2i/huh-core';
 import type { RendererMap } from '../types';
 interface Props {
     source: ErrorConfig;

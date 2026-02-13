@@ -1,5 +1,5 @@
 {
-  "name": "@huh/vue",
+  "name": "@sanghyuk-2i/huh-vue",
   "version": "0.1.0",
   "description": "Vue bindings for huh — HuhProvider and useHuh composable",
   "main": "./dist/index.js",
@@ -29,7 +29,7 @@
     }
   ],
   "dependencies": {
-    "@huh/core": "workspace:*"
+    "@sanghyuk-2i/huh-core": "workspace:*"
   },
   "peerDependencies": {
     "vue": ">=3.3"

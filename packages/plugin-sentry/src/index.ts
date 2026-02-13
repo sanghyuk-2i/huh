@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser';
-import type { HuhPlugin, ResolvedError, HuhErrorContext } from '@huh/core';
+import type { HuhPlugin, ResolvedError, HuhErrorContext } from '@sanghyuk-2i/huh-core';
 
 declare const window: { location: { pathname: string } } | undefined;
 

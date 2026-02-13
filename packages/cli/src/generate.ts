@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { ErrorConfig, LocalizedErrorConfig } from '@huh/core';
+import type { ErrorConfig, LocalizedErrorConfig } from '@sanghyuk-2i/huh-core';
 
 export function generateJsonFile(config: ErrorConfig, outputPath: string): void {
   const dir = path.dirname(outputPath);
@@ -44,7 +44,7 @@ export function generateLocaleIndex(localeNames: string[], defaultLocale: string
   const unionType = localeNames.map((l) => `'${l}'`).join(' | ');
   const recordEntries = localeNames.join(', ');
 
-  return `import type { ErrorConfig } from '@huh/core';
+  return `import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
 ${imports}
 
 export type HuhLocale = ${unionType};

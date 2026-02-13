@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { HuhProvider } from '@huh/svelte';
-  import type { ErrorConfig } from '@huh/core';
+  import { HuhProvider } from '@sanghyuk-2i/huh-svelte';
+  import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
   import errorConfig from './huh.json';
   import { renderers } from './renderers';
   import Buttons from './Buttons.svelte';

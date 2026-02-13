@@ -1,4 +1,4 @@
-import { resolveError, type ErrorConfig, type ResolvedError } from '@huh/core';
+import { resolveError, type ErrorConfig, type ResolvedError } from '@sanghyuk-2i/huh-core';
 import errorConfig from './huh.json';
 import './style.css';
 

@@ -1,7 +1,7 @@
 'use client';
 
-import type { ErrorConfig } from '@huh/core';
-import { HuhProvider } from '@huh/react';
+import type { ErrorConfig } from '@sanghyuk-2i/huh-core';
+import { HuhProvider } from '@sanghyuk-2i/huh-react';
 import { renderers } from './renderers';
 import errorConfig from '../huh.json';
 

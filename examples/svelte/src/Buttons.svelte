@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useHuh } from '@huh/svelte';
+  import { useHuh } from '@sanghyuk-2i/huh-svelte';
 
   const { huh } = useHuh();
 </script>
