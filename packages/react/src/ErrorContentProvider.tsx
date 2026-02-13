@@ -16,6 +16,8 @@ export interface HuhProviderProps {
   onRetry?: () => void;
   onCustomAction?: (action: { type: string; target?: string }) => void;
   plugins?: HuhPlugin[];
+  errorMap?: Record<string, string>;
+  fallbackTrackId?: string;
 }
 
 export function HuhProvider({
@@ -28,6 +30,8 @@ export function HuhProvider({
   onRetry,
   onCustomAction,
   plugins = [],
+  errorMap,
+  fallbackTrackId,
 }: HuhProviderProps) {
   const [activeError, setActiveError] = useState<ResolvedError | null>(null);
   const [internalLocale, setInternalLocale] = useState<string>(
@@ -62,9 +66,35 @@ export function HuhProvider({
         trackId,
         variables,
         locale: locales ? currentLocale : undefined,
+        severity: resolved.severity,
       });
     },
     [getActiveSource, plugins, locales, currentLocale],
+  );
+
+  const handleErrorByCode = useCallback(
+    (code: string, variables?: Record<string, string>) => {
+      // 1. Check errorMap
+      if (errorMap && code in errorMap) {
+        handleError(errorMap[code], variables);
+        return;
+      }
+      // 2. Check if code is a direct trackId
+      const activeSource = getActiveSource();
+      if (code in activeSource) {
+        handleError(code, variables);
+        return;
+      }
+      // 3. Use fallbackTrackId
+      if (fallbackTrackId) {
+        handleError(fallbackTrackId, variables);
+        return;
+      }
+      throw new Error(
+        `No mapping found for error code "${code}". Provide an errorMap, a matching trackId, or a fallbackTrackId.`,
+      );
+    },
+    [handleError, errorMap, fallbackTrackId, getActiveSource],
   );
 
   const setLocale = useCallback((newLocale: string) => {
@@ -74,11 +104,12 @@ export function HuhProvider({
   const contextValue = useMemo<HuhContextValue>(
     () => ({
       handleError,
+      handleErrorByCode,
       clearError,
       locale: locales ? currentLocale : undefined,
       setLocale,
     }),
-    [handleError, clearError, currentLocale, setLocale, locales],
+    [handleError, handleErrorByCode, clearError, currentLocale, setLocale, locales],
   );
 
   const createOnAction = useCallback(

@@ -276,6 +276,91 @@ describe('plugins', () => {
   });
 });
 
+describe('handleErrorByCode', () => {
+  function CodeConsumer() {
+    const { handleErrorByCode } = useHuh();
+    return (
+      <div>
+        <button onClick={() => handleErrorByCode('API_500')}>by-code</button>
+        <button onClick={() => handleErrorByCode('ERR_001')}>direct-trackid</button>
+        <button onClick={() => handleErrorByCode('UNKNOWN_CODE')}>unknown-code</button>
+      </div>
+    );
+  }
+
+  it('maps error code to trackId via errorMap', () => {
+    render(
+      <HuhProvider
+        source={testConfig}
+        renderers={mockRenderers}
+        errorMap={{ API_500: 'ERR_001' }}
+      >
+        <CodeConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('by-code').click();
+    });
+
+    expect(screen.getByTestId('toast')).toBeDefined();
+    expect(screen.getByText('Something went wrong')).toBeDefined();
+  });
+
+  it('falls back to direct trackId match when no errorMap entry', () => {
+    render(
+      <HuhProvider source={testConfig} renderers={mockRenderers}>
+        <CodeConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('direct-trackid').click();
+    });
+
+    expect(screen.getByTestId('toast')).toBeDefined();
+  });
+
+  it('uses fallbackTrackId when no mapping or direct match', () => {
+    render(
+      <HuhProvider
+        source={testConfig}
+        renderers={mockRenderers}
+        fallbackTrackId="ERR_002"
+      >
+        <CodeConsumer />
+      </HuhProvider>,
+    );
+
+    act(() => {
+      screen.getByText('unknown-code').click();
+    });
+
+    expect(screen.getByTestId('modal')).toBeDefined();
+  });
+
+  it('throws when no mapping found and no fallback', () => {
+    let capturedHandleErrorByCode: ((code: string) => void) | null = null;
+
+    function CaptureConsumer() {
+      const { handleErrorByCode } = useHuh();
+      capturedHandleErrorByCode = handleErrorByCode;
+      return null;
+    }
+
+    render(
+      <HuhProvider source={testConfig} renderers={mockRenderers}>
+        <CaptureConsumer />
+      </HuhProvider>,
+    );
+
+    expect(capturedHandleErrorByCode).not.toBeNull();
+    expect(() => capturedHandleErrorByCode!('UNKNOWN_CODE')).toThrow(
+      'No mapping found for error code',
+    );
+  });
+});
+
 describe('useHuh', () => {
   it('throws when used outside provider', () => {
     function BadConsumer() {

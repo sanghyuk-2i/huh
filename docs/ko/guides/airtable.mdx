@@ -37,22 +37,23 @@ icon: "database"
 | `message` | Long text | **필수** | 에러 메시지. `{{변수}}` 형태로 템플릿 변수 사용 가능 |
 | `title` | Single line text | 선택 | 에러 제목 (modal, page에서 사용) |
 | `image` | URL 또는 Single line text | 선택 | 에러 이미지 URL |
+| `severity` | Single select | 선택 | `INFO`, `WARNING`, `ERROR`, `CRITICAL` 또는 커스텀 심각도 |
 | `actionLabel` | Single line text | 선택 | 액션 버튼 텍스트 |
 | `actionType` | Single select | 선택 | `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
 | `actionTarget` | URL 또는 Single line text | 선택 | REDIRECT 시 이동할 URL |
 
 <Note>
-`type` 필드에 Single select 옵션으로 `TOAST`, `MODAL`, `PAGE` 등을 추가하면 입력 실수를 방지할 수 있습니다. 커스텀 타입도 옵션에 추가할 수 있습니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
+`type` 필드에 Single select 옵션으로 `TOAST`, `MODAL`, `PAGE` 등을 추가하면 입력 실수를 방지할 수 있습니다. `severity` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`)와 `actionType`도 마찬가지입니다. 커스텀 타입도 옵션에 추가할 수 있습니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.
 </Note>
 
 ### 작성 예시
 
-| trackId | type | message | title | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------------|------------|--------------|
-| ERR_LOGIN_001 | TOAST | 로그인에 실패했습니다. 다시 시도해주세요. | | 재시도 | RETRY | |
-| ERR_PAYMENT_001 | MODAL | 결제 처리 중 문제가 발생했습니다. | 결제 오류 | 고객센터 문의 | REDIRECT | /support |
-| ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다. | 페이지 없음 | 홈으로 가기 | REDIRECT | / |
-| ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요. | | 다시 시도 | RETRY | |
+| trackId | type | message | title | severity | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|----------|-------------|------------|--------------|
+| ERR_LOGIN_001 | TOAST | 로그인에 실패했습니다. 다시 시도해주세요. | | WARNING | 재시도 | RETRY | |
+| ERR_PAYMENT_001 | MODAL | 결제 처리 중 문제가 발생했습니다. | 결제 오류 | ERROR | 고객센터 문의 | REDIRECT | /support |
+| ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다. | 페이지 없음 | INFO | 홈으로 가기 | REDIRECT | / |
+| ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요. | | WARNING | 다시 시도 | RETRY | |
 
 </Step>
 

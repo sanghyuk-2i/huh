@@ -41,6 +41,14 @@ export const HuhProvider = defineComponent({
       type: Array as PropType<HuhPlugin[]>,
       default: () => [],
     },
+    errorMap: {
+      type: Object as PropType<Record<string, string>>,
+      default: undefined,
+    },
+    fallbackTrackId: {
+      type: String,
+      default: undefined,
+    },
   },
   setup(props, { slots }) {
     const activeError = ref<ResolvedError | null>(null);
@@ -73,7 +81,27 @@ export const HuhProvider = defineComponent({
         trackId,
         variables,
         locale: props.locales ? currentLocale.value : undefined,
+        severity: resolved.severity,
       });
+    };
+
+    const handleErrorByCode = (code: string, variables?: Record<string, string>) => {
+      if (props.errorMap && code in props.errorMap) {
+        handleError(props.errorMap[code], variables);
+        return;
+      }
+      const activeSource = getActiveSource();
+      if (code in activeSource) {
+        handleError(code, variables);
+        return;
+      }
+      if (props.fallbackTrackId) {
+        handleError(props.fallbackTrackId, variables);
+        return;
+      }
+      throw new Error(
+        `No mapping found for error code "${code}". Provide an errorMap, a matching trackId, or a fallbackTrackId.`,
+      );
     };
 
     const setLocale = (newLocale: string) => {
@@ -82,6 +110,7 @@ export const HuhProvider = defineComponent({
 
     provide(HuhInjectionKey, {
       handleError,
+      handleErrorByCode,
       clearError,
       get locale() {
         return props.locales ? currentLocale.value : undefined;

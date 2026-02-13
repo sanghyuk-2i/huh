@@ -9,6 +9,8 @@ interface Props {
         target?: string;
     }) => void;
     plugins?: HuhPlugin[];
+    errorMap?: Record<string, string>;
+    fallbackTrackId?: string;
 }
 declare const TestWrapper: import("svelte").Component<Props, {}, "">;
 type TestWrapper = ReturnType<typeof TestWrapper>;

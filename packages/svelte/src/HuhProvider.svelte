@@ -16,6 +16,8 @@
     onRetry?: () => void;
     onCustomAction?: (action: { type: string; target?: string }) => void;
     plugins?: HuhPlugin[];
+    errorMap?: Record<string, string>;
+    fallbackTrackId?: string;
   }
 
   let {
@@ -28,6 +30,8 @@
     onRetry,
     onCustomAction,
     plugins = [],
+    errorMap,
+    fallbackTrackId,
   }: Props = $props();
 
   let activeError: ResolvedError | null = $state(null);
@@ -60,7 +64,27 @@
       trackId,
       variables,
       locale: locales ? currentLocale : undefined,
+      severity: resolved.severity,
     });
+  }
+
+  function handleErrorByCode(code: string, variables?: Record<string, string>) {
+    if (errorMap && code in errorMap) {
+      handleError(errorMap[code], variables);
+      return;
+    }
+    const activeSource = getActiveSource();
+    if (code in activeSource) {
+      handleError(code, variables);
+      return;
+    }
+    if (fallbackTrackId) {
+      handleError(fallbackTrackId, variables);
+      return;
+    }
+    throw new Error(
+      `No mapping found for error code "${code}". Provide an errorMap, a matching trackId, or a fallbackTrackId.`,
+    );
   }
 
   function setLocale(newLocale: string) {
@@ -69,6 +93,7 @@
 
   setContext<HuhContextValue>(HUH_CONTEXT_KEY, {
     handleError,
+    handleErrorByCode,
     clearError,
     get locale() {
       return locales ? currentLocale : undefined;

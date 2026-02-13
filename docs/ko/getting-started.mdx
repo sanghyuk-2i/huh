@@ -88,11 +88,11 @@ yarn add -D @huh/cli
 
 아래 컬럼 구조로 데이터를 작성합니다. (Google Sheets, Airtable, Notion, CSV, XLSX 모두 동일)
 
-| trackId | type | message | title | image | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|-------------|------------|--------------|
-| ERR_LOGIN_FAILED | TOAST | 로그인에 실패했습니다 | | | | | |
-| ERR_SESSION_EXPIRED | MODAL | {`{{userName}}`}님의 세션이 만료되었습니다 | 세션 만료 | | 다시 로그인 | REDIRECT | /login |
-| ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다 | 404 | /images/404.png | 홈으로 | REDIRECT | / |
+| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
+| ERR_LOGIN_FAILED | TOAST | 로그인에 실패했습니다 | | | | | | |
+| ERR_SESSION_EXPIRED | MODAL | {`{{userName}}`}님의 세션이 만료되었습니다 | 세션 만료 | | ERROR | 다시 로그인 | REDIRECT | /login |
+| ERR_NOT_FOUND | PAGE | 요청하신 페이지를 찾을 수 없습니다 | 404 | /images/404.png | INFO | 홈으로 | REDIRECT | / |
 
 <Note>
 `type`과 `actionType`은 대문자로 관리됩니다. 소문자로 입력해도 CLI가 자동으로 대문자로 변환합니다.

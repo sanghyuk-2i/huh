@@ -29,6 +29,7 @@ The first row must be a header row, using the following column names:
 | `message` | Yes | Error message shown to the user |
 | `title` | | Error title (used for modal, page) |
 | `image` | | Image URL (used for page) |
+| `severity` | | Severity level: `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
 | `actionLabel` | | Action button text |
 | `actionType` | | Action kind: `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
 | `actionTarget` | | Action target URL (required for `REDIRECT`) |
@@ -73,13 +74,13 @@ Target example: /user/{{userId}}/settings
 
 ## Examples
 
-| trackId | type | message | title | image | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|-------------|------------|--------------|
-| ERR_NETWORK | TOAST | Please check your network connection | | | | | |
-| ERR_AUTH | MODAL | Authentication is required | Login Required | | Login | REDIRECT | /login |
-| ERR_TIMEOUT | MODAL | The request has timed out | Timeout | | Try Again | RETRY | |
-| ERR_FORBIDDEN | PAGE | \{\{userName\}\} does not have access permission | Access Denied | /img/403.png | Go Back | BACK | |
-| ERR_NOT_FOUND | PAGE | Page not found | 404 | /img/404.png | Go Home | REDIRECT | / |
+| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
+| ERR_NETWORK | TOAST | Please check your network connection | | | WARNING | | | |
+| ERR_AUTH | MODAL | Authentication is required | Login Required | | ERROR | Login | REDIRECT | /login |
+| ERR_TIMEOUT | MODAL | The request has timed out | Timeout | | ERROR | Try Again | RETRY | |
+| ERR_FORBIDDEN | PAGE | \{\{userName\}\} does not have access permission | Access Denied | /img/403.png | CRITICAL | Go Back | BACK | |
+| ERR_NOT_FOUND | PAGE | Page not found | 404 | /img/404.png | INFO | Go Home | REDIRECT | / |
 
 ## Rules Summary
 

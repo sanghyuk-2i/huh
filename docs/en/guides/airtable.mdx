@@ -37,22 +37,23 @@ Create the following fields in your table:
 | `message` | Long text | **Yes** | Error message. Supports `{{variable}}` template variables |
 | `title` | Single line text | Optional | Error title (used for modal, page) |
 | `image` | URL or Single line text | Optional | Error image URL |
+| `severity` | Single select | Optional | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
 | `actionLabel` | Single line text | Optional | Action button text |
 | `actionType` | Single select | Optional | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
 | `actionTarget` | URL or Single line text | Optional | URL to navigate to for REDIRECT |
 
 <Note>
-Adding `TOAST`, `MODAL`, `PAGE`, etc. as Single select options for the `type` field helps prevent input mistakes. Custom types can also be added as options. Even if entered in lowercase, the CLI will automatically convert them to uppercase.
+Adding `TOAST`, `MODAL`, `PAGE`, etc. as Single select options for the `type` field helps prevent input mistakes. The same applies to `severity` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`) and `actionType`. Custom types can also be added as options. Even if entered in lowercase, the CLI will automatically convert them to uppercase.
 </Note>
 
 ### Example Data
 
-| trackId | type | message | title | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------------|------------|--------------|
-| ERR_LOGIN_001 | TOAST | Login failed. Please try again. | | Retry | RETRY | |
-| ERR_PAYMENT_001 | MODAL | An error occurred during payment processing. | Payment Error | Contact Support | REDIRECT | /support |
-| ERR_NOT_FOUND | PAGE | The page you requested could not be found. | Page Not Found | Go Home | REDIRECT | / |
-| ERR_NETWORK | TOAST | Please check your network connection. | | Try Again | RETRY | |
+| trackId | type | message | title | severity | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|----------|-------------|------------|--------------|
+| ERR_LOGIN_001 | TOAST | Login failed. Please try again. | | WARNING | Retry | RETRY | |
+| ERR_PAYMENT_001 | MODAL | An error occurred during payment processing. | Payment Error | ERROR | Contact Support | REDIRECT | /support |
+| ERR_NOT_FOUND | PAGE | The page you requested could not be found. | Page Not Found | INFO | Go Home | REDIRECT | / |
+| ERR_NETWORK | TOAST | Please check your network connection. | | WARNING | Try Again | RETRY | |
 
 </Step>
 

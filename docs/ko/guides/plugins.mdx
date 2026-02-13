@@ -36,6 +36,7 @@ interface HuhErrorContext {
   trackId: string;
   variables?: Record<string, string>;
   locale?: string;
+  severity?: Severity;
 }
 ```
 
@@ -129,6 +130,68 @@ sentryPlugin({
 | `tags` | `Record<string, string>` | `{}` | Sentry scope에 설정할 추가 태그 |
 | `filter` | `(error: ResolvedError) => boolean` | — | `false`를 반환하면 리포트를 건너뜁니다 |
 | `breadcrumbs` | `boolean` | `true` | 액션 breadcrumb 기록 여부 |
+| `ignoreTypes` | `string[]` | `[]` | 무시할 에러 타입 목록 (노이즈 필터링) |
+| `ignoreTrackIds` | `string[]` | `[]` | 무시할 trackId 목록 (노이즈 필터링) |
+| `urlPatterns` | `Array<[RegExp, string]>` | `[]` | URL 패턴 그룹핑 (동적 URL 정규화) |
+| `enrichContext` | `(error, context) => Record<string, unknown>` | - | 추가 컨텍스트 보강 콜백 |
+| `sensitiveKeys` | `Array<string \| RegExp>` | `[]` | 민감 데이터 마스킹 키 목록 |
+
+### Severity 자동 매핑
+
+에러에 `severity`가 설정되어 있으면, Sentry 리포트 레벨이 자동으로 매핑됩니다:
+
+| Severity | Sentry Level |
+|----------|-------------|
+| `CRITICAL` | `fatal` |
+| `ERROR` | `error` |
+| `WARNING` | `warning` |
+| `INFO` | `info` |
+
+인식할 수 없는 severity나 severity가 없는 경우 `level` 옵션 값이 사용됩니다 (기본값: `'error'`).
+
+### 노이즈 필터링
+
+```ts
+sentryPlugin({
+  ignoreTypes: ['TOAST'],           // TOAST 에러는 Sentry에 보내지 않음
+  ignoreTrackIds: ['ERR_DISMISS'],  // 특정 trackId 무시
+})
+```
+
+### 민감 데이터 마스킹
+
+```ts
+sentryPlugin({
+  sensitiveKeys: ['password', 'token', /^secret/],
+  // variables: { password: '1234', token: 'abc', secretKey: 'xyz' }
+  // → Sentry에는 { password: '[REDACTED]', token: '[REDACTED]', secretKey: '[REDACTED]' }
+})
+```
+
+### URL 그룹핑
+
+동적 URL 세그먼트를 정규화하여 Sentry fingerprint로 그룹핑합니다.
+
+```ts
+sentryPlugin({
+  urlPatterns: [
+    [/\/users\/\d+/, '/users/:id'],
+    [/\/orders\/[a-f0-9-]+/, '/orders/:orderId'],
+  ],
+})
+```
+
+### 컨텍스트 보강
+
+```ts
+sentryPlugin({
+  enrichContext: (error, context) => ({
+    requestId: getRequestId(),
+    userId: getCurrentUser()?.id,
+    route: window.location.pathname,
+  }),
+})
+```
 
 ## @huh/plugin-datadog 사용하기
 

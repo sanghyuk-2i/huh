@@ -36,6 +36,7 @@ interface HuhErrorContext {
   trackId: string;
   variables?: Record<string, string>;
   locale?: string;
+  severity?: Severity;
 }
 ```
 
@@ -129,6 +130,68 @@ sentryPlugin({
 | `tags` | `Record<string, string>` | `{}` | Additional tags to set on the Sentry scope |
 | `filter` | `(error: ResolvedError) => boolean` | — | Return `false` to skip reporting |
 | `breadcrumbs` | `boolean` | `true` | Whether to record action breadcrumbs |
+| `ignoreTypes` | `string[]` | `[]` | Error types to ignore (noise filtering) |
+| `ignoreTrackIds` | `string[]` | `[]` | trackIds to ignore (noise filtering) |
+| `urlPatterns` | `Array<[RegExp, string]>` | `[]` | URL pattern grouping (dynamic URL normalization) |
+| `enrichContext` | `(error, context) => Record<string, unknown>` | - | Additional context enrichment callback |
+| `sensitiveKeys` | `Array<string \| RegExp>` | `[]` | Sensitive data masking key patterns |
+
+### Severity Auto-Mapping
+
+When an error has a `severity` set, the Sentry report level is automatically mapped:
+
+| Severity | Sentry Level |
+|----------|-------------|
+| `CRITICAL` | `fatal` |
+| `ERROR` | `error` |
+| `WARNING` | `warning` |
+| `INFO` | `info` |
+
+For unrecognized severity values or when severity is absent, the `level` option is used as fallback (default: `'error'`).
+
+### Noise Filtering
+
+```ts
+sentryPlugin({
+  ignoreTypes: ['TOAST'],           // Don't send TOAST errors to Sentry
+  ignoreTrackIds: ['ERR_DISMISS'],  // Ignore specific trackIds
+})
+```
+
+### Sensitive Data Masking
+
+```ts
+sentryPlugin({
+  sensitiveKeys: ['password', 'token', /^secret/],
+  // variables: { password: '1234', token: 'abc', secretKey: 'xyz' }
+  // → Sent to Sentry as { password: '[REDACTED]', token: '[REDACTED]', secretKey: '[REDACTED]' }
+})
+```
+
+### URL Grouping
+
+Normalizes dynamic URL segments for Sentry fingerprint grouping.
+
+```ts
+sentryPlugin({
+  urlPatterns: [
+    [/\/users\/\d+/, '/users/:id'],
+    [/\/orders\/[a-f0-9-]+/, '/orders/:orderId'],
+  ],
+})
+```
+
+### Context Enrichment
+
+```ts
+sentryPlugin({
+  enrichContext: (error, context) => ({
+    requestId: getRequestId(),
+    userId: getCurrentUser()?.id,
+    route: window.location.pathname,
+  }),
+})
+```
 
 ## Using @huh/plugin-datadog
 

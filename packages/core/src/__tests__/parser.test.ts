@@ -116,4 +116,43 @@ describe('parseSheetData', () => {
     const config = parseSheetData(rows);
     expect(config.ERR_001.action?.type).toBe('REDIRECT');
   });
+
+  it('parses severity and normalizes to uppercase', () => {
+    const headersWithSeverity = [...HEADERS, 'severity'];
+    const rows = [
+      headersWithSeverity,
+      ['ERR_001', 'toast', 'Oops', '', '', '', '', '', 'error'],
+    ];
+    const config = parseSheetData(rows);
+    expect(config.ERR_001.severity).toBe('ERROR');
+  });
+
+  it('normalizes severity to uppercase for custom values', () => {
+    const headersWithSeverity = [...HEADERS, 'severity'];
+    const rows = [
+      headersWithSeverity,
+      ['ERR_001', 'toast', 'Oops', '', '', '', '', '', 'critical'],
+    ];
+    const config = parseSheetData(rows);
+    expect(config.ERR_001.severity).toBe('CRITICAL');
+  });
+
+  it('leaves severity undefined when column is missing', () => {
+    const rows = [
+      HEADERS,
+      ['ERR_001', 'toast', 'Oops', '', '', '', '', ''],
+    ];
+    const config = parseSheetData(rows);
+    expect(config.ERR_001.severity).toBeUndefined();
+  });
+
+  it('leaves severity undefined when value is empty', () => {
+    const headersWithSeverity = [...HEADERS, 'severity'];
+    const rows = [
+      headersWithSeverity,
+      ['ERR_001', 'toast', 'Oops', '', '', '', '', '', ''],
+    ];
+    const config = parseSheetData(rows);
+    expect(config.ERR_001.severity).toBeUndefined();
+  });
 });

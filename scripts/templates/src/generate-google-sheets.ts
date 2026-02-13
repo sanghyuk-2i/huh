@@ -8,6 +8,7 @@ import {
   toRows,
   TYPE_OPTIONS,
   ACTION_TYPE_OPTIONS,
+  SEVERITY_OPTIONS,
 } from './data.js';
 
 function getAuth() {
@@ -76,6 +77,7 @@ function buildSheetRequests(
 ): sheets_v4.Schema$Request[] {
   const headerRow = rows[0];
   const typeColIndex = headerRow.indexOf('type');
+  const severityColIndex = headerRow.indexOf('severity');
   const actionTypeColIndex = headerRow.indexOf('actionType');
   const dataRowCount = rows.length - 1;
 
@@ -123,6 +125,13 @@ function buildSheetRequests(
   if (typeColIndex !== -1) {
     requests.push(
       buildDataValidation(sheetId, typeColIndex, TYPE_OPTIONS, dataRowCount),
+    );
+  }
+
+  // Data validation for severity column
+  if (severityColIndex !== -1) {
+    requests.push(
+      buildDataValidation(sheetId, severityColIndex, SEVERITY_OPTIONS, dataRowCount),
     );
   }
 

@@ -187,6 +187,60 @@ describe('plugins', () => {
   });
 });
 
+describe('handleErrorByCode', () => {
+  it('maps error code to trackId via errorMap', async () => {
+    render(TestWrapper, {
+      props: { source: testConfig, renderers: mockRenderers, errorMap: { API_500: 'ERR_001' } },
+    });
+
+    await fireEvent.click(screen.getByText('by-code'));
+    expect(screen.getByTestId('toast')).toBeDefined();
+    expect(screen.getByText('Something went wrong')).toBeDefined();
+  });
+
+  it('falls back to direct trackId match when no errorMap entry', async () => {
+    render(TestWrapper, {
+      props: { source: testConfig, renderers: mockRenderers },
+    });
+
+    await fireEvent.click(screen.getByText('direct-trackid'));
+    expect(screen.getByTestId('toast')).toBeDefined();
+  });
+
+  it('uses fallbackTrackId when no mapping or direct match', async () => {
+    render(TestWrapper, {
+      props: { source: testConfig, renderers: mockRenderers, fallbackTrackId: 'ERR_002' },
+    });
+
+    await fireEvent.click(screen.getByText('unknown-code'));
+    expect(screen.getByTestId('modal')).toBeDefined();
+  });
+
+  it('throws when no mapping found and no fallback', async () => {
+    render(TestWrapper, {
+      props: { source: testConfig, renderers: mockRenderers },
+    });
+
+    // In Svelte, errors thrown in event handlers become uncaught exceptions in jsdom.
+    // We verify the error is thrown by catching it at the process level.
+    let caughtError: Error | null = null;
+    const handler = (event: ErrorEvent) => {
+      caughtError = event.error;
+      event.preventDefault();
+    };
+    window.addEventListener('error', handler);
+
+    await fireEvent.click(screen.getByText('unknown-code'));
+
+    // The error is dispatched asynchronously via jsdom's reportException
+    await new Promise((r) => setTimeout(r, 0));
+
+    window.removeEventListener('error', handler);
+    expect(caughtError).not.toBeNull();
+    expect(caughtError!.message).toContain('No mapping found for error code');
+  });
+});
+
 describe('useHuh', () => {
   it('throws when used outside provider', () => {
     expect(() => {

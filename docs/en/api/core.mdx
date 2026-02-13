@@ -72,6 +72,19 @@ const ACTION_TYPES = {
 } as const;
 ```
 
+### `SEVERITY_LEVELS` (constant)
+
+Uppercase constants for built-in severity levels.
+
+```ts
+const SEVERITY_LEVELS = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+  CRITICAL: 'CRITICAL',
+} as const;
+```
+
 ### `ErrorType`
 
 An extensible string type that allows built-in types + custom types. Values are managed in uppercase.
@@ -88,6 +101,15 @@ Allows built-in action types + custom action types.
 ```ts
 type BuiltInActionType = 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS';
 type ActionType = BuiltInActionType | (string & {});  // Freely extensible: 'OPEN_CHAT', 'SHARE', etc.
+```
+
+### `Severity`
+
+Allows built-in severity levels + custom severity levels.
+
+```ts
+type BuiltInSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+type Severity = BuiltInSeverity | (string & {});  // Freely extensible custom severity
 ```
 
 ### `ErrorAction`
@@ -110,6 +132,7 @@ interface ErrorEntry {
   message: string;        // Error message (may contain template variables)
   title?: string;         // Title (for modal, page)
   image?: string;         // Image URL (for page)
+  severity?: Severity;   // Severity level
   action?: ErrorAction;   // User action
 }
 ```
@@ -229,6 +252,7 @@ interface HuhErrorContext {
   trackId: string;
   variables?: Record<string, string>;
   locale?: string;
+  severity?: Severity;
 }
 ```
 
@@ -252,6 +276,7 @@ Converts raw data from a data source (header + data row array) into an `ErrorCon
 
 <Note>
 `type` and `actionType` values are automatically converted to uppercase. Whether you enter `toast`, `Toast`, or `TOAST` in the data source, it will be processed as `TOAST`.
+`severity` values are also automatically converted to uppercase.
 Custom types (`BANNER`, `SNACKBAR`, etc.) can be freely used in addition to built-in types.
 </Note>
 
@@ -261,7 +286,7 @@ Custom types (`BANNER`, `SNACKBAR`, etc.) can be freely used in addition to buil
 import { parseSheetData } from '@huh/core';
 
 const rows = [
-  ['trackId', 'type', 'message', 'title', 'image', 'actionLabel', 'actionType', 'actionTarget'],
+  ['trackId', 'type', 'message', 'title', 'image', 'severity', 'actionLabel', 'actionType', 'actionTarget'],
   ['ERR_001', 'toast', 'An error occurred', '', '', '', '', ''],
   ['ERR_002', 'modal', 'Session expired', 'Notice', '', 'OK', 'dismiss', ''],
   ['ERR_003', 'banner', 'Server under maintenance', '', '', 'Contact Us', 'open_chat', ''],
@@ -372,6 +397,7 @@ Warnings are only generated for built-in types. Custom types do not trigger warn
 | `TOAST` has title | Toast errors typically do not display a title |
 | `TOAST` has image | Toast errors typically do not display an image |
 | `PAGE` has no action | Page errors should provide an action |
+| Unrecognized `severity` value | Unrecognized severity "X". Built-in levels: INFO, WARNING, ERROR, CRITICAL |
 
 **Example**
 

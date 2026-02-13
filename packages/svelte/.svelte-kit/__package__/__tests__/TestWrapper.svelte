@@ -10,11 +10,13 @@
     onRetry?: () => void;
     onCustomAction?: (action: { type: string; target?: string }) => void;
     plugins?: HuhPlugin[];
+    errorMap?: Record<string, string>;
+    fallbackTrackId?: string;
   }
 
-  let { source, renderers, onRetry, onCustomAction, plugins }: Props = $props();
+  let { source, renderers, onRetry, onCustomAction, plugins, errorMap, fallbackTrackId }: Props = $props();
 </script>
 
-<HuhProvider {source} {renderers} {onRetry} {onCustomAction} {plugins}>
+<HuhProvider {source} {renderers} {onRetry} {onCustomAction} {plugins} {errorMap} {fallbackTrackId}>
   <TestConsumer />
 </HuhProvider>

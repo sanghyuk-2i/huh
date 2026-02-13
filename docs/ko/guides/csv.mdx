@@ -26,10 +26,10 @@ icon: "file"
 첫 번째 행은 반드시 헤더 행이어야 합니다. 아래 컬럼 구조를 따릅니다:
 
 ```csv
-trackId,type,message,title,image,actionLabel,actionType,actionTarget
-ERR_LOGIN_FAILED,TOAST,로그인에 실패했습니다,,,,,
-ERR_SESSION_EXPIRED,MODAL,세션이 만료되었습니다,세션 만료,,다시 로그인,REDIRECT,/login
-ERR_NOT_FOUND,PAGE,페이지를 찾을 수 없습니다,404,/img/404.png,홈으로,REDIRECT,/
+trackId,type,message,title,image,severity,actionLabel,actionType,actionTarget
+ERR_LOGIN_FAILED,TOAST,로그인에 실패했습니다,,,,,,
+ERR_SESSION_EXPIRED,MODAL,세션이 만료되었습니다,세션 만료,,ERROR,다시 로그인,REDIRECT,/login
+ERR_NOT_FOUND,PAGE,페이지를 찾을 수 없습니다,404,/img/404.png,INFO,홈으로,REDIRECT,/
 ```
 
 <Note>
@@ -45,6 +45,7 @@ ERR_NOT_FOUND,PAGE,페이지를 찾을 수 없습니다,404,/img/404.png,홈으�
 | `message` | O | 에러 메시지. `{{변수}}` 템플릿 변수 지원 |
 | `title` | | 에러 제목 (modal, page용) |
 | `image` | | 이미지 URL (page용) |
+| `severity` | | `INFO`, `WARNING`, `ERROR`, `CRITICAL` 또는 커스텀 심각도 |
 | `actionLabel` | | 액션 버튼 텍스트 |
 | `actionType` | | `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
 | `actionTarget` | | REDIRECT 시 이동할 URL |

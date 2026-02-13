@@ -1,8 +1,9 @@
 import type { ErrorConfig, ValidationResult, ValidationError } from './schema';
-import { ERROR_TYPES, ACTION_TYPES } from './schema';
+import { ERROR_TYPES, ACTION_TYPES, SEVERITY_LEVELS } from './schema';
 
 const BUILT_IN_ERROR_TYPES = Object.values(ERROR_TYPES) as string[];
 const BUILT_IN_ACTION_TYPES = Object.values(ACTION_TYPES) as string[];
+const BUILT_IN_SEVERITY_LEVELS = Object.values(SEVERITY_LEVELS) as string[];
 
 export function validateConfig(config: ErrorConfig): ValidationResult {
   const errors: ValidationError[] = [];
@@ -66,6 +67,15 @@ export function validateConfig(config: ErrorConfig): ValidationResult {
         trackId,
         field: 'action',
         message: 'PAGE errors should provide an action for user navigation',
+      });
+    }
+
+    // Severity warning for unrecognized values
+    if (entry.severity && !BUILT_IN_SEVERITY_LEVELS.includes(entry.severity)) {
+      warnings.push({
+        trackId,
+        field: 'severity',
+        message: `Unrecognized severity "${entry.severity}". Built-in levels: ${BUILT_IN_SEVERITY_LEVELS.join(', ')}`,
       });
     }
   }

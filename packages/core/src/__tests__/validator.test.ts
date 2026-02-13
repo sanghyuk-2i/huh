@@ -116,4 +116,35 @@ describe('validateConfig', () => {
     expect(result.valid).toBe(true);
     expect(result.warnings).toHaveLength(0);
   });
+
+  it('accepts recognized severity levels without warning', () => {
+    const config: ErrorConfig = {
+      ERR_001: { type: 'TOAST', message: 'test', severity: 'ERROR' },
+      ERR_002: { type: 'TOAST', message: 'test', severity: 'WARNING' },
+      ERR_003: { type: 'TOAST', message: 'test', severity: 'INFO' },
+      ERR_004: { type: 'TOAST', message: 'test', severity: 'CRITICAL' },
+    };
+    const result = validateConfig(config);
+    expect(result.valid).toBe(true);
+    expect(result.warnings).toHaveLength(0);
+  });
+
+  it('warns for unrecognized severity value', () => {
+    const config: ErrorConfig = {
+      ERR_001: { type: 'TOAST', message: 'test', severity: 'CUSTOM_LEVEL' },
+    };
+    const result = validateConfig(config);
+    expect(result.valid).toBe(true);
+    expect(result.warnings.some((w) => w.field === 'severity')).toBe(true);
+    expect(result.warnings[0].message).toContain('CUSTOM_LEVEL');
+  });
+
+  it('does not warn when severity is absent', () => {
+    const config: ErrorConfig = {
+      ERR_001: { type: 'TOAST', message: 'test' },
+    };
+    const result = validateConfig(config);
+    expect(result.valid).toBe(true);
+    expect(result.warnings.some((w) => w.field === 'severity')).toBe(false);
+  });
 });

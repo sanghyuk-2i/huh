@@ -1,6 +1,6 @@
-﻿trackId,type,message,title,image,actionLabel,actionType,actionTarget
-ERR_NETWORK,TOAST,Please check your network connection,,,Retry,RETRY,
-ERR_AUTH,MODAL,Your session has expired,Session Expired,,Login,REDIRECT,/login
-ERR_NOT_FOUND,PAGE,The page you requested was not found,404,,Go Back,BACK,
-ERR_TIMEOUT,MODAL,The request timed out,Timeout,,Retry,RETRY,
-ERR_FORBIDDEN,PAGE,"{{userName}}, you don't have permission",Access Denied,,Go Back,BACK,
+﻿trackId,type,message,title,image,severity,actionLabel,actionType,actionTarget
+ERR_NETWORK,TOAST,Please check your network connection,,,WARNING,Retry,RETRY,
+ERR_AUTH,MODAL,Your session has expired,Session Expired,,ERROR,Login,REDIRECT,/login
+ERR_NOT_FOUND,PAGE,The page you requested was not found,404,,INFO,Go Back,BACK,
+ERR_TIMEOUT,MODAL,The request timed out,Timeout,,ERROR,Retry,RETRY,
+ERR_FORBIDDEN,PAGE,"{{userName}}, you don't have permission",Access Denied,,CRITICAL,Go Back,BACK,

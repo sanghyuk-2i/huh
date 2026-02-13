@@ -72,6 +72,19 @@ const ACTION_TYPES = {
 } as const;
 ```
 
+### `SEVERITY_LEVELS` (상수)
+
+기본 제공 심각도 수준의 대문자 상수입니다.
+
+```ts
+const SEVERITY_LEVELS = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+  CRITICAL: 'CRITICAL',
+} as const;
+```
+
 ### `ErrorType`
 
 기본 제공 타입 + 커스텀 타입을 허용하는 확장 가능한 문자열 타입입니다. 값은 대문자로 관리됩니다.
@@ -88,6 +101,15 @@ type ErrorType = BuiltInErrorType | (string & {});  // 'BANNER', 'SNACKBAR' 등 
 ```ts
 type BuiltInActionType = 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS';
 type ActionType = BuiltInActionType | (string & {});  // 'OPEN_CHAT', 'SHARE' 등 자유 확장
+```
+
+### `Severity`
+
+기본 제공 심각도 + 커스텀 심각도를 허용합니다.
+
+```ts
+type BuiltInSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+type Severity = BuiltInSeverity | (string & {});  // 커스텀 심각도 확장 가능
 ```
 
 ### `ErrorAction`
@@ -110,6 +132,7 @@ interface ErrorEntry {
   message: string;        // 에러 메시지 (템플릿 변수 포함 가능)
   title?: string;         // 제목 (modal, page용)
   image?: string;         // 이미지 URL (page용)
+  severity?: Severity;   // 심각도 수준
   action?: ErrorAction;   // 사용자 액션
 }
 ```
@@ -229,6 +252,7 @@ interface HuhErrorContext {
   trackId: string;
   variables?: Record<string, string>;
   locale?: string;
+  severity?: Severity;
 }
 ```
 
@@ -254,6 +278,7 @@ interface HuhErrorContext {
 
 <Note>
 `type`과 `actionType` 값은 자동으로 대문자로 변환됩니다. 데이터 소스에서 `toast`, `Toast`, `TOAST` 어느 것을 입력해도 `TOAST`로 처리됩니다.
+`severity` 값도 자동으로 대문자로 변환됩니다.
 기본 제공 타입 외에도 커스텀 타입(`BANNER`, `SNACKBAR` 등)을 자유롭게 사용할 수 있습니다.
 </Note>
 
@@ -263,7 +288,7 @@ interface HuhErrorContext {
 import { parseSheetData } from '@huh/core';
 
 const rows = [
-  ['trackId', 'type', 'message', 'title', 'image', 'actionLabel', 'actionType', 'actionTarget'],
+  ['trackId', 'type', 'message', 'title', 'image', 'severity', 'actionLabel', 'actionType', 'actionTarget'],
   ['ERR_001', 'toast', '오류가 발생했습니다', '', '', '', '', ''],
   ['ERR_002', 'modal', '세션 만료', '알림', '', '확인', 'dismiss', ''],
   ['ERR_003', 'banner', '서버 점검 중', '', '', '문의하기', 'open_chat', ''],
@@ -378,6 +403,7 @@ renderTemplate('{{a}} and {{b}}', { a: 'Hello' });
 | `TOAST`에 title이 있음 | Toast errors typically do not display a title |
 | `TOAST`에 image가 있음 | Toast errors typically do not display an image |
 | `PAGE`에 action이 없음 | Page errors should provide an action |
+| 인식할 수 없는 `severity` 값 | Unrecognized severity "X". Built-in levels: INFO, WARNING, ERROR, CRITICAL |
 
 **예시**
 

@@ -24,11 +24,11 @@ After downloading, edit the data and run `huh pull`.
 
 In Excel, create the first row as a header row:
 
-| trackId | type | message | title | image | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|-------------|------------|--------------|
-| ERR_LOGIN_FAILED | TOAST | Login failed | | | | | |
-| ERR_SESSION_EXPIRED | MODAL | Session has expired | Session Expired | | Login Again | REDIRECT | /login |
-| ERR_NOT_FOUND | PAGE | Page not found | 404 | /img/404.png | Go Home | REDIRECT | / |
+| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
+| ERR_LOGIN_FAILED | TOAST | Login failed | | | | | | |
+| ERR_SESSION_EXPIRED | MODAL | Session has expired | Session Expired | | ERROR | Login Again | REDIRECT | /login |
+| ERR_NOT_FOUND | PAGE | Page not found | 404 | /img/404.png | INFO | Go Home | REDIRECT | / |
 
 <Note>
 Even if entered in lowercase, the CLI will automatically convert to uppercase. Custom types (`BANNER`, `SNACKBAR`, etc.) can also be used freely.
@@ -43,6 +43,7 @@ Even if entered in lowercase, the CLI will automatically convert to uppercase. C
 | `message` | Yes | Error message. Supports `{{variable}}` template variables |
 | `title` | | Error title (for modal, page) |
 | `image` | | Image URL (for page) |
+| `severity` | | `INFO`, `WARNING`, `ERROR`, `CRITICAL`, or custom severity |
 | `actionLabel` | | Action button text |
 | `actionType` | | `REDIRECT`, `RETRY`, `BACK`, `DISMISS`, or custom action |
 | `actionTarget` | | URL to navigate to for REDIRECT |

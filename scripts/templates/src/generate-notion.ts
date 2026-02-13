@@ -4,6 +4,7 @@ import {
   SAMPLE_EN,
   TYPE_OPTIONS,
   ACTION_TYPE_OPTIONS,
+  SEVERITY_OPTIONS,
   type SampleRow,
 } from './data.js';
 
@@ -62,6 +63,11 @@ function buildProperties(): NotionPropertySchema {
     message: { rich_text: {} },
     errorTitle: { rich_text: {} },
     image: { url: {} },
+    severity: {
+      select: {
+        options: SEVERITY_OPTIONS.map((name) => ({ name })),
+      },
+    },
     actionLabel: { rich_text: {} },
     actionType: {
       select: {
@@ -81,7 +87,7 @@ function rowToPageProperties(row: SampleRow): Record<string, unknown> {
 
     if (h === 'trackId') {
       props[fieldName] = { title: [{ text: { content: value } }] };
-    } else if (h === 'type' || h === 'actionType') {
+    } else if (h === 'type' || h === 'actionType' || h === 'severity') {
       if (value) {
         props[fieldName] = { select: { name: value } };
       }
@@ -130,6 +136,35 @@ async function findDatabaseByTitle(
   return null;
 }
 
+async function ensureDatabaseProperties(
+  token: string,
+  databaseId: string,
+): Promise<void> {
+  // Fetch current database schema
+  const db = (await notionFetch(`/databases/${databaseId}`, token)) as {
+    properties: Record<string, { id: string; type: string }>;
+  };
+
+  const existingProps = new Set(Object.keys(db.properties));
+  const expectedProps = buildProperties();
+
+  // Collect missing properties
+  const missingProps: NotionPropertySchema = {};
+  for (const [name, config] of Object.entries(expectedProps)) {
+    if (!existingProps.has(name)) {
+      missingProps[name] = config;
+    }
+  }
+
+  if (Object.keys(missingProps).length === 0) return;
+
+  // Update database schema with missing properties
+  await notionFetch(`/databases/${databaseId}`, token, {
+    method: 'PATCH',
+    body: JSON.stringify({ properties: missingProps }),
+  });
+}
+
 async function findOrCreateDatabase(
   token: string,
   parentPageId: string,
@@ -137,6 +172,7 @@ async function findOrCreateDatabase(
 ): Promise<string> {
   const existingId = await findDatabaseByTitle(token, parentPageId, dbTitle);
   if (existingId) {
+    await ensureDatabaseProperties(token, existingId);
     await clearDatabase(token, existingId);
     return existingId;
   }
@@ -221,7 +257,8 @@ export async function generateNotion(): Promise<NotionResult | null> {
   const existingDbId = process.env.NOTION_DATABASE_ID;
 
   if (existingDbId) {
-    // Update existing database: clear and re-populate
+    // Update existing database: ensure schema, clear, and re-populate
+    await ensureDatabaseProperties(token, existingDbId);
     await clearDatabase(token, existingDbId);
     await addPages(token, existingDbId, SAMPLE_KO);
 

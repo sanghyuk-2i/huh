@@ -1,8 +1,10 @@
 export type {
   ErrorType,
   ActionType,
+  Severity,
   BuiltInErrorType,
   BuiltInActionType,
+  BuiltInSeverity,
   ErrorAction,
   ErrorEntry,
   ErrorConfig,
@@ -16,7 +18,7 @@ export type {
   HuhErrorContext,
 } from './schema';
 
-export { ERROR_TYPES, ACTION_TYPES } from './schema';
+export { ERROR_TYPES, ACTION_TYPES, SEVERITY_LEVELS } from './schema';
 
 export { parseSheetData } from './parser';
 export { resolveError } from './resolver';

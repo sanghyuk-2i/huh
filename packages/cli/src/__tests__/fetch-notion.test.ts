@@ -122,16 +122,18 @@ describe('notionPagesToRows', () => {
       'message',
       'title',
       'image',
+      'severity',
       'actionLabel',
       'actionType',
       'actionTarget',
     ]);
-    expect(rows[1]).toEqual(['ERR_001', 'toast', 'Error occurred', '', '', 'Retry', 'retry', '']);
+    expect(rows[1]).toEqual(['ERR_001', 'toast', 'Error occurred', '', '', '', 'Retry', 'retry', '']);
     expect(rows[2]).toEqual([
       'ERR_002',
       'page',
       'Not found',
       'Page Not Found',
+      '',
       '',
       'Go home',
       'redirect',
@@ -154,7 +156,7 @@ describe('notionPagesToRows', () => {
 
     const rows = notionPagesToRows(pages as any);
 
-    expect(rows[1]).toEqual(['ERR_001', 'toast', 'Error', '', '', '', '', '']);
+    expect(rows[1]).toEqual(['ERR_001', 'toast', 'Error', '', '', '', '', '', '']);
   });
 });
 

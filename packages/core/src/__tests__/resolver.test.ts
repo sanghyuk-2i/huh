@@ -25,6 +25,15 @@ const testConfig: ErrorConfig = {
     type: 'BANNER',
     message: 'Custom type: {{detail}}',
   },
+  ERR_SEVERITY: {
+    type: 'TOAST',
+    message: 'Critical error',
+    severity: 'CRITICAL',
+  },
+  ERR_NO_SEVERITY: {
+    type: 'TOAST',
+    message: 'No severity',
+  },
 };
 
 describe('resolveError', () => {
@@ -66,5 +75,15 @@ describe('resolveError', () => {
     const resolved = resolveError(testConfig, 'ERR_CUSTOM', { detail: 'server down' });
     expect(resolved.type).toBe('BANNER');
     expect(resolved.message).toBe('Custom type: server down');
+  });
+
+  it('preserves severity through resolve', () => {
+    const resolved = resolveError(testConfig, 'ERR_SEVERITY');
+    expect(resolved.severity).toBe('CRITICAL');
+  });
+
+  it('leaves severity undefined when not set', () => {
+    const resolved = resolveError(testConfig, 'ERR_NO_SEVERITY');
+    expect(resolved.severity).toBeUndefined();
   });
 });

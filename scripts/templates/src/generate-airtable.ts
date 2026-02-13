@@ -4,6 +4,7 @@ import {
   SAMPLE_EN,
   TYPE_OPTIONS,
   ACTION_TYPE_OPTIONS,
+  SEVERITY_OPTIONS,
   type SampleRow,
 } from './data.js';
 
@@ -54,6 +55,13 @@ function buildFields(): AirtableFieldConfig[] {
     message: { name: 'message', type: 'multilineText' },
     title: { name: 'title', type: 'singleLineText' },
     image: { name: 'image', type: 'url' },
+    severity: {
+      name: 'severity',
+      type: 'singleSelect',
+      options: {
+        choices: SEVERITY_OPTIONS.map((name) => ({ name })),
+      },
+    },
     actionLabel: { name: 'actionLabel', type: 'singleLineText' },
     actionType: {
       name: 'actionType',
@@ -132,6 +140,7 @@ export async function generateAirtable(): Promise<AirtableResult | null> {
 
       // Create missing fields
       const existingFieldNames = new Set(tableMeta.fields.map((f) => f.name));
+      const addedFields: string[] = [];
       for (const field of expectedFields) {
         if (!existingFieldNames.has(field.name)) {
           await airtableFetch(
@@ -139,7 +148,16 @@ export async function generateAirtable(): Promise<AirtableResult | null> {
             token,
             { method: 'POST', body: JSON.stringify(field) },
           );
+          addedFields.push(field.name);
         }
+      }
+
+      if (addedFields.length > 0) {
+        console.warn(
+          `\n  ⚠ Table "${table.name}": Added fields [${addedFields.join(', ')}] at the end of the table.` +
+          `\n    The Airtable API does not support field reordering.` +
+          `\n    To fix the column order, drag the fields manually in the Airtable UI.`,
+        );
       }
 
       // Delete existing records

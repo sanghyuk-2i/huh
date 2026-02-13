@@ -88,11 +88,11 @@ After loading, all APIs are available via the `window.HuhCore` global variable:
 
 Create your data using the following column structure. (Same for Google Sheets, Airtable, Notion, CSV, and XLSX)
 
-| trackId | type | message | title | image | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|-------------|------------|--------------|
-| ERR_LOGIN_FAILED | TOAST | Login failed | | | | | |
-| ERR_SESSION_EXPIRED | MODAL | \{\{userName\}\}'s session has expired | Session Expired | | Login Again | REDIRECT | /login |
-| ERR_NOT_FOUND | PAGE | The page you requested could not be found | 404 | /images/404.png | Go Home | REDIRECT | / |
+| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
+| ERR_LOGIN_FAILED | TOAST | Login failed | | | | | | |
+| ERR_SESSION_EXPIRED | MODAL | \{\{userName\}\}'s session has expired | Session Expired | | ERROR | Login Again | REDIRECT | /login |
+| ERR_NOT_FOUND | PAGE | The page you requested could not be found | 404 | /images/404.png | INFO | Go Home | REDIRECT | / |
 
 <Note>
 `type` and `actionType` are managed in uppercase. Even if you enter lowercase, the CLI will automatically convert them to uppercase.

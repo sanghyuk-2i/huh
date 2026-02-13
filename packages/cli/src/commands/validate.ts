@@ -29,7 +29,18 @@ export function runValidate(filePath?: string) {
   const result = validateConfig(config);
   const entryCount = Object.keys(config).length;
 
-  console.log(pc.dim(`Found ${entryCount} error entries.\n`));
+  // Severity distribution summary
+  const severityCounts: Record<string, number> = {};
+  for (const entry of Object.values(config)) {
+    const sev = entry.severity ?? '(none)';
+    severityCounts[sev] = (severityCounts[sev] ?? 0) + 1;
+  }
+  const severitySummary = Object.entries(severityCounts)
+    .map(([sev, count]) => `${sev}: ${count}`)
+    .join(', ');
+
+  console.log(pc.dim(`Found ${entryCount} error entries.`));
+  console.log(pc.dim(`Severity: ${severitySummary}\n`));
 
   if (result.warnings.length > 0) {
     console.log(pc.yellow(`${result.warnings.length} warning(s):`));

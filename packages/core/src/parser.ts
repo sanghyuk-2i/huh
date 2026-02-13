@@ -10,6 +10,7 @@ const EXPECTED_HEADERS = [
   'message',
   'title',
   'image',
+  'severity',
   'actionLabel',
   'actionType',
   'actionTarget',
@@ -81,11 +82,15 @@ export function parseSheetData(rows: string[][]): ErrorConfig {
       }
     }
 
+    const rawSeverity = get('severity');
+    const severity = rawSeverity ? rawSeverity.toUpperCase() : undefined;
+
     config[trackId] = {
       type,
       message,
       ...(get('title') && { title: get('title') }),
       ...(get('image') && { image: get('image') }),
+      ...(severity && { severity }),
       ...(action && { action }),
     };
   }

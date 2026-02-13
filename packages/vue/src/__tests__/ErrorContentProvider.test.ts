@@ -297,6 +297,73 @@ describe('plugins', () => {
   });
 });
 
+describe('handleErrorByCode', () => {
+  const CodeConsumer = defineComponent({
+    setup() {
+      const { handleErrorByCode } = useHuh();
+      return () =>
+        h('div', [
+          h('button', { onClick: () => handleErrorByCode('API_500') }, 'by-code'),
+          h('button', { onClick: () => handleErrorByCode('ERR_001') }, 'direct-trackid'),
+          h('button', { onClick: () => handleErrorByCode('UNKNOWN_CODE') }, 'unknown-code'),
+        ]);
+    },
+  });
+
+  it('maps error code to trackId via errorMap', async () => {
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers, errorMap: { API_500: 'ERR_001' } },
+      slots: { default: () => h(CodeConsumer) },
+    });
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'by-code')[0].trigger('click');
+    expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
+    expect(wrapper.text()).toContain('Something went wrong');
+  });
+
+  it('falls back to direct trackId match when no errorMap entry', async () => {
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers },
+      slots: { default: () => h(CodeConsumer) },
+    });
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'direct-trackid')[0].trigger('click');
+    expect(wrapper.find('[data-testid="toast"]').exists()).toBe(true);
+  });
+
+  it('uses fallbackTrackId when no mapping or direct match', async () => {
+    const wrapper = mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers, fallbackTrackId: 'ERR_002' },
+      slots: { default: () => h(CodeConsumer) },
+    });
+
+    await wrapper.findAll('button').filter((b) => b.text() === 'unknown-code')[0].trigger('click');
+    expect(wrapper.find('[data-testid="modal"]').exists()).toBe(true);
+  });
+
+  it('throws when no mapping found and no fallback', async () => {
+    let capturedHandleErrorByCode: ((code: string) => void) | null = null;
+
+    const CaptureConsumer = defineComponent({
+      setup() {
+        const { handleErrorByCode } = useHuh();
+        capturedHandleErrorByCode = handleErrorByCode;
+        return () => null;
+      },
+    });
+
+    mount(HuhProvider, {
+      props: { source: testConfig, renderers: mockRenderers },
+      slots: { default: () => h(CaptureConsumer) },
+    });
+
+    expect(capturedHandleErrorByCode).not.toBeNull();
+    expect(() => capturedHandleErrorByCode!('UNKNOWN_CODE')).toThrow(
+      'No mapping found for error code',
+    );
+  });
+});
+
 describe('useHuh', () => {
   it('throws when used outside provider', () => {
     const BadConsumer = defineComponent({

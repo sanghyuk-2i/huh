@@ -44,6 +44,8 @@ interface HuhProviderProps {
   onRetry?: () => void;       // RETRY 액션 시 호출되는 콜백
   onCustomAction?: (action: { type: string; target?: string }) => void;  // 커스텀 액션 콜백
   plugins?: HuhPlugin[];    // 모니터링/분석용 플러그인 배열
+  errorMap?: Record<string, string>;  // 에러 코드→trackId 매핑 테이블
+  fallbackTrackId?: string;           // 매핑이 없을 때 사용할 기본 trackId
 }
 ```
 
@@ -172,6 +174,7 @@ function useHuh(): HuhContextValue;
 
 interface HuhContextValue {
   handleError: (trackId: string, variables?: Record<string, string>) => void;
+  handleErrorByCode: (code: string, variables?: Record<string, string>) => void;
   clearError: () => void;
   locale: string | undefined;                // 현재 로케일 (i18n 모드)
   setLocale: (locale: string) => void;       // 로케일 변경 (i18n 모드)
@@ -212,6 +215,41 @@ const { clearError } = useHuh();
 <template>
   <button @click="clearError()">에러 닫기</button>
 </template>
+```
+
+### `handleErrorByCode`
+
+에러 코드(예: API 응답 코드)를 trackId로 매핑하여 에러를 표시합니다.
+
+**조회 순서:**
+1. `errorMap`에서 코드 매핑 확인
+2. 코드가 직접 trackId와 일치하는지 확인
+3. `fallbackTrackId` 사용
+4. 매핑이 없으면 에러 throw
+
+```vue
+<!-- Provider setup -->
+<HuhProvider
+  :source="config"
+  :renderers="renderers"
+  :error-map="{ 'API_500': 'ERR_SERVER', 'API_401': 'ERR_AUTH' }"
+  fallback-track-id="ERR_UNKNOWN"
+>
+  <App />
+</HuhProvider>
+
+<!-- In a component -->
+<script setup>
+const { handleErrorByCode } = useHuh();
+
+async function callApi() {
+  try {
+    await api.call();
+  } catch (e) {
+    handleErrorByCode(e.code);
+  }
+}
+</script>
 ```
 
 ---

@@ -10,6 +10,7 @@ const EXPECTED_FIELDS = [
   'message',
   'title',
   'image',
+  'severity',
   'actionLabel',
   'actionType',
   'actionTarget',

@@ -14,6 +14,8 @@ interface Props {
         target?: string;
     }) => void;
     plugins?: HuhPlugin[];
+    errorMap?: Record<string, string>;
+    fallbackTrackId?: string;
 }
 declare const HuhProvider: import("svelte").Component<Props, {}, "">;
 type HuhProvider = ReturnType<typeof HuhProvider>;

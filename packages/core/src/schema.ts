@@ -13,12 +13,22 @@ export const ACTION_TYPES = {
   DISMISS: 'DISMISS',
 } as const;
 
+// Built-in severity levels (uppercase constants)
+export const SEVERITY_LEVELS = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+  CRITICAL: 'CRITICAL',
+} as const;
+
 export type BuiltInErrorType = (typeof ERROR_TYPES)[keyof typeof ERROR_TYPES];
 export type BuiltInActionType = (typeof ACTION_TYPES)[keyof typeof ACTION_TYPES];
+export type BuiltInSeverity = (typeof SEVERITY_LEVELS)[keyof typeof SEVERITY_LEVELS];
 
 // Open-ended string types — built-in values + any user-defined custom type
 export type ErrorType = BuiltInErrorType | (string & {});
 export type ActionType = BuiltInActionType | (string & {});
+export type Severity = BuiltInSeverity | (string & {});
 
 export interface ErrorAction {
   label: string;
@@ -31,6 +41,7 @@ export interface ErrorEntry {
   message: string;
   title?: string;
   image?: string;
+  severity?: Severity;
   action?: ErrorAction;
 }
 
@@ -71,6 +82,7 @@ export interface HuhErrorContext {
   trackId: string;
   variables?: Record<string, string>;
   locale?: string;
+  severity?: Severity;
 }
 
 export interface HuhPlugin {

@@ -29,6 +29,7 @@ icon: "table"
 | `message` | O | 사용자에게 보여줄 에러 메시지 |
 | `title` | | 에러 제목 (modal, page에서 사용) |
 | `image` | | 이미지 URL (page에서 사용) |
+| `severity` | | 심각도: `INFO`, `WARNING`, `ERROR`, `CRITICAL` 또는 커스텀 심각도 |
 | `actionLabel` | | 액션 버튼 텍스트 |
 | `actionType` | | 액션 종류: `REDIRECT`, `RETRY`, `BACK`, `DISMISS` 또는 커스텀 액션 |
 | `actionTarget` | | 액션 대상 URL (`REDIRECT` 시 필수) |
@@ -73,13 +74,13 @@ icon: "table"
 
 ## 작성 예시
 
-| trackId | type | message | title | image | actionLabel | actionType | actionTarget |
-|---------|------|---------|-------|-------|-------------|------------|--------------|
-| ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요 | | | | | |
-| ERR_AUTH | MODAL | 인증이 필요합니다 | 로그인 필요 | | 로그인하기 | REDIRECT | /login |
-| ERR_TIMEOUT | MODAL | 요청 시간이 초과되었습니다 | 시간 초과 | | 다시 시도 | RETRY | |
-| ERR_FORBIDDEN | PAGE | {`{{userName}}`}님은 접근 권한이 없습니다 | 접근 거부 | /img/403.png | 뒤로가기 | BACK | |
-| ERR_NOT_FOUND | PAGE | 페이지를 찾을 수 없습니다 | 404 | /img/404.png | 홈으로 | REDIRECT | / |
+| trackId | type | message | title | image | severity | actionLabel | actionType | actionTarget |
+|---------|------|---------|-------|-------|----------|-------------|------------|--------------|
+| ERR_NETWORK | TOAST | 네트워크 연결을 확인해주세요 | | | WARNING | | | |
+| ERR_AUTH | MODAL | 인증이 필요합니다 | 로그인 필요 | | ERROR | 로그인하기 | REDIRECT | /login |
+| ERR_TIMEOUT | MODAL | 요청 시간이 초과되었습니다 | 시간 초과 | | ERROR | 다시 시도 | RETRY | |
+| ERR_FORBIDDEN | PAGE | {`{{userName}}`}님은 접근 권한이 없습니다 | 접근 거부 | /img/403.png | CRITICAL | 뒤로가기 | BACK | |
+| ERR_NOT_FOUND | PAGE | 페이지를 찾을 수 없습니다 | 404 | /img/404.png | INFO | 홈으로 | REDIRECT | / |
 
 ## 규칙 요약
 

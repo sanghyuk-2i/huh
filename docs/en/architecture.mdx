@@ -131,6 +131,7 @@ ErrorConfig (Record<trackId, ErrorEntry>)
     +-- message: string (supports {{variable}} templates)
     +-- title?: string
     +-- image?: string
+    +-- severity?: Severity (uppercase. Built-in: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL' + custom severity)
     +-- action?: ErrorAction
         +-- label: string
         +-- type: ActionType (uppercase. Built-in: 'REDIRECT' | 'RETRY' | 'BACK' | 'DISMISS' + custom actions)
@@ -140,7 +141,7 @@ ErrorConfig (Record<trackId, ErrorEntry>)
 ### Type Extensibility
 
 `ErrorType` and `ActionType` are open-ended string types:
-- Built-in types: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`)
+- Built-in types: `ERROR_TYPES` (`TOAST`, `MODAL`, `PAGE`), `ACTION_TYPES` (`REDIRECT`, `RETRY`, `BACK`, `DISMISS`), `SEVERITY_LEVELS` (`INFO`, `WARNING`, `ERROR`, `CRITICAL`)
 - Custom types (e.g., `BANNER`, `SNACKBAR`, `OPEN_CHAT`) can be freely added from data sources
 - The parser automatically converts to uppercase (lowercase input is accepted)
 - Custom types work automatically when you register the corresponding renderer in the framework's `RendererMap`
