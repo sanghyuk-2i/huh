@@ -81,7 +81,7 @@ describe('adapter registry', () => {
 describe('default adapter registration', () => {
   it('registers all 5 adapters when importing barrel', async () => {
     // Re-import the barrel to trigger registrations
-    const { getRegisteredTypes: getTypes, clearAdapters: clear } = await import('../adapters');
+    const { getRegisteredTypes: getTypes } = await import('../adapters');
     const types = getTypes();
 
     expect(types).toContain('google-sheets');

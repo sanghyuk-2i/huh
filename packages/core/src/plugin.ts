@@ -7,7 +7,8 @@ export function runPluginHook<K extends 'onError' | 'onAction'>(
 ): void {
   for (const plugin of plugins) {
     try {
-      (plugin[hook] as Function | undefined)?.(...args);
+      const hookFn = plugin[hook] as ((...args: unknown[]) => void) | undefined;
+      hookFn?.(...args);
     } catch (err) {
       console.warn(`[huh] Plugin "${plugin.name}" threw in ${hook}:`, err);
     }

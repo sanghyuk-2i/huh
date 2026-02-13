@@ -64,7 +64,7 @@ export async function runTest(options: TestCommandOptions) {
 
   // Load previous report for diff (before generating new one)
   const outputDir = path.resolve(process.cwd(), options.output);
-  let previousReport = options.diff ? loadPreviousReport(outputDir) : null;
+  const previousReport = options.diff ? loadPreviousReport(outputDir) : null;
 
   // Capture screenshots
   const screenshots = await captureAllScreenshots({

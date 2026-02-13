@@ -1,8 +1,8 @@
 import type { ErrorConfig, ValidationResult, ValidationError } from './schema';
 import { ERROR_TYPES, ACTION_TYPES, SEVERITY_LEVELS } from './schema';
 
-const BUILT_IN_ERROR_TYPES = Object.values(ERROR_TYPES) as string[];
-const BUILT_IN_ACTION_TYPES = Object.values(ACTION_TYPES) as string[];
+const _BUILT_IN_ERROR_TYPES = Object.values(ERROR_TYPES) as string[];
+const _BUILT_IN_ACTION_TYPES = Object.values(ACTION_TYPES) as string[];
 const BUILT_IN_SEVERITY_LEVELS = Object.values(SEVERITY_LEVELS) as string[];
 
 export function validateConfig(config: ErrorConfig): ValidationResult {

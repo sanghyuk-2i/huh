@@ -1,4 +1,4 @@
-import type { ErrorConfig, ValidationError } from '@huh/core';
+import type { ValidationError } from '@huh/core';
 
 // ── CLI Options ──
 

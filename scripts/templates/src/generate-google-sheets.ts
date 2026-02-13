@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { google, type sheets_v4 } from 'googleapis';
 import {
-  HEADERS,
   SAMPLE_KO,
   SAMPLE_EN,
   toRows,

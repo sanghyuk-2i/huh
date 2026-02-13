@@ -57,9 +57,9 @@ export default [
     },
   },
 
-  // Examples - allow non-null assertions
+  // Examples and scripts - allow non-null assertions
   {
-    files: ['examples/**/*.{ts,tsx}'],
+    files: ['examples/**/*.{ts,tsx}', 'scripts/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-non-null-assertion': 'off',
     },
@@ -70,6 +70,7 @@ export default [
     files: ['**/__tests__/**/*.{ts,tsx,js}', '**/*.test.{ts,tsx,js}', '**/*.spec.{ts,tsx,js}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
 

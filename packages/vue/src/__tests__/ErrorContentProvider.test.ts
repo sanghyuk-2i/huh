@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { defineComponent, h } from 'vue';
 import { HuhProvider } from '../ErrorContentProvider';
 import { useHuh } from '../useErrorContent';
 import type { ErrorConfig, HuhPlugin } from '@huh/core';
-import type { RendererMap, ErrorRenderProps } from '../types';
+import type { RendererMap } from '../types';
 
 const testConfig: ErrorConfig = {
   ERR_001: {

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ResolvedError, ErrorConfig, LocalizedErrorConfig } from '@huh/core';
+import type { ResolvedError } from '@huh/core';
 
 export interface ErrorRenderProps {
   error: ResolvedError;

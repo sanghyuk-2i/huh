@@ -111,7 +111,7 @@ async function findDatabaseByTitle(
 ): Promise<string | null> {
   let startCursor: string | undefined;
 
-  // eslint-disable-next-line no-constant-condition
+   
   while (true) {
     const params = startCursor ? `?start_cursor=${startCursor}` : '';
     const res = (await notionFetch(`/blocks/${parentPageId}/children${params}`, token)) as {
