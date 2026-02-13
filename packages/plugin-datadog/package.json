@@ -1,6 +1,6 @@
 {
   "name": "@sanghyuk-2i/huh-plugin-datadog",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Datadog integration plugin for huh — automatic error logging and action tracking",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

@@ -1,6 +1,6 @@
 {
   "name": "@sanghyuk-2i/huh-react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React bindings for huh — HuhProvider and useHuh hook",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

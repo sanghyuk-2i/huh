@@ -1,6 +1,6 @@
 {
   "name": "@sanghyuk-2i/huh-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Huh - error content JSON DSL core: types, parsing, variable substitution, validation",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

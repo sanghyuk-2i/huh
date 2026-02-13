@@ -1,6 +1,6 @@
 {
   "name": "@sanghyuk-2i/huh-vue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vue bindings for huh — HuhProvider and useHuh composable",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
